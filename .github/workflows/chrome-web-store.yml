@@ -43,12 +43,19 @@ jobs:
         env:
           RELEASE_TAG: ${{ inputs.tag }}
 
+      - name: Check out the uploader from the workflow revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          path: .publisher
+          sparse-checkout: scripts/chrome-web-store.js
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
       - name: Upload package and optionally submit for review
-        run: bun scripts/chrome-web-store.js
+        run: bun .publisher/scripts/chrome-web-store.js
         env:
-          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
-          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
-          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_SERVICE_ACCOUNT_JSON: ${{ secrets.CWS_SERVICE_ACCOUNT_JSON }}
           CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
           CWS_EXTENSION_ID: ${{ vars.CWS_EXTENSION_ID }}
           CWS_PUBLISH: ${{ inputs.publish }}
