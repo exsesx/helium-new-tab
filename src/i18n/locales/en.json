@@ -44,5 +44,5 @@
   "languageError": "This translation could not load. Using English for now.",
   "backgroundBlend": "Blended",
   "backgroundHelium": "Helium",
-  "background": "Background"
+  "style": "Style"
 }

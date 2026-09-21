@@ -44,5 +44,5 @@
   "languageError": "No se pudo cargar esta traducción. Se usará inglés por ahora.",
   "backgroundBlend": "Integrado",
   "backgroundHelium": "Helium",
-  "background": "Fondo"
+  "style": "Estilo"
 }

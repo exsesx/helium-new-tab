@@ -44,5 +44,5 @@
   "languageError": "No s’ha pogut carregar la traducció. De moment es farà servir l’anglès.",
   "backgroundBlend": "Integrat",
   "backgroundHelium": "Helium",
-  "background": "Fons"
+  "style": "Estil"
 }

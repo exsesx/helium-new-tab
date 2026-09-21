@@ -44,5 +44,5 @@
   "languageError": "Käännöstä ei voitu ladata. Toistaiseksi käytetään englantia.",
   "backgroundBlend": "Yhtenäinen",
   "backgroundHelium": "Helium",
-  "background": "Tausta"
+  "style": "Tyyli"
 }

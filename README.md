@@ -20,7 +20,7 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
 
 ## Features
 
-- Follows the device's light/dark appearance, with manual overrides in Customize. Background offers Blended (`#1E2020` in dark mode, matching solid browser chrome with native frame materials disabled) or Helium (`#3B3C3C` in dark mode). Both use white in light mode. Saved backgrounds apply before the first paint and follow device appearance changes. Existing background preferences are preserved.
+- Follows the device's light/dark appearance, with manual overrides in Customize. Style offers Blended (`#1E2020` in dark mode, matching solid browser chrome with native frame materials disabled) or Helium (`#3B3C3C` in dark mode). Both use white in light mode. Saved styles apply before the first paint and follow device appearance changes. Existing style preferences are preserved.
 - Larger Helium logo and search positioned around a quarter of the way down the page, with an optional clock and date below. Short windows use tighter spacing.
 - Native settings dialog styled as an animated side drawer on desktop and a bottom sheet on mobile. Markup and event handlers load only on the first Customize click and are reused afterward. Supports Escape, backdrop dismissal, focus management, and reduced motion. No React or component-library runtime.
 - Saved fonts and appearance apply before the first paint. Clock space stays reserved until the actual time is ready; no loading fade or placeholder.
@@ -64,7 +64,7 @@ for size in 16 32 48 96 128 256; do
 done
 ```
 
-Bun minifies and tree-shakes the app into ESM, with settings imported only on demand. The synchronous `theme.js` applies the translated tab title, saved appearance, background, and fonts before CSS loads. The build extracts only the 37 short tab titles from the catalogs into this bundle, so the title does not wait for the application or translation request. The main logo is inline SVG and follows the text color, eliminating separate light/dark image requests. Bun minifies the plain CSS stylesheet. There are no runtime dependencies.
+Bun minifies and tree-shakes the app into ESM, with settings imported only on demand. The synchronous `theme.js` applies the translated tab title, saved appearance, style, and fonts before CSS loads. The build extracts only the 37 short tab titles from the catalogs into this bundle, so the title does not wait for the application or translation request. The main logo is inline SVG and follows the text color, eliminating separate light/dark image requests. Bun minifies the plain CSS stylesheet. There are no runtime dependencies.
 
 - `bun run build`: validate translation coverage, then compile/copy all sources.
 - `bun run dev`: build, serve, and watch all sources.
@@ -75,7 +75,7 @@ Bun minifies and tree-shakes the app into ESM, with settings imported only on de
 
 ## Languages
 
-**Customize → Language** defaults to **Automatic**. It selects the first supported browser language, with English as fallback. A manual choice is saved on this device and changes interface text, tab title, accessibility labels, and date/time locale. Appearance, background, and time-format overrides remain independent.
+**Customize → Language** defaults to **Automatic**. It selects the first supported browser language, with English as fallback. A manual choice is saved on this device and changes interface text, tab title, accessibility labels, and date/time locale. Appearance, style, and time-format overrides remain independent.
 
 37 translations are included: Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Irish, Italian, Latvian, Lithuanian, Maltese, Polish, Portuguese, Romanian, Slovak, Slovenian, Spanish, Swedish, Albanian, Bosnian, Icelandic, Macedonian, Norwegian Bokmål, Serbian (Latin), Turkish, Ukrainian, Simplified Chinese, Traditional Chinese, Japanese, and Korean.
 
