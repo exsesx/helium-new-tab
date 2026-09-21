@@ -4,6 +4,18 @@ The original extension code is Copyright (c) 2026 Oleh Vanin, under the MIT lice
 Helium artwork remains under its upstream GPL-3.0 license, included in
 [licenses/GPL-3.0.txt](licenses/GPL-3.0.txt). The MIT license does not relicense that artwork.
 
+## Bang catalog
+
+`src/data/bangs.json` is a snapshot of [Helium's published bang catalog](https://services.helium.imput.net/bangs.json),
+downloaded on 21 September 2026. Its generation timestamp is `2026-09-01T08:41:24.475Z`.
+The catalog is Copyright (c) 2024 Kagi Search, 2026 imput, under the MIT license
+included in [licenses/bangs-MIT.txt](licenses/bangs-MIT.txt).
+
+The source header identifies [Kagi's bangs](https://github.com/kagisearch/bangs) and
+[Helium's extras](https://github.com/imputnet/helium-services/blob/main/svc/bangs/extras.json)
+as its inputs. We converted the published JSON with comments and trailing commas to
+standard JSON using `Bun.JSON5.parse`, without changing its entries.
+
 ## Helium artwork
 
 Copyright 2026 The Helium Authors.

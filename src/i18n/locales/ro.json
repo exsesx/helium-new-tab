@@ -44,5 +44,9 @@
   "languageError": "Traducerea nu s-a putut încărca. Pentru moment se folosește engleza.",
   "backgroundBlend": "Asortat",
   "backgroundHelium": "Helium",
-  "style": "Stil"
+  "style": "Stil",
+  "searchService": "Caută pe {service}",
+  "bangHint": "Încearcă !yt pisici pentru a căuta pe YouTube.",
+  "showServiceIcons": "Afișează pictogramele serviciilor",
+  "serviceIconsHelp": "Încarcă pictograme de la Google în timp ce scrii un bang. Trimite adresa site-ului, fără termeni de căutare sau cookie-uri."
 }

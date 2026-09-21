@@ -181,9 +181,44 @@ h1 {
 }
 
 .search-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
   color: var(--secondary);
+  width: 20px;
+  height: 20px;
+}
+
+.search-icon > svg {
   width: 19px;
   height: 19px;
+  transition: opacity 160ms ease;
+}
+
+.search-icon > svg.is-hidden {
+  opacity: 0;
+}
+
+.search-favicon {
+  position: absolute;
+  inset: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.search-favicon.is-visible {
+  opacity: 1;
+}
+
+@starting-style {
+  .search-favicon.is-visible {
+    opacity: 0;
+  }
 }
 
 #search {
@@ -217,6 +252,15 @@ h1 {
 
 .search-submit:hover {
   background: var(--border);
+}
+
+.search-feedback {
+  min-height: 1.5em;
+  margin: 8px 16px 0;
+  color: var(--secondary);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: start;
 }
 
 footer {
@@ -638,7 +682,9 @@ kbd {
 
 @media (prefers-reduced-motion: reduce) {
   dialog,
-  dialog::backdrop {
+  dialog::backdrop,
+  .search-icon > svg,
+  .search-favicon {
     transition: none !important;
   }
 }

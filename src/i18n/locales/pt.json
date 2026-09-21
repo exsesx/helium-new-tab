@@ -44,5 +44,9 @@
   "languageError": "Não foi possível carregar esta tradução. Será usado inglês por agora.",
   "backgroundBlend": "Integrado",
   "backgroundHelium": "Helium",
-  "style": "Estilo"
+  "style": "Estilo",
+  "searchService": "Pesquisar em {service}",
+  "bangHint": "Experimente !yt gatos para pesquisar no YouTube.",
+  "showServiceIcons": "Mostrar ícones dos serviços",
+  "serviceIconsHelp": "Obtém ícones do Google enquanto escreve um bang. Envia o endereço do site, sem termos de pesquisa nem cookies."
 }

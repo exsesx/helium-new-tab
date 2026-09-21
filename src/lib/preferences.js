@@ -1,8 +1,9 @@
 import { readPreferences, resolvedFonts } from "./model.js";
+import { preferencesKey } from "./storage.js";
 
 export function loadPreferences() {
   try {
-    return readPreferences(JSON.parse(localStorage.getItem("quiet-tab")));
+    return readPreferences(JSON.parse(localStorage.getItem(preferencesKey)));
   } catch {
     return readPreferences(null);
   }

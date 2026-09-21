@@ -14,6 +14,7 @@ export const defaults = {
   timeFormat: "auto",
   showSeconds: false,
   showDate: true,
+  showServiceIcons: true,
   uiFont: "system",
   monoFont: "system",
   uiCustomFont: "",
@@ -100,7 +101,7 @@ export function readPreferences(value) {
     result.timeFormat = value.hour24 ? "24h" : "12h";
   }
 
-  for (const key of ["showSeconds", "showDate"]) {
+  for (const key of ["showSeconds", "showDate", "showServiceIcons"]) {
     if (typeof value[key] === "boolean") {
       result[key] = value[key];
     }

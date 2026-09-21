@@ -44,5 +44,9 @@
   "languageError": "A fordítás nem tölthető be. Egyelőre az angol nyelv lesz használatban.",
   "backgroundBlend": "Összehangolt",
   "backgroundHelium": "Helium",
-  "style": "Stílus"
+  "style": "Stílus",
+  "searchService": "Keresés itt: {service}",
+  "bangHint": "Próbáld ki: !yt macskák a YouTube-on való kereséshez.",
+  "showServiceIcons": "Szolgáltatásikonok megjelenítése",
+  "serviceIconsHelp": "A bang beírása közben ikonokat tölt le a Google-tól. A webhely címét küldi el, keresőkifejezések és sütik nélkül."
 }

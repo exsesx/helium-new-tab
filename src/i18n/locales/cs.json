@@ -44,5 +44,9 @@
   "languageError": "Překlad se nepodařilo načíst. Prozatím se používá angličtina.",
   "backgroundBlend": "Sladěné",
   "backgroundHelium": "Helium",
-  "style": "Styl"
+  "style": "Styl",
+  "searchService": "Hledat na {service}",
+  "bangHint": "Zkuste !yt kočky pro hledání na YouTube.",
+  "showServiceIcons": "Zobrazovat ikony služeb",
+  "serviceIconsHelp": "Při psaní bangu načítá ikony z Googlu. Odesílá adresu webu bez hledaných výrazů a souborů cookie."
 }

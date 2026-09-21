@@ -44,5 +44,9 @@
   "languageError": "Преводот не може да се вчита. Засега се користи англиски.",
   "backgroundBlend": "Усогласена",
   "backgroundHelium": "Helium",
-  "style": "Стил"
+  "style": "Стил",
+  "searchService": "Пребарај на {service}",
+  "bangHint": "Пробајте !yt мачки за пребарување на YouTube.",
+  "showServiceIcons": "Прикажи икони на сервиси",
+  "serviceIconsHelp": "Презема икони од Google додека внесувате bang. Ја испраќа адресата на страницата, без поими за пребарување или колачиња."
 }

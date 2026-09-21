@@ -19,10 +19,11 @@ Use Conventional Commits, for example `fix: preserve the selected language on re
 
 ## GitHub release
 
-1. Update the versions in `src/manifest.json` and `package.json` together.
-2. Run `bun install` to refresh package metadata in the lockfile, then `bun run check`.
-3. Commit and push the release, then tag that commit with `v<manifest version>` and push the tag.
-4. The Release workflow validates the tag, checks the source, builds the package, and creates
+1. Refresh the bundled bang catalog using the manual steps below.
+2. Update the versions in `src/manifest.json` and `package.json` together.
+3. Run `bun install` to refresh package metadata in the lockfile, then `bun run check`.
+4. Commit and push the release, then tag that commit with `v<manifest version>` and push the tag.
+5. The Release workflow validates the tag, checks the source, builds the package, and creates
    a GitHub release with a ZIP and SHA-256 checksum. GitHub supplies the matching source archives.
 
 `bun run package` also creates these files locally in `release/`. The ZIP contains the
@@ -33,6 +34,28 @@ uses the `zip` command available on macOS and GitHub's Ubuntu runners.
 For local installation, extract the ZIP and use **Load unpacked** on the extracted folder.
 When sharing a package, also make the matching source release available, including the
 editable artwork and build instructions. The artwork retains its GPL-3.0 license.
+
+### Refresh the bang catalog manually
+
+Before each release, download Helium's published catalog and convert its comments and
+trailing commas to standard JSON. Keep all entry fields, including format flags.
+The extension does not fetch this file at runtime.
+
+```sh
+curl --fail --location --output /tmp/helium-tab-bangs.jsonc \
+  https://services.helium.imput.net/bangs.json
+bun - <<'JS'
+const source = await Bun.file("/tmp/helium-tab-bangs.jsonc").text();
+const entries = Bun.JSON5.parse(source);
+await Bun.write("src/data/bangs.json", `${JSON.stringify(entries, null, 2)}\n`);
+JS
+bun run format
+bun run check
+```
+
+Review the catalog diff and the upstream license header. Update the download date and
+generation timestamp in `THIRD_PARTY_NOTICES.md`, and update `licenses/bangs-MIT.txt`
+if the upstream notice changed. If the feed is unchanged, keep the current snapshot.
 
 ## Chrome Web Store
 

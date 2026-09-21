@@ -44,5 +44,9 @@
   "languageError": "Bu çeviri yüklenemedi. Şimdilik İngilizce kullanılıyor.",
   "backgroundBlend": "Uyumlu",
   "backgroundHelium": "Helium",
-  "style": "Stil"
+  "style": "Stil",
+  "searchService": "{service} üzerinde ara",
+  "bangHint": "YouTube’da aramak için !yt kediler yazın.",
+  "showServiceIcons": "Hizmet simgelerini göster",
+  "serviceIconsHelp": "Bir bang yazarken Google’dan simgeleri alır. Arama terimleri veya çerezler olmadan sitenin adresini gönderir."
 }

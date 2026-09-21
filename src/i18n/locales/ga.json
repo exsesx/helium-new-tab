@@ -44,5 +44,9 @@
   "languageError": "Níorbh fhéidir an t-aistriúchán a lódáil. Úsáidfear Béarla go fóill.",
   "backgroundBlend": "Comhtháite",
   "backgroundHelium": "Helium",
-  "style": "Stíl"
+  "style": "Stíl",
+  "searchService": "Cuardaigh ar {service}",
+  "bangHint": "Bain triail as !yt cait chun YouTube a chuardach.",
+  "showServiceIcons": "Taispeáin deilbhíní seirbhísí",
+  "serviceIconsHelp": "Faigheann sé deilbhíní ó Google agus bang á chlóscríobh agat. Seolann sé seoladh an tsuímh, gan téarmaí cuardaigh ná fianáin."
 }
