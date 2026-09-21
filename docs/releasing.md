@@ -48,19 +48,28 @@ Initial setup in your own Google account:
 2. Create the extension item in the Developer Dashboard. Complete its store listing,
    screenshots, privacy declarations, and distribution settings. Use the public
    [privacy policy](https://github.com/exsesx/helium-new-tab/blob/main/PRIVACY.md).
-3. Enable the Chrome Web Store API and create OAuth credentials following the
-   [official API guide](https://developer.chrome.com/docs/webstore/using-api).
-4. Create a GitHub environment named `chrome-web-store`. Add environment variables
-   `CWS_PUBLISHER_ID` and `CWS_EXTENSION_ID` from the Dashboard.
-5. Add environment secrets `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, and `CWS_REFRESH_TOKEN`.
-   Keep these out of repository files and issue comments. Optional required reviewers on
-   the environment add an approval before the upload job runs.
-6. Run the workflow for the intended release tag. Later uploads require a higher manifest version.
+3. Enable the Chrome Web Store API in a Google Cloud project and create a service
+   account. No project roles are required. Add its email under **Service account** in
+   the Chrome Web Store publisher settings, following the
+   [official service account guide](https://developer.chrome.com/docs/webstore/service-accounts).
+4. Create a JSON key for that service account. In GitHub **Settings → Secrets and
+   variables → Actions**, save the entire JSON as the repository secret
+   `CWS_SERVICE_ACCOUNT_JSON`. Keep the key out of repository files and issue comments.
+   This authentication does not need an OAuth client, consent screen, or refresh token.
+5. Add repository variables `CWS_PUBLISHER_ID` and `CWS_EXTENSION_ID` from the Dashboard.
+   The workflow uses the `chrome-web-store` environment, where optional required
+   reviewers can add an approval before the upload job runs. Environment secrets and
+   variables can also be used instead of repository settings.
+6. Run the workflow from the updated branch for the intended release tag. Later uploads
+   require a higher manifest version. The package is built from the selected tag, while
+   the uploader comes from the workflow revision so older tags use current authentication.
 
-The workflow uses the official v2 API, waits for asynchronous upload completion, and
-stops on upload errors before attempting publication. It never logs OAuth tokens or
-response bodies. Review the Developer Dashboard if it fails; do not assume a failed
-or interrupted workflow means the upload or submission did not reach Google.
+The uploader exchanges a signed service account JWT for a short-lived access token
+scoped to the Chrome Web Store API. It uses the official v2 API, waits for asynchronous
+upload completion, and stops on upload errors before attempting publication. It never
+logs private keys, tokens, or response bodies. Review the Developer Dashboard if it fails;
+do not assume a failed or interrupted workflow means the upload or submission did not
+reach Google.
 
 Store listing text must describe this as an unofficial extension. The `search` permission
 is used only to submit a user's query through the browser's configured search provider.
