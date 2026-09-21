@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "prefer-template": "error",
+    "no-useless-concat": "error",
+    "curly": ["error", "all"],
+    "eqeqeq": ["error", "always"],
+    "no-var": "error",
+    "prefer-const": "error"
+  },
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "chrome": "readonly",
+    "Bun": "readonly",
+    "process": "readonly",
+    "__TAB_TITLES__": "readonly"
+  },
+  "ignorePatterns": ["dist/**"]
+}

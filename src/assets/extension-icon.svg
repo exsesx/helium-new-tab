@@ -1,0 +1,8 @@
+<!--
+  Helium product logo, Copyright 2026 The Helium Authors, GPL-3.0.
+  Geometry: https://github.com/imputnet/helium/blob/main/resources/branding/product_logo.icon
+  Neutral color matches Helium's native light-mode new-tab favicon.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56">
+  <path fill="#3c4043" d="M33.19 51.17 28 55 22.81 51.17 25.17 32.9 10.5 44.08 4.59 41.5 5.31 35.09 22.33 28 5.31 20.91 4.59 14.5 10.5 11.92 25.17 23.1 22.81 4.83 28 1 33.19 4.83 30.83 23.1 45.5 11.92 51.41 14.5 50.69 20.91 33.67 28 50.69 35.09 51.41 41.5 45.5 44.08 30.83 32.9Z"/>
+</svg>

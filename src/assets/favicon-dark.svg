@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <filter id="tint" color-interpolation-filters="sRGB">
+    <feFlood flood-color="#c7c7c7" />
+    <feComposite in2="SourceAlpha" operator="in" />
+  </filter>
+  <image width="32" height="32" filter="url(#tint)" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAOVBMVEUAAAA9QEM8QENAQEM7QEM6QEM8QEM8QENAQEg9QEM9QEU9QEI8QEQ7QEM8QEM9QEM8QEQ9QEM8QEOpt+ubAAAAEnRSTlMA34AgcDDvvxCgYGBAsJBQz48LZ9VRAAAA5klEQVQ4y6VT2Q7DIAxLS7gG9Mj/f+wgXFWHqKZafSiJYwMW8C+EmPdRKZz1T4pYJwSbCGFC2J4UPokw2oRc8+b3RPD8a07R25po4aVIBMm1hUjLQlipWacfPm4vsTPDGoAlakV5mysfgO5MbHNEYZZn+EIwrlQUxtGAqqxWAw1OF5H0MbS/p2S5U4clDODqMBoYwWD1cTC8TEUNixW3tv/dpLto12GFgciiqk6mjldhCVHoAFHPsz9f9TUsbGH1/K5x55BTOQff4+blZvpu9lwaXiZ25zHYepsQAp/mjQI/vRePd4gvxjEUO6AInZAAAAAASUVORK5CYII=" />
+</svg>

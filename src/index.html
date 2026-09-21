@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title data-i18n="newTab">New Tab</title>
+    <!-- The build embeds these tiny assets so favicon selection needs no file request or script. -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/favicon-light.png"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      sizes="32x32"
+      href="assets/favicon-dark.svg"
+      media="(prefers-color-scheme: dark)"
+    />
+    <script src="theme.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="assets/app.js"></script>
+  </head>
+  <body>
+    <main>
+      <section class="start" aria-label="New tab" data-i18n-label="newTab">
+        <div class="helium-logo" role="img" aria-label="Helium">
+          <svg viewBox="0 0 256 256" aria-hidden="true">
+            <path
+              d="M152.62 237.85L128 256L103.38 237.85L114.568 151.248L45.05 204.22L17 192L20.425 161.635L101.128 128L20.425 94.365L17 64L45.05 51.78L114.568 104.752L103.38 18.15L128 0L152.62 18.15L141.432 104.752L210.95 51.78L239 64L235.575 94.365L154.872 128L235.575 161.635L239 192L210.95 204.22L141.432 151.248L152.62 237.85Z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+        <form id="search-form" role="search" autocomplete="off">
+          <svg
+            class="search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            aria-hidden="true"
+          >
+            <circle cx="10.5" cy="10.5" r="6.5" />
+            <path d="m16 16 4.5 4.5" />
+          </svg>
+          <input
+            id="search"
+            type="text"
+            aria-label="Search or type a URL"
+            data-i18n-label="searchPlaceholder"
+            placeholder="Search or type a URL"
+            data-i18n-placeholder="searchPlaceholder"
+            spellcheck="false"
+            autocapitalize="off"
+          />
+          <button class="search-submit" type="submit" aria-label="Search" data-i18n-label="search">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </button>
+        </form>
+        <div class="clock-block" id="clock-block">
+          <h1>
+            <time
+              id="clock"
+              aria-label="Current time"
+              data-i18n-label="currentTime"
+              dir="auto"
+            ></time>
+          </h1>
+          <p id="date" dir="auto"></p>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span class="keyboard-hint"><kbd>/</kbd><span data-i18n="toSearch">to search</span></span
+      ><button
+        class="settings-button"
+        id="open-settings"
+        aria-label="Customize new tab"
+        data-i18n-label="customize"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M4 17h16" />
+          <circle cx="9" cy="7" r="3" />
+          <circle cx="15" cy="17" r="3" /></svg
+        ><span data-i18n="customize">Customize</span>
+      </button>
+    </footer>
+
+    <p id="status" class="toast" role="status"></p>
+  </body>
+</html>

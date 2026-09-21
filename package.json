@@ -1,0 +1,24 @@
+{
+  "name": "helium-new-tab",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "bun scripts/dev.js",
+    "build": "bun scripts/build.js",
+    "lint": "oxlint --deny-warnings .",
+    "lint:fix": "oxlint --fix --deny-warnings .",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "check": "bun run lint && bun run format:check && bun test && bun run build",
+    "test": "bun test",
+    "hooks:install": "git config core.hooksPath .githooks",
+    "package": "bun run build && bun scripts/package.js"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.83.0"
+  },
+  "packageManager": "bun@1.4.1"
+}
