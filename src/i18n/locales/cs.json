@@ -45,7 +45,6 @@
   "backgroundBlend": "Sladěné",
   "backgroundHelium": "Helium",
   "style": "Styl",
-  "searchService": "Hledat na {service}",
   "showServiceIcons": "Zobrazovat ikony služeb",
   "serviceIconsHelp": "Při psaní bangu načítá ikony z Googlu. Odesílá adresu webu bez hledaných výrazů a souborů cookie."
 }

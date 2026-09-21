@@ -45,7 +45,6 @@
   "backgroundBlend": "Εναρμονισμένο",
   "backgroundHelium": "Helium",
   "style": "Στυλ",
-  "searchService": "Αναζήτηση στο {service}",
   "showServiceIcons": "Εμφάνιση εικονιδίων υπηρεσιών",
   "serviceIconsHelp": "Φορτώνει εικονίδια από το Google ενώ πληκτρολογείτε ένα bang. Στέλνει τη διεύθυνση του ιστοτόπου, χωρίς όρους αναζήτησης ή cookie."
 }

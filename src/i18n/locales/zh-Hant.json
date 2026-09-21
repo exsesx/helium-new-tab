@@ -45,7 +45,6 @@
   "backgroundBlend": "與瀏覽器融合",
   "backgroundHelium": "Helium",
   "style": "樣式",
-  "searchService": "在 {service} 中搜尋",
   "showServiceIcons": "顯示服務圖示",
   "serviceIconsHelp": "輸入 bang 時從 Google 載入圖示。只傳送網站位址，不傳送搜尋字詞或 Cookie。"
 }

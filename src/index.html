@@ -74,14 +74,13 @@
             id="search"
             type="text"
             aria-label="Search or type a URL"
-            aria-describedby="search-feedback"
             data-i18n-label="searchPlaceholder"
             placeholder="Search or type a URL"
             data-i18n-placeholder="searchPlaceholder"
             spellcheck="false"
             autocapitalize="off"
           />
-          <button id="search-submit" class="search-submit" type="submit" aria-label="Search">
+          <button class="search-submit" type="submit" aria-label="Search" data-i18n-label="search">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -93,8 +92,6 @@
             </svg>
           </button>
         </form>
-
-        <p id="search-feedback" class="search-feedback" role="status" aria-atomic="true"></p>
 
         <div class="clock-block" id="clock-block">
           <h1>

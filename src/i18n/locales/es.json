@@ -45,7 +45,6 @@
   "backgroundBlend": "Integrado",
   "backgroundHelium": "Helium",
   "style": "Estilo",
-  "searchService": "Buscar en {service}",
   "showServiceIcons": "Mostrar iconos de servicios",
   "serviceIconsHelp": "Obtiene iconos de Google mientras escribes un bang. Envía la dirección del sitio, sin términos de búsqueda ni cookies."
 }

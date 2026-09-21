@@ -45,7 +45,6 @@
   "backgroundBlend": "Asortat",
   "backgroundHelium": "Helium",
   "style": "Stil",
-  "searchService": "Caută pe {service}",
   "showServiceIcons": "Afișează pictogramele serviciilor",
   "serviceIconsHelp": "Încarcă pictograme de la Google în timp ce scrii un bang. Trimite adresa site-ului, fără termeni de căutare sau cookie-uri."
 }

@@ -45,7 +45,6 @@
   "backgroundBlend": "Usklajeno",
   "backgroundHelium": "Helium",
   "style": "Slog",
-  "searchService": "Išči v {service}",
   "showServiceIcons": "Prikaži ikone storitev",
   "serviceIconsHelp": "Med vnašanjem ukaza bang nalaga ikone iz Googla. Pošlje naslov spletnega mesta brez iskalnih izrazov ali piškotkov."
 }

@@ -45,7 +45,6 @@
   "backgroundBlend": "Suderintas",
   "backgroundHelium": "Helium",
   "style": "Stilius",
-  "searchService": "Ieškoti per {service}",
   "showServiceIcons": "Rodyti paslaugų piktogramas",
   "serviceIconsHelp": "Rašant bang komandą, įkelia piktogramas iš „Google“. Siunčia svetainės adresą be paieškos žodžių ar slapukų."
 }

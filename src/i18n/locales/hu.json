@@ -45,7 +45,6 @@
   "backgroundBlend": "Összehangolt",
   "backgroundHelium": "Helium",
   "style": "Stílus",
-  "searchService": "Keresés itt: {service}",
   "showServiceIcons": "Szolgáltatásikonok megjelenítése",
   "serviceIconsHelp": "A bang beírása közben ikonokat tölt le a Google-tól. A webhely címét küldi el, keresőkifejezések és sütik nélkül."
 }

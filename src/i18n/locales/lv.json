@@ -45,7 +45,6 @@
   "backgroundBlend": "Saskaņots",
   "backgroundHelium": "Helium",
   "style": "Stils",
-  "searchService": "Meklēt vietnē {service}",
   "showServiceIcons": "Rādīt pakalpojumu ikonas",
   "serviceIconsHelp": "Ielādē ikonas no Google, kamēr rakstāt bang komandu. Nosūta vietnes adresi bez meklēšanas vārdiem vai sīkfailiem."
 }

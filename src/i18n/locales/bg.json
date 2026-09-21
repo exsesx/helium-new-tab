@@ -45,7 +45,6 @@
   "backgroundBlend": "Слят с браузъра",
   "backgroundHelium": "Helium",
   "style": "Стил",
-  "searchService": "Търсене в {service}",
   "showServiceIcons": "Показване на икони на сайтове",
   "serviceIconsHelp": "Зарежда икони от Google, докато въвеждате bang. Изпраща адреса на сайта, без думи за търсене или бисквитки."
 }

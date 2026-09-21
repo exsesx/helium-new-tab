@@ -45,7 +45,6 @@
   "backgroundBlend": "Usklađena",
   "backgroundHelium": "Helium",
   "style": "Stil",
-  "searchService": "Pretraži {service}",
   "showServiceIcons": "Prikaži ikone servisa",
   "serviceIconsHelp": "Preuzima ikone s Googlea dok unosite bang. Šalje adresu stranice bez pojmova pretrage ili kolačića."
 }

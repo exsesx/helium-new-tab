@@ -175,24 +175,13 @@ async function updateSearchPreview() {
   try {
     destination = await resolveSearchDestination($("search").value);
   } catch {
-    // A missing catalog leaves ordinary search feedback available.
+    // A missing catalog leaves the default search icon visible.
   }
 
   if (revision !== searchRevision) {
     return;
   }
 
-  const service = destination?.service;
-  const description = service
-    ? translator.text("searchService").replace("{service}", () => service)
-    : "";
-  const feedback = $("search-feedback");
-
-  if (feedback.textContent !== description) {
-    feedback.textContent = description;
-  }
-
-  $("search-submit").setAttribute("aria-label", service ? description : translator.text("search"));
   showSearchIcon(preferences.showServiceIcons ? destination?.favicon : "");
 }
 
@@ -302,7 +291,6 @@ async function updateLanguage(updateAppearance = false) {
 
   document.documentElement.lang = result.failed ? "en" : selection.locale;
   translator.apply(document);
-  void updateSearchPreview();
 
   if (result.failed) {
     notify(translator.text("languageError"));

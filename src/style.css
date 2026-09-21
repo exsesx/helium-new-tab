@@ -254,15 +254,6 @@ h1 {
   background: var(--border);
 }
 
-.search-feedback {
-  min-height: 1.5em;
-  margin: 8px 16px 0;
-  color: var(--secondary);
-  font-size: 12px;
-  line-height: 1.5;
-  text-align: start;
-}
-
 footer {
   display: flex;
   align-items: center;

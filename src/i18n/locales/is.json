@@ -45,7 +45,6 @@
   "backgroundBlend": "Samræmdur",
   "backgroundHelium": "Helium",
   "style": "Stíll",
-  "searchService": "Leita á {service}",
   "showServiceIcons": "Sýna tákn þjónusta",
   "serviceIconsHelp": "Sækir tákn frá Google á meðan þú skrifar bang. Sendir veffang síðunnar án leitarorða eða vafrakaka."
 }

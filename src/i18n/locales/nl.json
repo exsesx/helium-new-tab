@@ -45,7 +45,6 @@
   "backgroundBlend": "Afgestemd",
   "backgroundHelium": "Helium",
   "style": "Stijl",
-  "searchService": "Zoeken op {service}",
   "showServiceIcons": "Dienstpictogrammen tonen",
   "serviceIconsHelp": "Haalt pictogrammen op bij Google terwijl je een bang typt. Verstuurt het adres van de website, zonder zoektermen of cookies."
 }

@@ -45,7 +45,6 @@
   "backgroundBlend": "Yhtenäinen",
   "backgroundHelium": "Helium",
   "style": "Tyyli",
-  "searchService": "Hae palvelusta {service}",
   "showServiceIcons": "Näytä palveluiden kuvakkeet",
   "serviceIconsHelp": "Lataa kuvakkeet Googlelta, kun kirjoitat bang-komentoa. Lähettää sivuston osoitteen ilman hakusanoja tai evästeitä."
 }

@@ -45,7 +45,6 @@
   "backgroundBlend": "У тон браузеру",
   "backgroundHelium": "Helium",
   "style": "Стиль",
-  "searchService": "Шукати в {service}",
   "showServiceIcons": "Показувати значки сервісів",
   "serviceIconsHelp": "Завантажує значки з Google, коли ви вводите bang. Надсилає адресу сайту без пошукових слів і файлів cookie."
 }

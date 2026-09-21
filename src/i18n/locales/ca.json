@@ -45,7 +45,6 @@
   "backgroundBlend": "Integrat",
   "backgroundHelium": "Helium",
   "style": "Estil",
-  "searchService": "Cerca a {service}",
   "showServiceIcons": "Mostra les icones dels serveis",
   "serviceIconsHelp": "Carrega icones de Google mentre escrius un bang. Envia l'adreça del lloc, sense termes de cerca ni galetes."
 }

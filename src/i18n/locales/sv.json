@@ -45,7 +45,6 @@
   "backgroundBlend": "Anpassad",
   "backgroundHelium": "Helium",
   "style": "Stil",
-  "searchService": "Sök på {service}",
   "showServiceIcons": "Visa tjänsteikoner",
   "serviceIconsHelp": "Hämtar ikoner från Google medan du skriver en bang. Skickar webbplatsens adress utan sökord eller kakor."
 }

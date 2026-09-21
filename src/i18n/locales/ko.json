@@ -45,7 +45,6 @@
   "backgroundBlend": "브라우저와 조화",
   "backgroundHelium": "Helium",
   "style": "스타일",
-  "searchService": "{service}에서 검색",
   "showServiceIcons": "서비스 아이콘 표시",
   "serviceIconsHelp": "bang을 입력하는 동안 Google에서 아이콘을 가져옵니다. 검색어나 쿠키 없이 사이트 주소를 전송합니다."
 }

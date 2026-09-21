@@ -52,8 +52,8 @@ The image has a circular radius and fades in and out; reduced-motion settings di
 The icon requests a 64-pixel image from Google's favicon service. Only the service origin
 is included, without search terms, cookies, or a referrer. Chromium's credentialless image
 policy removes cookies; no additional extension permission is needed.
-Turn off **Customize → Show service icons** to stop icon requests. A localized destination
-label remains available with icons off or unavailable. Unknown bangs keep the search icon.
+Turn off **Customize → Show service icons** to stop icon requests.
+Unknown bangs keep the search icon.
 Custom address-bar shortcuts are not included.
 The localhost preview supports the same local bangs and uses DuckDuckGo for ordinary searches.
 
