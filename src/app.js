@@ -185,7 +185,7 @@ async function updateSearchPreview() {
   const service = destination?.service;
   const description = service
     ? translator.text("searchService").replace("{service}", () => service)
-    : translator.text("bangHint");
+    : "";
   const feedback = $("search-feedback");
 
   if (feedback.textContent !== description) {

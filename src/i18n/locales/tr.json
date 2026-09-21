@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "searchService": "{service} üzerinde ara",
-  "bangHint": "YouTube’da aramak için !yt kediler yazın.",
   "showServiceIcons": "Hizmet simgelerini göster",
   "serviceIconsHelp": "Bir bang yazarken Google’dan simgeleri alır. Arama terimleri veya çerezler olmadan sitenin adresini gönderir."
 }

@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stiil",
   "searchService": "Otsi teenusest {service}",
-  "bangHint": "YouTube’ist otsimiseks proovi !yt kassid.",
   "showServiceIcons": "Näita teenuste ikoone",
   "serviceIconsHelp": "Laadib bangu sisestamisel ikoone Google’ist. Saadab veebisaidi aadressi ilma otsingusõnade ja küpsisteta."
 }

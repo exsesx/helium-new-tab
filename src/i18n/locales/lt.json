@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stilius",
   "searchService": "Ieškoti per {service}",
-  "bangHint": "Išbandykite !yt katės, kad ieškotumėte „YouTube“.",
   "showServiceIcons": "Rodyti paslaugų piktogramas",
   "serviceIconsHelp": "Rašant bang komandą, įkelia piktogramas iš „Google“. Siunčia svetainės adresą be paieškos žodžių ar slapukų."
 }

@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "searchService": "Pretraži {service}",
-  "bangHint": "Probajte !yt mačke za pretragu na YouTube-u.",
   "showServiceIcons": "Prikaži ikone servisa",
   "serviceIconsHelp": "Preuzima ikone sa Google-a dok unosite bang. Šalje adresu sajta bez termina pretrage ili kolačića."
 }

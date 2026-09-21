@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "searchService": "Auf {service} suchen",
-  "bangHint": "Mit !yt Katzen auf YouTube suchen.",
   "showServiceIcons": "Dienstsymbole anzeigen",
   "serviceIconsHelp": "Lädt beim Eingeben eines Bangs Symbole von Google. Sendet die Website-Adresse ohne Suchbegriffe oder Cookies."
 }

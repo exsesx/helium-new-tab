@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "スタイル",
   "searchService": "{service}で検索",
-  "bangHint": "!yt 猫 と入力するとYouTubeで検索できます。",
   "showServiceIcons": "サービスのアイコンを表示",
   "serviceIconsHelp": "bangの入力中にGoogleからアイコンを取得します。サイトのアドレスを送信しますが、検索語句やCookieは送信しません。"
 }

@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stils",
   "searchService": "Meklēt vietnē {service}",
-  "bangHint": "Izmēģiniet !yt kaķi, lai meklētu YouTube.",
   "showServiceIcons": "Rādīt pakalpojumu ikonas",
   "serviceIconsHelp": "Ielādē ikonas no Google, kamēr rakstāt bang komandu. Nosūta vietnes adresi bez meklēšanas vārdiem vai sīkfailiem."
 }

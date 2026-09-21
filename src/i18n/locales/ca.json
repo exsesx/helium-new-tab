@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Estil",
   "searchService": "Cerca a {service}",
-  "bangHint": "Prova !yt gats per cercar a YouTube.",
   "showServiceIcons": "Mostra les icones dels serveis",
   "serviceIconsHelp": "Carrega icones de Google mentre escrius un bang. Envia l'adreça del lloc, sense termes de cerca ni galetes."
 }

@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stili",
   "searchService": "Kërko në {service}",
-  "bangHint": "Provoni !yt mace për të kërkuar në YouTube.",
   "showServiceIcons": "Shfaq ikonat e shërbimeve",
   "serviceIconsHelp": "Merr ikona nga Google ndërsa shkruani një bang. Dërgon adresën e faqes, pa termat e kërkimit ose cookie."
 }

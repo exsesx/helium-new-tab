@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stijl",
   "searchService": "Zoeken op {service}",
-  "bangHint": "Probeer !yt katten om op YouTube te zoeken.",
   "showServiceIcons": "Dienstpictogrammen tonen",
   "serviceIconsHelp": "Haalt pictogrammen op bij Google terwijl je een bang typt. Verstuurt het adres van de website, zonder zoektermen of cookies."
 }

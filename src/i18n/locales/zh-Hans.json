@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "样式",
   "searchService": "在 {service} 中搜索",
-  "bangHint": "输入 !yt 猫 即可在 YouTube 中搜索。",
   "showServiceIcons": "显示服务图标",
   "serviceIconsHelp": "输入 bang 时从 Google 加载图标。仅发送网站地址，不发送搜索词或 Cookie。"
 }

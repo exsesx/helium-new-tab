@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "searchService": "Sök på {service}",
-  "bangHint": "Prova !yt katter för att söka på YouTube.",
   "showServiceIcons": "Visa tjänsteikoner",
   "serviceIconsHelp": "Hämtar ikoner från Google medan du skriver en bang. Skickar webbplatsens adress utan sökord eller kakor."
 }

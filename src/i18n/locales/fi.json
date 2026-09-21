@@ -46,7 +46,6 @@
   "backgroundHelium": "Helium",
   "style": "Tyyli",
   "searchService": "Hae palvelusta {service}",
-  "bangHint": "Kokeile !yt kissat hakeaksesi YouTubesta.",
   "showServiceIcons": "Näytä palveluiden kuvakkeet",
   "serviceIconsHelp": "Lataa kuvakkeet Googlelta, kun kirjoitat bang-komentoa. Lähettää sivuston osoitteen ilman hakusanoja tai evästeitä."
 }
