@@ -4,6 +4,9 @@ import { loadPreferences, applyAppearance } from "./lib/preferences.js";
 import { createDateFormatter, createTimeFormatter } from "./lib/date-time.js";
 
 const $ = (id) => document.getElementById(id);
+const clock = $("clock");
+const date = $("date");
+const clockBlock = $("clock-block");
 
 const bootstrapped = Boolean(window.__quietTabPreferences);
 let preferences = window.__quietTabPreferences ?? loadPreferences();
@@ -14,7 +17,10 @@ let activeLocale;
 let clockTimer;
 let toastTimer;
 let timeFormatter;
+let timeFormatterKey;
 let dateFormatter;
+let clockParts = [];
+let lastDate;
 
 function notify(message) {
   $("status").textContent = message;
@@ -35,31 +41,69 @@ function save() {
 
 function updateClock() {
   const now = new Date();
-  const parts = timeFormatter.formatToParts(now);
 
-  // Preserve locale ordering, spacing, and direction, including prefixed day periods.
-  $("clock").replaceChildren(
-    ...parts.map((part) => {
-      if (part.type !== "dayPeriod") {
-        return document.createTextNode(part.value);
+  if (preferences.showClock) {
+    const parts = timeFormatter.formatToParts(now);
+
+    // Rebuild only when the locale or format changes the arrangement of time parts.
+    if (
+      parts.length !== clockParts.length ||
+      parts.some((part, index) => part.type !== clockParts[index].type)
+    ) {
+      clockParts = parts.map(({ type }) => ({ type, node: document.createTextNode("") }));
+      clock.replaceChildren(
+        ...clockParts.map(({ type, node }) => {
+          if (type !== "dayPeriod") {
+            return node;
+          }
+
+          const period = document.createElement("span");
+          period.className = "day-period";
+          period.append(node);
+
+          return period;
+        }),
+      );
+    }
+
+    parts.forEach(({ value }, index) => {
+      const { node } = clockParts[index];
+
+      if (node.data !== value) {
+        node.data = value;
       }
+    });
 
-      const period = document.createElement("span");
-      period.className = "day-period";
-      period.textContent = part.value;
+    const timestamp = now.toISOString();
 
-      return period;
-    }),
-  );
+    if (clock.dateTime !== timestamp) {
+      clock.dateTime = timestamp;
+    }
+  }
 
-  $("clock").dateTime = now.toISOString();
-  $("date").textContent = dateFormatter.format(now);
-  $("clock-block").dataset.ready = "true";
+  if (preferences.showDate && lastDate !== now.toDateString()) {
+    const text = dateFormatter.format(now);
+
+    if (date.textContent !== text) {
+      date.textContent = text;
+    }
+
+    lastDate = now.toDateString();
+  }
+
+  if (!clockBlock.dataset.ready) {
+    clockBlock.dataset.ready = "true";
+  }
 }
 
 function applyPreferences(updateAppearance = true) {
-  timeFormatter = createTimeFormatter(preferences, activeLocale);
-  $("clock").lang = timeFormatter.resolvedOptions().locale;
+  const formatterKey = `${activeLocale}:${preferences.timeFormat}:${preferences.showSeconds}`;
+
+  if (formatterKey !== timeFormatterKey) {
+    timeFormatter = createTimeFormatter(preferences, activeLocale);
+    timeFormatterKey = formatterKey;
+    clock.lang = timeFormatter.resolvedOptions().locale;
+  }
 
   if (updateAppearance) {
     applyAppearance(preferences);
@@ -186,15 +230,11 @@ void updateLanguage(!bootstrapped);
 function scheduleClock() {
   clearTimeout(clockTimer);
 
-  if (document.hidden) {
+  if (document.hidden || (!preferences.showClock && !preferences.showDate)) {
     return;
   }
 
   updateClock();
-
-  if (!preferences.showClock && !preferences.showDate) {
-    return;
-  }
 
   const interval = preferences.showClock && preferences.showSeconds ? 1000 : 60000;
   clockTimer = setTimeout(scheduleClock, interval - (Date.now() % interval));
@@ -204,9 +244,14 @@ document.addEventListener("visibilitychange", scheduleClock);
 
 async function updateLanguage(updateAppearance = false) {
   const selection = resolveLanguage(preferences.language, navigator.languages);
-  activeLocale = selection.locale;
-  dateFormatter = createDateFormatter(activeLocale);
-  $("date").lang = dateFormatter.resolvedOptions().locale;
+
+  if (activeLocale !== selection.locale) {
+    activeLocale = selection.locale;
+    dateFormatter = createDateFormatter(activeLocale);
+    date.lang = dateFormatter.resolvedOptions().locale;
+    lastDate = undefined;
+  }
+
   applyPreferences(updateAppearance);
 
   const result = await translator.select(selection.language);

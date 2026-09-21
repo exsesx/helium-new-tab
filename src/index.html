@@ -3,7 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
+    <!-- Paint the canvas before external assets load, using the saved appearance below. -->
+    <style>
+      :root {
+        color-scheme: light;
+        --dark-bg: #1e2020;
+        --bg: #fff;
+        background: var(--bg);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          color-scheme: dark;
+          --bg: var(--dark-bg);
+        }
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: var(--dark-bg);
+      }
+
+      :root[data-background="helium"] {
+        --dark-bg: #3b3c3c;
+      }
+    </style>
     <title data-i18n="newTab">New Tab</title>
 
     <!-- The build embeds these tiny assets so favicon selection needs no file request or script. -->
@@ -22,7 +46,7 @@
       media="(prefers-color-scheme: dark)"
     />
 
-    <script src="theme.js"></script>
+    <script src="theme.js" blocking="render"></script>
     <link rel="stylesheet" href="style.css" />
     <script type="module" src="assets/app.js"></script>
   </head>

@@ -1,8 +1,4 @@
 :root {
-  color-scheme: light;
-  /* Match solid browser chrome with native frame materials disabled. */
-  --dark-bg: #1e2020;
-  --bg: #fff;
   --text: #292b2b;
   --secondary: #555858;
   --muted: #666969;
@@ -21,8 +17,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: var(--dark-bg);
     --text: #e3e5e5;
     --secondary: #c3c6c6;
     --muted: #acb0b0;
@@ -39,8 +33,6 @@
 }
 
 :root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: var(--dark-bg);
   --text: #e3e5e5;
   --secondary: #c3c6c6;
   --muted: #acb0b0;
@@ -53,10 +45,6 @@
   --toggle-thumb: #1e2020;
   --tint: #303232;
   --border: #454848;
-}
-
-:root[data-background="helium"] {
-  --dark-bg: #3b3c3c;
 }
 
 * {
