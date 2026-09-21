@@ -2,12 +2,18 @@
 
 ## Local checks and hooks
 
-Use Bun 1.4.1, as pinned in `.bun-version` and `package.json`.
-Run `bun install --frozen-lockfile` and `bun run hooks:install` after cloning.
-The dependency-free pre-commit hook runs `bun run check`, including lint, formatting,
-tests, and a production build. It checks the current worktree, so review staged and
-unstaged changes before committing. Hooks are local; GitHub Actions also checks every
-pull request and push to `main`.
+Use Bun 1.4.2, as pinned in `.bun-version` and `package.json`.
+Developer tooling also needs Node 22.12 or newer on PATH.
+Run `bun install --frozen-lockfile` after cloning. The `prepare` script automatically
+sets up [Husky](https://typicode.github.io/husky/get-started.html); no separate hook
+installation is needed. The tracked `.husky/pre-commit` runs `bun run check`, including
+lint, formatting, tests, and a production build. It checks the current worktree, so
+review staged and unstaged changes before committing.
+
+If hooks need reinstalling, run `bun run prepare`. Git GUI clients must be able to
+find Bun and Node on their PATH; see Husky's [GUI setup guidance](https://typicode.github.io/husky/how-to.html#node-version-managers-and-guis).
+GitHub Actions sets `HUSKY=0` to skip local hook setup and runs the same checks directly
+on every pull request and push to `main`.
 
 Use Conventional Commits, for example `fix: preserve the selected language on reload`.
 

@@ -34,7 +34,7 @@ The localhost preview uses DuckDuckGo because the browser search API is availabl
 
 ## Development
 
-Use Bun 1.4.1. Run `bun install --frozen-lockfile` and `bun run hooks:install`, then `bun run dev` and open http://127.0.0.1:4173. This builds the extension and watches all of `src/` with one serialized rebuild pipeline. Refresh the preview after edits. Restart the dev command after editing build scripts.
+Use Bun 1.4.2 and Node 22.12 or newer for development tooling. Run `bun install --frozen-lockfile`, then `bun run dev` and open http://127.0.0.1:4173. Installation also sets up the Husky pre-commit hook automatically. The dev command builds the extension and watches all of `src/` with one serialized rebuild pipeline. Refresh the preview after edits. Restart the dev command after editing build scripts.
 
 ```text
 src/                       # Everything that ships: edit here

@@ -4,6 +4,8 @@ on:
     tags: ["v*.*.*"]
 permissions:
   contents: write
+env:
+  HUSKY: "0"
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false

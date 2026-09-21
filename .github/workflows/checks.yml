@@ -5,6 +5,8 @@ on:
   pull_request:
 permissions:
   contents: read
+env:
+  HUSKY: "0"
 concurrency:
   group: checks-${{ github.ref }}
   cancel-in-progress: true

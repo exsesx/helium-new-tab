@@ -12,6 +12,8 @@ on:
         type: boolean
 permissions:
   contents: read
+env:
+  HUSKY: "0"
 concurrency:
   group: chrome-web-store
   cancel-in-progress: false
