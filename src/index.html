@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <title data-i18n="newTab">New Tab</title>
+
     <!-- The build embeds these tiny assets so favicon selection needs no file request or script. -->
     <link
       rel="icon"
@@ -20,10 +21,12 @@
       href="assets/favicon-dark.svg"
       media="(prefers-color-scheme: dark)"
     />
+
     <script src="theme.js"></script>
     <link rel="stylesheet" href="style.css" />
     <script type="module" src="assets/app.js"></script>
   </head>
+
   <body>
     <main>
       <section class="start" aria-label="New tab" data-i18n-label="newTab">
@@ -35,6 +38,7 @@
             />
           </svg>
         </div>
+
         <form id="search-form" role="search" autocomplete="off">
           <svg
             class="search-icon"
@@ -69,6 +73,7 @@
             </svg>
           </button>
         </form>
+
         <div class="clock-block" id="clock-block">
           <h1>
             <time
@@ -82,9 +87,13 @@
         </div>
       </section>
     </main>
+
     <footer>
-      <span class="keyboard-hint"><kbd>/</kbd><span data-i18n="toSearch">to search</span></span
-      ><button
+      <span class="keyboard-hint">
+        <kbd>/</kbd>
+        <span data-i18n="toSearch">to search</span>
+      </span>
+      <button
         class="settings-button"
         id="open-settings"
         aria-label="Customize new tab"
@@ -99,8 +108,9 @@
         >
           <path d="M4 7h16M4 17h16" />
           <circle cx="9" cy="7" r="3" />
-          <circle cx="15" cy="17" r="3" /></svg
-        ><span data-i18n="customize">Customize</span>
+          <circle cx="15" cy="17" r="3" />
+        </svg>
+        <span data-i18n="customize">Customize</span>
       </button>
     </footer>
 

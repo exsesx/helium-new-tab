@@ -42,18 +42,30 @@ export function resolveLanguage(choice, preferred = []) {
   if (Object.hasOwn(languages, choice)) {
     return { language: choice, locale: choice };
   }
+
   for (const tag of preferred) {
     try {
       const locale = new Intl.Locale(tag);
       const base = locale.language;
-      const language =
-        base === "zh"
-          ? `zh-${locale.maximize().script === "Hant" ? "Hant" : "Hans"}`
-          : base === "no" || base === "nn"
-            ? "nb"
-            : base === "sr"
-              ? "sr-Latn"
-              : base;
+      let language = base;
+
+      switch (base) {
+        case "zh": {
+          const script = locale.maximize().script;
+          language = script === "Hant" ? "zh-Hant" : "zh-Hans";
+          break;
+        }
+
+        case "no":
+        case "nn":
+          language = "nb";
+          break;
+
+        case "sr":
+          language = "sr-Latn";
+          break;
+      }
+
       if (Object.hasOwn(languages, language)) {
         return {
           language,
@@ -65,5 +77,6 @@ export function resolveLanguage(choice, preferred = []) {
       // Ignore malformed browser language tags.
     }
   }
+
   return { language: "en", locale: "en" };
 }

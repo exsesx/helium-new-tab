@@ -311,10 +311,12 @@ dialog {
     display 180ms allow-discrete,
     overlay 180ms allow-discrete;
 }
+
 dialog[open] {
   transform: translateX(0);
   opacity: 1;
 }
+
 dialog::backdrop {
   background: #00000030;
   opacity: 0;
@@ -323,14 +325,17 @@ dialog::backdrop {
     display 180ms allow-discrete,
     overlay 180ms allow-discrete;
 }
+
 dialog[open]::backdrop {
   opacity: 1;
 }
+
 @starting-style {
   dialog[open] {
     transform: translateX(100%);
     opacity: 0;
   }
+
   dialog[open]::backdrop {
     opacity: 0;
   }
@@ -361,9 +366,11 @@ h2 {
   padding: 0;
   border-radius: 8px;
 }
+
 .close-button:hover {
   background: var(--tint);
 }
+
 .close-button svg {
   width: 18px;
   height: 18px;
@@ -488,44 +495,55 @@ input[type="checkbox"]:checked:before {
   main {
     padding-inline: 16px;
   }
+
   footer {
     padding: 12px 16px;
   }
+
   #search-form {
     gap: 8px;
     padding-left: 12px;
   }
+
   dialog {
     padding: 16px;
   }
+
   .setting {
     gap: 10px;
   }
+
   select {
     max-width: 160px;
   }
 }
+
 @media (max-height: 420px) {
   main {
     padding-block: 24px;
   }
+
   .helium-logo {
     margin-bottom: 18px;
   }
+
   .clock-block {
     margin-top: 20px;
   }
 }
+
 @media (pointer: coarse) {
   .settings-button,
   .close-button {
     min-height: 44px;
     min-width: 44px;
   }
+
   select {
     min-height: 44px;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
@@ -537,22 +555,26 @@ input[type="checkbox"]:checked:before {
   height: 56px;
   margin: 0 auto 28px;
 }
+
 .helium-logo svg {
   display: block;
   width: 100%;
   height: 100%;
 }
+
 .font-settings {
   margin: 16px 0 0;
   padding: 0;
   border: 0;
   min-width: 0;
 }
+
 .font-settings legend {
   font-size: 11px;
   color: var(--muted);
   padding: 0 0 8px;
 }
+
 .font-note {
   font-size: 11px;
   line-height: 1.5;
@@ -563,12 +585,14 @@ input[type="checkbox"]:checked:before {
 .custom-font {
   padding: 2px 0 14px;
 }
+
 .custom-font label {
   display: block;
   color: var(--muted);
   font-size: 11px;
   margin-bottom: 6px;
 }
+
 .custom-font input {
   width: 100%;
   min-width: 0;
@@ -578,6 +602,7 @@ input[type="checkbox"]:checked:before {
   color: var(--text);
   background: var(--surface);
 }
+
 @media (pointer: coarse) {
   .custom-font input {
     font-size: 16px;
@@ -588,16 +613,19 @@ input[type="checkbox"]:checked:before {
 .font-overrides {
   margin-top: 24px;
 }
+
 .font-overrides summary {
   cursor: pointer;
   font-size: 13px;
   color: var(--secondary);
   padding-block: 12px;
 }
+
 kbd {
   flex-shrink: 0;
   font-family: var(--mono-font, monospace);
 }
+
 @media (max-width: 520px) {
   dialog {
     inset: auto 12px max(12px, env(safe-area-inset-bottom));
@@ -608,15 +636,18 @@ kbd {
     border-radius: 18px;
     transform: translateY(100%);
   }
+
   dialog[open] {
     transform: translateY(0);
   }
+
   @starting-style {
     dialog[open] {
       transform: translateY(100%);
     }
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   dialog,
   dialog::backdrop {
@@ -628,12 +659,15 @@ kbd {
 .clock-block:not([data-ready]) {
   visibility: hidden;
 }
+
 h1 {
   min-height: 1.15em;
 }
+
 #date {
   min-height: 1.3em;
 }
+
 :root[data-show-clock="false"] h1,
 :root[data-show-date="false"] #date,
 :root[data-show-clock="false"][data-show-date="false"] .clock-block {

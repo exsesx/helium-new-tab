@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "ignorePatterns": ["dist/**", "bun.lock"],
+  "htmlWhitespaceSensitivity": "ignore",
   "printWidth": 100,
   "tabWidth": 2
 }

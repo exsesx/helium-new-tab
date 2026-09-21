@@ -22,35 +22,39 @@
 
   <div class="setting">
     <label for="language" data-i18n="language">Language</label>
-    <span class="select-control"
-      ><select id="language">
+    <span class="select-control">
+      <select id="language">
         <option value="auto" data-i18n="automatic">Automatic</option>
-      </select></span
-    >
+      </select>
+    </span>
   </div>
+
   <div class="setting">
-    <label for="theme" data-i18n="appearance">Appearance</label
-    ><span class="select-control"
-      ><select id="theme">
+    <label for="theme" data-i18n="appearance">Appearance</label>
+    <span class="select-control">
+      <select id="theme">
         <option value="system" data-i18n="systemTheme">Match device</option>
         <option value="light" data-i18n="light">Light</option>
         <option value="dark" data-i18n="dark">Dark</option>
-      </select></span
-    >
+      </select>
+    </span>
   </div>
+
   <div class="setting">
     <label for="background" data-i18n="style">Style</label>
-    <span class="select-control"
-      ><select id="background">
+    <span class="select-control">
+      <select id="background">
         <option value="blend" data-i18n="backgroundBlend">Blended</option>
         <option value="helium" data-i18n="backgroundHelium">Helium</option>
-      </select></span
-    >
+      </select>
+    </span>
   </div>
+
   <div class="setting">
-    <label for="show-clock" data-i18n="showClock">Show clock</label
-    ><input id="show-clock" type="checkbox" role="switch" />
+    <label for="show-clock" data-i18n="showClock">Show clock</label>
+    <input id="show-clock" type="checkbox" role="switch" />
   </div>
+
   <div class="setting">
     <label for="time-format" data-i18n="timeFormat">Time format</label>
     <span class="select-control">
@@ -61,28 +65,33 @@
       </select>
     </span>
   </div>
+
   <div class="setting">
-    <label for="show-seconds" data-i18n="showSeconds">Display seconds</label
-    ><input id="show-seconds" type="checkbox" role="switch" />
+    <label for="show-seconds" data-i18n="showSeconds">Display seconds</label>
+    <input id="show-seconds" type="checkbox" role="switch" />
   </div>
+
   <div class="setting">
-    <label for="show-date" data-i18n="showDate">Show date</label
-    ><input id="show-date" type="checkbox" role="switch" />
+    <label for="show-date" data-i18n="showDate">Show date</label>
+    <input id="show-date" type="checkbox" role="switch" />
   </div>
+
   <fieldset class="font-settings">
     <legend data-i18n="globalFonts">Global fonts</legend>
+
     <div class="setting">
-      <label for="ui-font" data-i18n="ui">UI</label
-      ><span class="select-control"
-        ><select id="ui-font">
+      <label for="ui-font" data-i18n="ui">UI</label>
+      <span class="select-control">
+        <select id="ui-font">
           <option value="system" data-i18n="systemFont">System</option>
           <option value="custom" data-i18n="custom">Custom…</option>
-        </select></span
-      >
+        </select>
+      </span>
     </div>
+
     <div id="ui-custom-row" class="custom-font" hidden>
-      <label for="ui-custom-font" data-i18n="uiFamily">UI font family</label
-      ><input
+      <label for="ui-custom-font" data-i18n="uiFamily">UI font family</label>
+      <input
         id="ui-custom-font"
         type="text"
         maxlength="120"
@@ -94,18 +103,20 @@
         aria-describedby="font-help"
       />
     </div>
+
     <div class="setting">
-      <label for="mono-font" data-i18n="mono">Mono</label
-      ><span class="select-control"
-        ><select id="mono-font">
+      <label for="mono-font" data-i18n="mono">Mono</label>
+      <span class="select-control">
+        <select id="mono-font">
           <option value="system" data-i18n="systemFont">System</option>
           <option value="custom" data-i18n="custom">Custom…</option>
-        </select></span
-      >
+        </select>
+      </span>
     </div>
+
     <div id="mono-custom-row" class="custom-font" hidden>
-      <label for="mono-custom-font" data-i18n="monoFamily">Mono font family</label
-      ><input
+      <label for="mono-custom-font" data-i18n="monoFamily">Mono font family</label>
+      <input
         id="mono-custom-font"
         type="text"
         maxlength="120"
@@ -118,26 +129,30 @@
       />
     </div>
   </fieldset>
+
   <p id="font-help" class="font-note" data-i18n="fontHelp">
     UI is used for text and controls. Mono is used for the clock. Custom fonts must be installed on
     this device.
   </p>
+
   <details class="font-overrides">
     <summary data-i18n="overrides">Component overrides</summary>
+
     <div class="setting">
-      <label for="clock-font" data-i18n="clock">Clock</label
-      ><span class="select-control"
-        ><select id="clock-font">
+      <label for="clock-font" data-i18n="clock">Clock</label>
+      <span class="select-control">
+        <select id="clock-font">
           <option value="inherit" data-i18n="default">Default</option>
           <option value="ui" data-i18n="uiFont">UI font</option>
           <option value="mono" data-i18n="monoFont">Mono font</option>
           <option value="custom" data-i18n="custom">Custom…</option>
-        </select></span
-      >
+        </select>
+      </span>
     </div>
+
     <div id="clock-custom-row" class="custom-font" hidden>
-      <label for="clock-custom-font" data-i18n="clockFamily">Clock font family</label
-      ><input
+      <label for="clock-custom-font" data-i18n="clockFamily">Clock font family</label>
+      <input
         id="clock-custom-font"
         type="text"
         maxlength="120"
@@ -149,20 +164,22 @@
         aria-describedby="font-help"
       />
     </div>
+
     <div class="setting">
-      <label for="date-font" data-i18n="date">Date</label
-      ><span class="select-control"
-        ><select id="date-font">
+      <label for="date-font" data-i18n="date">Date</label>
+      <span class="select-control">
+        <select id="date-font">
           <option value="inherit" data-i18n="default">Default</option>
           <option value="ui" data-i18n="uiFont">UI font</option>
           <option value="mono" data-i18n="monoFont">Mono font</option>
           <option value="custom" data-i18n="custom">Custom…</option>
-        </select></span
-      >
+        </select>
+      </span>
     </div>
+
     <div id="date-custom-row" class="custom-font" hidden>
-      <label for="date-custom-font" data-i18n="dateFamily">Date font family</label
-      ><input
+      <label for="date-custom-font" data-i18n="dateFamily">Date font family</label>
+      <input
         id="date-custom-font"
         type="text"
         maxlength="120"
@@ -174,20 +191,22 @@
         aria-describedby="font-help"
       />
     </div>
+
     <div class="setting">
-      <label for="search-font" data-i18n="search">Search</label
-      ><span class="select-control"
-        ><select id="search-font">
+      <label for="search-font" data-i18n="search">Search</label>
+      <span class="select-control">
+        <select id="search-font">
           <option value="inherit" data-i18n="default">Default</option>
           <option value="ui" data-i18n="uiFont">UI font</option>
           <option value="mono" data-i18n="monoFont">Mono font</option>
           <option value="custom" data-i18n="custom">Custom…</option>
-        </select></span
-      >
+        </select>
+      </span>
     </div>
+
     <div id="search-custom-row" class="custom-font" hidden>
-      <label for="search-custom-font" data-i18n="searchFamily">Search font family</label
-      ><input
+      <label for="search-custom-font" data-i18n="searchFamily">Search font family</label>
+      <input
         id="search-custom-font"
         type="text"
         maxlength="120"
@@ -199,10 +218,12 @@
         aria-describedby="font-help"
       />
     </div>
+
     <p class="font-note" data-i18n="overrideHelp">
       Default follows your global font. Missing fonts use the default.
     </p>
   </details>
+
   <p class="privacy-note" data-i18n="privacy">
     Saved only on this device. No tracking, no accounts.
   </p>

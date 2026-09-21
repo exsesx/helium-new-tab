@@ -9,6 +9,7 @@
     "curly": ["error", "all"],
     "eqeqeq": ["error", "always"],
     "no-var": "error",
+    "no-nested-ternary": "error",
     "prefer-const": "error"
   },
   "env": {

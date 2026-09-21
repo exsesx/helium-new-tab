@@ -28,14 +28,15 @@ export const defaults = {
 
 export function websiteUrl(value) {
   const text = value.trim();
+
   if (!text || /\s/.test(text)) {
     throw new Error("Enter a website, such as example.com.");
   }
-  const url = new URL(
-    /^[a-z][a-z\d+.-]*:/i.test(text) && !/^[^/:]+:\d+(?:\/|$)/.test(text)
-      ? text
-      : `https://${text}`,
-  );
+
+  const hasScheme = /^[a-z][a-z\d+.-]*:/i.test(text);
+  const hasHostPort = /^[^/:]+:\d+(?:\/|$)/.test(text);
+  const url = new URL(hasScheme && !hasHostPort ? text : `https://${text}`);
+
   if (
     !["https:", "http:"].includes(url.protocol) ||
     !url.hostname ||
@@ -44,11 +45,13 @@ export function websiteUrl(value) {
   ) {
     throw new Error("Use an http or https website address without login details.");
   }
+
   return url.href;
 }
 
 export function searchDestination(value) {
   const text = value.trim();
+
   if (
     /^https?:\/\//i.test(text) ||
     /^(?:localhost|(?:[a-z\d-]+\.)+[a-z\d-]{2,})(?::\d+)?(?:[/?#]|$)/i.test(text)
@@ -59,50 +62,62 @@ export function searchDestination(value) {
       /* Treat other input as a search. */
     }
   }
+
   return { query: text };
 }
 
 export function readPreferences(value) {
   const result = structuredClone(defaults);
+
   if (!value || typeof value !== "object") {
     return result;
   }
+
   // Both light styles are white; preserve the effective dark style from older settings.
   const background = ["blend", "helium"].includes(value.background)
     ? value.background
     : value.darkBackground;
+
   if (["blend", "helium"].includes(background)) {
     result.background = background;
   }
+
   if (Object.hasOwn(languages, value.language)) {
     result.language = value.language;
   }
+
   if (["system", "light", "dark"].includes(value.theme)) {
     result.theme = value.theme;
   }
+
   if (typeof value.showClock === "boolean") {
     result.showClock = value.showClock;
   }
+
   if (["auto", "12h", "24h"].includes(value.timeFormat)) {
     result.timeFormat = value.timeFormat;
   } else if (typeof value.hour24 === "boolean") {
     result.timeFormat = value.hour24 ? "24h" : "12h";
   }
+
   for (const key of ["showSeconds", "showDate"]) {
     if (typeof value[key] === "boolean") {
       result[key] = value[key];
     }
   }
+
   for (const key of ["uiFont", "monoFont"]) {
     if (["system", "custom"].includes(value[key])) {
       result[key] = value[key];
     }
   }
+
   for (const key of ["clockFont", "dateFont", "searchFont"]) {
     if (["inherit", "ui", "mono", "custom"].includes(value[key])) {
       result[key] = value[key];
     }
   }
+
   for (const key of [
     "uiCustomFont",
     "monoCustomFont",
@@ -114,6 +129,7 @@ export function readPreferences(value) {
       result[key] = value[key].slice(0, 120);
     }
   }
+
   // Preserve deliberately chosen fonts from the original per-component settings.
   if (value.fontVersion !== 2) {
     const legacyNames = {
@@ -121,26 +137,30 @@ export function readPreferences(value) {
       serif: "Georgia",
       humanist: "Avenir Next",
     };
+
     for (const [oldKey, newKey] of [
       ["interface", "ui"],
       ["clock", "clock"],
       ["date", "date"],
     ]) {
-      const old = value[`${oldKey}Font`];
-      if (old === "custom" && typeof value[`${oldKey}CustomFont`] === "string") {
+      const oldFont = value[`${oldKey}Font`];
+
+      if (oldFont === "custom" && typeof value[`${oldKey}CustomFont`] === "string") {
         result[`${newKey}Font`] = "custom";
         result[`${newKey}CustomFont`] = value[`${oldKey}CustomFont`].slice(0, 120);
-      } else if (Object.hasOwn(legacyNames, old)) {
+      } else if (Object.hasOwn(legacyNames, oldFont)) {
         result[`${newKey}Font`] = "custom";
-        result[`${newKey}CustomFont`] = legacyNames[old];
-      } else if (old === "mono") {
+        result[`${newKey}CustomFont`] = legacyNames[oldFont];
+      } else if (oldFont === "mono") {
         result[`${newKey}Font`] = newKey === "ui" ? "custom" : "mono";
+
         if (newKey === "ui") {
           result.uiCustomFont = "Menlo";
         }
       }
     }
   }
+
   return result;
 }
 
@@ -148,11 +168,14 @@ export function fontFamily(customName = "", fallback = fonts.system) {
   const name = [...customName.trim()]
     .filter((char) => char.charCodeAt(0) >= 32 && char.charCodeAt(0) !== 127)
     .join("");
+
   if (!name) {
     return fallback;
   }
+
   // A custom entry is one literal family name, never a CSS expression or URL.
   const escaped = name.replace(/[\\"]/g, "\\$&");
+
   return `"${escaped}", ${fallback}`;
 }
 
@@ -163,17 +186,28 @@ export function resolvedFonts(preferences) {
       ? fontFamily(preferences.monoCustomFont, fonts.mono)
       : fonts.mono;
   const result = { interface: ui, mono };
+
   for (const key of ["clock", "date", "search"]) {
     const fallback = key === "clock" ? mono : ui;
     const choice = preferences[`${key}Font`];
-    result[key] =
-      choice === "custom"
-        ? fontFamily(preferences[`${key}CustomFont`], fallback)
-        : choice === "ui"
-          ? ui
-          : choice === "mono"
-            ? mono
-            : fallback;
+
+    switch (choice) {
+      case "custom":
+        result[key] = fontFamily(preferences[`${key}CustomFont`], fallback);
+        break;
+
+      case "ui":
+        result[key] = ui;
+        break;
+
+      case "mono":
+        result[key] = mono;
+        break;
+
+      default:
+        result[key] = fallback;
+    }
   }
+
   return result;
 }
