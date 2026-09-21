@@ -20,17 +20,21 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
 
 ## Features
 
-- Follows the device's light/dark appearance, with manual overrides in Customize. Style offers Blended (`#1E2020` in dark mode, matching solid browser chrome with native frame materials disabled) or Helium (`#3B3C3C` in dark mode). Both use white in light mode. Saved styles apply before the first paint and follow device appearance changes. Existing style preferences are preserved.
-- Larger Helium logo and search positioned around a quarter of the way down the page, with an optional clock and date below. Short windows use tighter spacing.
-- Native settings dialog styled as an animated side drawer on desktop and a bottom sheet on mobile. Markup and event handlers load only on the first Customize click and are reused afterward. Supports Escape, backdrop dismissal, focus management, and reduced motion. No React or component-library runtime.
-- Saved fonts and appearance apply before the first paint. Clock space stays reserved until the actual time is ready; no loading fade or placeholder.
-- Date and time use the selected language and the browser’s default time zone through cached `Intl.DateTimeFormat` instances. Automatic follows the first supported entry in `navigator.languages`, preserving its region (for example, US versus UK hour cycles). Time format offers Automatic (the default for new settings), 12-hour, and 24-hour, plus optional seconds. Existing 12/24-hour choices are preserved. Locale-specific ordering, digits, spacing, and AM/PM placement are retained; formatters refresh on browser language changes. The clock stops scheduling updates while the tab is hidden.
-- Global UI and Mono fonts, each with System or Custom. UI controls ordinary text; Mono controls the clock. Optional Clock, Date, and Search overrides can inherit the default, choose either global font, or use a custom installed family. Existing custom preferences are migrated. No fonts are downloaded.
-- Search using the browser's default search provider, or navigate directly to a website. Press `/` to focus search while the page has focus. The address bar retains its normal new-tab focus.
-- Preferences stay in local storage for this extension and browser profile.
-- No analytics, remote fonts, favicons, background service, or remote network requests on page load. The only extension permission is `search`.
+- Automatic light and dark appearance, with manual overrides and Blended or Helium styles.
+- Optional clock and date, with 12-hour or 24-hour time and optional seconds.
+- 37 interface languages, with localized dates and times.
+- Custom installed fonts for the interface, clock, date, and search field.
+- Search through the browser's default provider or navigate directly to a website.
+  Press `/` to focus search while the page has focus.
+- Keyboard-accessible settings that adapt to small windows and respect reduced motion.
+- Preferences saved locally in the extension's browser profile.
+- No analytics, remote fonts, or external network requests on page load.
+  The only extension permission is `search`.
 
-The localhost preview uses DuckDuckGo because the browser search API is available only to an installed extension. Native Helium bangs remain available in the address bar; this page does not implement its own bang resolver.
+The favicon follows the browser's light or dark appearance. The page appearance can
+be overridden separately. Custom browser theme palettes are not detected automatically.
+
+Native Helium bangs remain available in the address bar.
 
 ## Development
 
@@ -64,8 +68,6 @@ for size in 16 32 48 96 128 256; do
 done
 ```
 
-Bun minifies and tree-shakes the app into ESM, with settings imported only on demand. The synchronous `theme.js` applies the translated tab title, saved appearance, style, and fonts before CSS loads. The build extracts only the 37 short tab titles from the catalogs into this bundle, so the title does not wait for the application or translation request. The main logo is inline SVG and follows the text color, eliminating separate light/dark image requests. Bun minifies the plain CSS stylesheet. There are no runtime dependencies.
-
 - `bun run build`: validate translation coverage, then compile/copy all sources.
 - `bun run dev`: build, serve, and watch all sources.
 - `bun run lint` / `bun run lint:fix`: check JavaScript with Oxlint or apply safe fixes.
@@ -73,21 +75,36 @@ Bun minifies and tree-shakes the app into ESM, with settings imported only on de
 - `bun test`: check routing, preferences, date/time, language resolution, translation coverage, loading failures, and language-switch races.
 - `bun run check`: lint, formatting, tests, and production build.
 
+### Manual checks in Helium
+
+Run `bun run check`, reload the unpacked `dist/` extension, and open a fresh tab.
+The localhost preview uses DuckDuckGo and cannot verify native browser integration.
+
+- Confirm the extension opens as the new-tab page and the address bar keeps initial focus.
+- Submit a sample query through the page and confirm it uses the browser's default search
+  provider. Check direct navigation with `https://example.com`.
+- Check the tab title and favicon in light and dark browser appearance, including on a fresh tab.
+- Change appearance, language, clock, and font preferences; open another new tab and confirm
+  they persist without a flash of the default settings.
+- Check `/` search focus, Escape dismissal, keyboard navigation in Customize, and the
+  settings layout in narrow and short windows.
+
 ## Languages
 
-**Customize → Language** defaults to **Automatic**. It selects the first supported browser language, with English as fallback. A manual choice is saved on this device and changes interface text, tab title, accessibility labels, and date/time locale. Appearance, style, and time-format overrides remain independent.
+**Customize → Language** defaults to **Automatic**, which follows your supported browser
+languages and falls back to English. A manual choice updates the interface, tab title,
+and date and time formatting, and is saved on this device.
 
-37 translations are included: Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Irish, Italian, Latvian, Lithuanian, Maltese, Polish, Portuguese, Romanian, Slovak, Slovenian, Spanish, Swedish, Albanian, Bosnian, Icelandic, Macedonian, Norwegian Bokmål, Serbian (Latin), Turkish, Ukrainian, Simplified Chinese, Traditional Chinese, Japanese, and Korean.
+Available languages: Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English,
+Estonian, Finnish, French, German, Greek, Hungarian, Irish, Italian, Latvian, Lithuanian,
+Maltese, Polish, Portuguese, Romanian, Slovak, Slovenian, Spanish, Swedish, Albanian,
+Bosnian, Icelandic, Macedonian, Norwegian Bokmål, Serbian (Latin), Turkish, Ukrainian,
+Simplified Chinese, Traditional Chinese, Japanese, and Korean.
 
-Regional browser preferences match the corresponding translation (`es-MX` → Spanish); Chinese script/region distinguishes Simplified and Traditional. Norwegian variants use Bokmål. **Russian is intentionally excluded and must not be added.** Unsupported browser languages are skipped when selecting Automatic; if none match, English is used.
+**Russian is intentionally excluded and must not be added.**
 
-English is bundled as the fallback. Only the selected non-English JSON dictionary is fetched locally, and successful loads are cached for that tab. Other languages do not add to startup downloads. Failed loads fall back to English and can be retried. All dictionaries have matching keys and interpolation placeholders checked by tests. Translations have not received native-speaker review.
-
-Date names and number conventions depend on the browser’s built-in `Intl` locale data. A translated interface can still use fallback date formatting if the browser lacks that locale (observed for Irish in the preview). No date polyfill or external translation service is loaded.
-
-Uses the supplied Helium browser-chrome backgrounds, `#FFFFFF` in light mode and `#1E2020` in dark mode, with `#353737` dark inputs. The search field follows the supplied omnibox reference: flat `#EBEBEB` / `#353737` idle fills, white / `#3B3C3C` focused fills, 16 px corners scaled for our 54 px field from Helium’s 8 px corners on its 28 px omnibox, and a 2 px focus border (`#4157D2` / `#7A95F8`), without a shadow. Text, surfaces, and dividers are neutral; accent color is reserved for active controls and keyboard focus. The main logo uses the SVG shape from [Helium's brand kit](https://helium.computer/brand), recolored to match the neutral text (`#292B2B` in light mode and `#E3E5E5` in dark mode); the monochrome tab icon comes from [Helium’s native New Tab favicon](https://github.com/imputnet/helium/blob/main/resources/favicons/favicon_ntp_32.png). Its light variant is the original PNG; the dark SVG applies a light neutral tint to the same embedded alpha mask. The favicon follows the browser’s `prefers-color-scheme`, independently of the page appearance override. The tab title is the localized equivalent of New Tab. The manifest uses separate extension icons rendered from Helium's vector product logo at 16, 32, 48, 96, 128, and 256 pixels, including Retina sizes. These do not load on the new-tab page. The build embeds both tab favicon variants as data URLs near the start of the HTML, before scripts and styles. Native media queries select the browser color scheme without JavaScript or a separate favicon file request. The browser still controls when its tab strip replaces the initial placeholder; embedding removes our loading dependency but does not guarantee the first tab-strip frame. Reload the extension after manifest changes; first-frame favicon behavior must be verified in Helium. No Prism code is bundled. This project is not affiliated with or endorsed by Helium or imput.
-
-Browser theme palettes are not exposed through Chromium's public extension API; matching the selected Customize Helium palette automatically is not supported here. Automatic light/dark detection remains available through `prefers-color-scheme`. See the [Chrome Extensions team’s explanation](https://groups.google.com/a/chromium.org/g/chromium-extensions/c/c5FgEIf3MBI).
+Translations have not received native-speaker review. Date and time formatting depends
+on the browser's built-in locale support and may fall back to another locale.
 
 ## Releases and contributing
 
