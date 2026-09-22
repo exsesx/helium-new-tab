@@ -43,7 +43,13 @@ export async function build() {
     const image = await Bun.file(`${root}src/assets/${name}`).arrayBuffer();
     const data = Buffer.from(image).toString("base64");
 
-    html = html.replace(`href="assets/${name}"`, `href="data:${type};base64,${data}"`);
+    const reference = `href="assets/${name}"`;
+
+    if (!html.includes(reference)) {
+      throw new Error(`index.html no longer references assets/${name}`);
+    }
+
+    html = html.replace(reference, `href="data:${type};base64,${data}"`);
   }
 
   await Bun.write(`${root}dist/index.html`, html);
@@ -52,7 +58,7 @@ export async function build() {
     await Bun.write(`${root}dist/locales/${language}.json`, JSON.stringify(messages));
   }
 
-  const startup = await Bun.build({
+  const startup = await bundle({
     entrypoints: [`${root}src/theme.js`],
     target: "browser",
     format: "iife",
@@ -64,42 +70,35 @@ export async function build() {
     },
   });
 
-  if (!startup.success) {
-    throw new AggregateError(startup.logs, "Startup build failed");
-  }
-
   await Bun.write(`${root}dist/theme.js`, startup.outputs[0]);
 
-  for (const args of [
-    [
-      "bun",
-      "build",
-      "src/app.js",
-      "--outdir",
-      "dist/assets",
-      "--target",
-      "browser",
-      "--format",
-      "esm",
-      "--splitting",
-      "--chunk-naming",
-      "[name].[ext]",
-      "--minify",
-      "--no-module-preload",
-    ],
-    ["bun", "build", "src/style.css", "--outdir", "dist", "--minify"],
-  ]) {
-    const task = Bun.spawn(args, {
-      cwd: root,
-      stdout: "inherit",
-      stderr: "inherit",
-      env: { ...process.env, NO_COLOR: "1" },
-    });
+  await bundle({
+    entrypoints: [`${root}src/app.js`],
+    outdir: `${root}dist/assets`,
+    target: "browser",
+    format: "esm",
+    splitting: true,
+    minify: true,
+    modulePreload: false,
+    // Entry names are referenced from index.html; chunk hashes keep split names unique.
+    naming: { entry: "[name].[ext]", chunk: "[name]-[hash].[ext]" },
+  });
 
-    if ((await task.exited) !== 0) {
-      throw new Error(`Build failed: ${args[0]}`);
-    }
+  await bundle({
+    entrypoints: [`${root}src/style.css`],
+    outdir: `${root}dist`,
+    minify: true,
+  });
+}
+
+async function bundle(options) {
+  const result = await Bun.build(options);
+
+  if (!result.success) {
+    throw new AggregateError(result.logs, "Build failed");
   }
+
+  return result;
 }
 
 if (import.meta.main) {
