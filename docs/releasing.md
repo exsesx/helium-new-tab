@@ -3,7 +3,7 @@
 ## Local checks and hooks
 
 Use Bun 1.4.2, as pinned in `.bun-version` and `package.json`.
-Developer tooling also needs Node 22.12 or newer on PATH.
+Use Node 26 for developer tooling. CI installs the latest Node 26 release explicitly.
 Run `bun install --frozen-lockfile` after cloning. The `prepare` script automatically
 sets up [Husky](https://typicode.github.io/husky/get-started.html); no separate hook
 installation is needed. The tracked `.husky/pre-commit` runs `bun run check`, including
@@ -60,8 +60,10 @@ if the upstream notice changed. If the feed is unchanged, keep the current snaps
 ## Chrome Web Store
 
 The repository does not need store credentials for checks or GitHub releases.
-The **Chrome Web Store** workflow runs only when manually dispatched. Select an existing
-release tag and leave **publish** unchecked to upload without submitting for review.
+The **Chrome Web Store** workflow runs only when manually dispatched. Choose `main` under
+**Use workflow from** and leave the optional release tag blank to build its latest commit
+at the time the run starts. Enter an existing release tag to build that version instead.
+Leave **publish** unchecked to upload without submitting for review.
 Selecting **publish** submits the item for review; approval and public availability
 remain controlled by Google. This workflow does not run on commits or tags automatically.
 
@@ -83,9 +85,11 @@ Initial setup in your own Google account:
    The workflow uses the `chrome-web-store` environment, where optional required
    reviewers can add an approval before the upload job runs. Environment secrets and
    variables can also be used instead of repository settings.
-6. Run the workflow from the updated branch for the intended release tag. Later uploads
-   require a higher manifest version. The package is built from the selected tag, while
-   the uploader comes from the workflow revision so older tags use current authentication.
+6. Run the workflow from the updated branch, optionally supplying an existing release tag.
+   Later uploads require a higher manifest version; update `src/manifest.json` and
+   `package.json` together before uploading a new version. The package is built from the
+   selected branch commit or tag, while the uploader comes from the workflow revision so
+   older tags use current authentication.
 
 The uploader exchanges a signed service account JWT for a short-lived access token
 scoped to the Chrome Web Store API. It uses the official v2 API, waits for asynchronous
