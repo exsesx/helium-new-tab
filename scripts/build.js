@@ -1,5 +1,6 @@
 import { cp, mkdir, rm } from "node:fs/promises";
 import { languages } from "../src/i18n/languages.js";
+import { compactCatalog } from "../src/lib/bangs.js";
 
 export const root = new URL("../", import.meta.url).pathname;
 
@@ -24,6 +25,7 @@ export async function build() {
 
   await rm(`${root}dist`, { recursive: true, force: true });
   await mkdir(`${root}dist/locales`, { recursive: true });
+  await mkdir(`${root}dist/data`, { recursive: true });
 
   for (const name of ["index.html", "assets"]) {
     await cp(`${root}src/${name}`, `${root}dist/${name}`, { recursive: true });
@@ -65,6 +67,10 @@ export async function build() {
   for (const [language, messages] of catalogs) {
     await Bun.write(`${root}dist/locales/${language}.json`, JSON.stringify(messages));
   }
+
+  // JSON.parse on fetched data is faster than evaluating a megabyte-sized object literal.
+  const bangs = await Bun.file(`${root}src/data/bangs.json`).json();
+  await Bun.write(`${root}dist/data/bangs.json`, JSON.stringify(compactCatalog(bangs)));
 
   const startup = await bundle({
     entrypoints: [`${root}src/theme.js`],

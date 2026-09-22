@@ -15,6 +15,8 @@ The source header identifies [Kagi's bangs](https://github.com/kagisearch/bangs)
 [Helium's extras](https://github.com/imputnet/helium-services/blob/main/svc/bangs/extras.json)
 as its inputs. We converted the published JSON with comments and trailing commas to
 standard JSON using `Bun.JSON5.parse`, without changing its entries.
+The build packages a compact copy with only the aliases, URL templates, and format flags
+that the extension reads.
 
 ## Top-level domain list
 

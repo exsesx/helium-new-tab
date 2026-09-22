@@ -1,7 +1,9 @@
 import { expect, test } from "bun:test";
 import { resolveSearchDestination } from "../src/lib/search.js";
 import catalog from "../src/data/bangs.json";
-import { resolveBang } from "../src/lib/bangs.js";
+import { compactCatalog, createBangResolver } from "../src/lib/bangs.js";
+
+const resolveBang = createBangResolver(catalog);
 
 test("favicon previews use only a recognized service origin, never query terms", () => {
   const youtube = new URL(resolveBang("!yt private query").favicon);
@@ -118,5 +120,18 @@ test("bundled entries retain valid names, aliases, formats and safe destinations
     expect(["https:", "http:"]).toContain(url.protocol);
     expect(url.username).toBe("");
     expect(url.password).toBe("");
+  }
+});
+
+test("the compact catalog keeps every field the resolver reads", () => {
+  const compact = compactCatalog(catalog);
+  const resolveCompact = createBangResolver(compact);
+
+  expect(
+    compact.every((entry) => Object.keys(entry).every((key) => ["ts", "u", "f"].includes(key))),
+  ).toBe(true);
+
+  for (const { ts } of catalog) {
+    expect(resolveCompact(`!${ts[0]} example`)).toEqual(resolveBang(`!${ts[0]} example`));
   }
 });
