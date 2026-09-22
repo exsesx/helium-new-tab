@@ -20,9 +20,9 @@ Use Conventional Commits, for example `fix: preserve the selected language on re
 ## GitHub release
 
 1. Run `bun run bangs:refresh` to refresh the bundled bang catalog before tagging.
-2. Update the versions in `src/manifest.json` and `package.json` together.
+2. Update the version in `package.json`. The build copies it into the packaged manifest.
 3. Run `bun install` to refresh package metadata in the lockfile, then `bun run check`.
-4. Commit and push the release, then tag that commit with `v<manifest version>` and push the tag.
+4. Commit and push the release, then tag that commit with `v<package version>` and push the tag.
 5. The Release workflow validates the tag, checks the source, builds the package, and creates
    a GitHub release with a ZIP and SHA-256 checksum. GitHub supplies the matching source archives.
 
@@ -94,8 +94,8 @@ Initial setup in your own Google account:
    reviewers can add an approval before the upload job runs. Environment secrets and
    variables can also be used instead of repository settings.
 6. Run the workflow from the updated branch, optionally supplying an existing release tag.
-   Later uploads require a higher manifest version; update `src/manifest.json` and
-   `package.json` together before uploading a new version. The package is built from the
+   Later uploads require a higher version; update `package.json` before uploading a
+   new version. The package is built from the
    selected branch commit or tag, while the uploader comes from the workflow revision so
    older tags use current authentication.
 

@@ -7,12 +7,6 @@ if (!/^\d+\.\d+\.\d+$/.test(version)) {
   throw new Error("Expected a three-part release version in the manifest");
 }
 
-const metadata = await Bun.file("package.json").json();
-
-if (metadata.version !== version) {
-  throw new Error("package.json and manifest versions must match");
-}
-
 if (process.env.RELEASE_TAG && process.env.RELEASE_TAG !== `v${version}`) {
   throw new Error("Release tag must match the manifest version");
 }

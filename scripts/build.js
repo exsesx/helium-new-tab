@@ -25,13 +25,21 @@ export async function build() {
   await rm(`${root}dist`, { recursive: true, force: true });
   await mkdir(`${root}dist/locales`, { recursive: true });
 
-  for (const name of ["index.html", "manifest.json", "assets"]) {
+  for (const name of ["index.html", "assets"]) {
     await cp(`${root}src/${name}`, `${root}dist/${name}`, { recursive: true });
   }
 
   for (const name of ["LICENSE", "THIRD_PARTY_NOTICES.md", "PRIVACY.md", "licenses"]) {
     await cp(`${root}${name}`, `${root}dist/${name}`, { recursive: true });
   }
+
+  // package.json is the single source of the release version.
+  const { version } = await Bun.file(`${root}package.json`).json();
+  const manifest = await Bun.file(`${root}src/manifest.json`).json();
+  await Bun.write(
+    `${root}dist/manifest.json`,
+    `${JSON.stringify({ ...manifest, version }, null, 2)}\n`,
+  );
 
   // Keep authored images in src/assets; embed only the tab icons in the page head.
   let html = await Bun.file(`${root}src/index.html`).text();
