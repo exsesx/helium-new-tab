@@ -1,4 +1,4 @@
-import { searchDestination } from "./model.js";
+import { searchDestination } from "./address.js";
 
 export async function resolveSearchDestination(value) {
   const destination = searchDestination(value);

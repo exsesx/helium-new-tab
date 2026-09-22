@@ -27,46 +27,6 @@ export const defaults = {
   searchCustomFont: "",
 };
 
-export function websiteUrl(value) {
-  const text = value.trim();
-
-  if (!text || /\s/.test(text)) {
-    throw new Error("Enter a website, such as example.com.");
-  }
-
-  const hasScheme = /^[a-z][a-z\d+.-]*:/i.test(text);
-  const hasHostPort = /^[^/:]+:\d+(?:\/|$)/.test(text);
-  const url = new URL(hasScheme && !hasHostPort ? text : `https://${text}`);
-
-  if (
-    !["https:", "http:"].includes(url.protocol) ||
-    !url.hostname ||
-    url.username ||
-    url.password
-  ) {
-    throw new Error("Use an http or https website address without login details.");
-  }
-
-  return url.href;
-}
-
-export function searchDestination(value) {
-  const text = value.trim();
-
-  if (
-    /^https?:\/\//i.test(text) ||
-    /^(?:localhost|(?:[a-z\d-]+\.)+[a-z\d-]{2,})(?::\d+)?(?:[/?#]|$)/i.test(text)
-  ) {
-    try {
-      return { url: websiteUrl(text) };
-    } catch {
-      /* Treat other input as a search. */
-    }
-  }
-
-  return { query: text };
-}
-
 export function readPreferences(value) {
   const result = structuredClone(defaults);
 

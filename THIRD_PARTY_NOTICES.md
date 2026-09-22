@@ -16,6 +16,13 @@ The source header identifies [Kagi's bangs](https://github.com/kagisearch/bangs)
 as its inputs. We converted the published JSON with comments and trailing commas to
 standard JSON using `Bun.JSON5.parse`, without changing its entries.
 
+## Top-level domain list
+
+The search field bundles the [`tlds`](https://github.com/stephenmathieson/node-tlds) package's
+list of IANA top-level domains to tell website addresses such as `example.com` from file
+names such as `next.js`. It is Copyright (c) 2013 Stephen Mathieson and 2020 Richie Bendall,
+under the MIT license included in [licenses/tlds-MIT.txt](licenses/tlds-MIT.txt).
+
 ## Helium artwork
 
 Copyright 2026 The Helium Authors.

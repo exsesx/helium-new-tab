@@ -1,42 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import {
-  readPreferences,
-  searchDestination,
-  websiteUrl,
-  fontFamily,
-  fonts,
-  resolvedFonts,
-} from "../src/lib/model.js";
-
-describe("shortcut URLs", () => {
-  test("normalizes ordinary sites and preserves explicit local HTTP", () => {
-    expect(websiteUrl(" example.com/docs ")).toBe("https://example.com/docs");
-    expect(websiteUrl("http://localhost:3000")).toBe("http://localhost:3000/");
-    expect(websiteUrl("localhost:3000")).toBe("https://localhost:3000/");
-  });
-
-  test("rejects executable URLs and embedded credentials", () => {
-    for (const input of [
-      "javascript:alert(1)",
-      "data:text/html,test",
-      "file:///tmp/test",
-      "https://user:pass@example.com",
-      "hello world",
-      "",
-    ]) {
-      expect(() => websiteUrl(input)).toThrow();
-    }
-  });
-});
-
-test("searches phrases and navigates URLs", () => {
-  expect(searchDestination("a quiet afternoon")).toEqual({ query: "a quiet afternoon" });
-  expect(searchDestination("example.com/docs")).toEqual({ url: "https://example.com/docs" });
-  expect(searchDestination("localhost:3000")).toEqual({ url: "https://localhost:3000/" });
-  expect(searchDestination("what is example.com")).toEqual({ query: "what is example.com" });
-  expect(searchDestination("javascript:alert(1)")).toEqual({ query: "javascript:alert(1)" });
-  expect(searchDestination("   ")).toEqual({ query: "" });
-});
+import { expect, test } from "bun:test";
+import { readPreferences, fontFamily, fonts, resolvedFonts } from "../src/lib/model.js";
 
 test("validates display and font preferences, ignoring legacy shortcuts", () => {
   const value = readPreferences({

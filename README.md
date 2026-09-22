@@ -25,7 +25,9 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
 - 37 interface languages, with localized dates and times.
 - Custom installed fonts for the interface, clock, date, and search field.
 - Search through the browser's default provider or navigate directly to a website.
-  Press `/` to focus search while the page has focus.
+  Bare names open only with a known top-level domain, so `example.com` opens a site while
+  `next.js` searches. Local names such as `localhost:3000`, `printer.local`, and IP
+  addresses open over HTTP. Press `/` to focus search while the page has focus.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
 - Preferences saved locally in the extension's browser profile.
 - No analytics, remote fonts, or external network requests on page load.
