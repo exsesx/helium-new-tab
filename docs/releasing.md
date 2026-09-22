@@ -19,7 +19,7 @@ Use Conventional Commits, for example `fix: preserve the selected language on re
 
 ## GitHub release
 
-1. Refresh the bundled bang catalog using the manual steps below.
+1. Run `bun run bangs:refresh` to refresh the bundled bang catalog before tagging.
 2. Update the versions in `src/manifest.json` and `package.json` together.
 3. Run `bun install` to refresh package metadata in the lockfile, then `bun run check`.
 4. Commit and push the release, then tag that commit with `v<manifest version>` and push the tag.
@@ -35,27 +35,35 @@ For local installation, extract the ZIP and use **Load unpacked** on the extract
 When sharing a package, also make the matching source release available, including the
 editable artwork and build instructions. The artwork retains its GPL-3.0 license.
 
-### Refresh the bang catalog manually
+### Refresh the bang catalog
 
-Before each release, download Helium's published catalog and convert its comments and
-trailing commas to standard JSON. Keep all entry fields, including format flags.
-The extension does not fetch this file at runtime.
+Before each release, run:
 
 ```sh
-curl --fail --location --output /tmp/helium-tab-bangs.jsonc \
-  https://services.helium.imput.net/bangs.json
-bun - <<'JS'
-const source = await Bun.file("/tmp/helium-tab-bangs.jsonc").text();
-const entries = Bun.JSON5.parse(source);
-await Bun.write("src/data/bangs.json", `${JSON.stringify(entries, null, 2)}\n`);
-JS
-bun run format
+bun run bangs:refresh
 bun run check
 ```
 
-Review the catalog diff and the upstream license header. Update the download date and
-generation timestamp in `THIRD_PARTY_NOTICES.md`, and update `licenses/bangs-MIT.txt`
-if the upstream notice changed. If the feed is unchanged, keep the current snapshot.
+The command downloads Helium's published catalog and compares SHA-256 checksums of the
+parsed JSON, so comments and whitespace do not count as updates. It formats standard JSON
+while retaining every field, including format flags. It updates
+the download date and generation timestamp in `THIRD_PARTY_NOTICES.md` when the catalog
+changes. An unchanged catalog leaves the files untouched. Download, parsing, license,
+or formatting failures stop before replacing the snapshot.
+The existing catalog tests validate entries, unique aliases, URL templates, and format
+flags when you run `bun run check`.
+
+Review and commit the resulting diff before tagging. If the upstream license changes,
+review its notice and update `licenses/bangs-MIT.txt` and the attribution before retrying.
+Release workflows build the committed snapshot so the tag and ZIP contain the same catalog.
+Both the Release and Chrome Web Store workflows run `bun run bangs:refresh --check`
+before building. This downloads the upstream feed and compares its checksum without writing
+files. Publishing stops on a checksum mismatch or download/parsing/license error. The normal
+`bun run check` step then validates the committed entries before packaging.
+Run the refresh command, review and commit the changes, then publish the updated commit.
+If a release tag already exists, prepare a new version and tag instead of moving that tag.
+Older releases without a bundled bang catalog skip this check.
+The extension does not fetch this file at runtime.
 
 ## Chrome Web Store
 

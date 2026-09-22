@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "bun scripts/dev.js",
     "build": "bun scripts/build.js",
+    "bangs:refresh": "bun scripts/refresh-bangs.js",
     "lint": "oxlint --deny-warnings .",
     "lint:fix": "oxlint --fix --deny-warnings .",
     "format": "oxfmt --write .",
