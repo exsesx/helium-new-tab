@@ -2,6 +2,7 @@ import { watch } from "node:fs";
 import { build, root } from "./build.js";
 
 let files;
+let manifest;
 let sourceHash;
 
 async function rebuild() {
@@ -23,6 +24,8 @@ async function rebuild() {
   }
 
   await build();
+  // Serve the extension's own policy so the preview allows and blocks the same resources.
+  manifest = await Bun.file(`${root}dist/manifest.json`).json();
   sourceHash = nextHash;
   files = new Set(
     await Array.fromAsync(new Bun.Glob("**/*").scan({ cwd: `${root}dist`, onlyFiles: true })),
@@ -45,8 +48,7 @@ const server = Bun.serve({
       headers: {
         "Cache-Control": "no-store",
         "Cross-Origin-Embedder-Policy": "credentialless",
-        "Content-Security-Policy":
-          "default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data: https://www.google.com https://*.gstatic.com; object-src 'none'; base-uri 'none'",
+        "Content-Security-Policy": manifest.content_security_policy.extension_pages,
       },
     });
   },
