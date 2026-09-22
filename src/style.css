@@ -134,6 +134,18 @@ main {
   text-align: center;
 }
 
+.helium-logo {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 28px;
+}
+
+.helium-logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .clock-block {
   margin-top: 36px;
 }
@@ -571,18 +583,6 @@ input[type="checkbox"]:checked:before {
   * {
     transition: none !important;
   }
-}
-
-.helium-logo {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 28px;
-}
-
-.helium-logo svg {
-  display: block;
-  width: 100%;
-  height: 100%;
 }
 
 .font-settings {
