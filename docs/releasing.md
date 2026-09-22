@@ -3,7 +3,7 @@
 ## Local checks and hooks
 
 Use Bun 1.4.2, as pinned in `.bun-version` and `package.json`.
-Developer tooling also needs Node 22.12 or newer on PATH.
+Use Node 26 for developer tooling. CI installs the latest Node 26 release explicitly.
 Run `bun install --frozen-lockfile` after cloning. The `prepare` script automatically
 sets up [Husky](https://typicode.github.io/husky/get-started.html); no separate hook
 installation is needed. The tracked `.husky/pre-commit` runs `bun run check`, including
