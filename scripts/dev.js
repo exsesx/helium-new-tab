@@ -44,8 +44,9 @@ const server = Bun.serve({
     return new Response(Bun.file(`${root}dist/${path}`), {
       headers: {
         "Cache-Control": "no-store",
+        "Cross-Origin-Embedder-Policy": "credentialless",
         "Content-Security-Policy":
-          "default-src 'self'; script-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'",
+          "default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data: https://www.google.com https://*.gstatic.com; object-src 'none'; base-uri 'none'",
       },
     });
   },

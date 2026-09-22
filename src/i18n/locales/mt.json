@@ -44,5 +44,7 @@
   "languageError": "Ma setgħetx titgħabba t-traduzzjoni. Għalissa jintuża l-Ingliż.",
   "backgroundBlend": "Integrat",
   "backgroundHelium": "Helium",
-  "style": "Stil"
+  "style": "Stil",
+  "showServiceIcons": "Uri l-ikoni tas-servizzi",
+  "serviceIconsHelp": "Iġib l-ikoni minn Google waqt li tittajpja bang. Jibgħat l-indirizz tas-sit, mingħajr kliem tat-tfittxija jew cookies."
 }

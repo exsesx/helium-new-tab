@@ -44,5 +44,7 @@
   "languageError": "翻訳を読み込めませんでした。一時的に英語で表示します。",
   "backgroundBlend": "ブラウザーに調和",
   "backgroundHelium": "Helium",
-  "style": "スタイル"
+  "style": "スタイル",
+  "showServiceIcons": "サービスのアイコンを表示",
+  "serviceIconsHelp": "bangの入力中にGoogleからアイコンを取得します。サイトのアドレスを送信しますが、検索語句やCookieは送信しません。"
 }

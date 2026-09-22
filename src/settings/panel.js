@@ -19,6 +19,7 @@ export function createSettings({ getPreferences, onChange, translator, languages
     ["time-format", "timeFormat"],
     ["show-seconds", "showSeconds"],
     ["show-date", "showDate"],
+    ["show-service-icons", "showServiceIcons"],
     ...["ui", "mono", "clock", "date", "search"].map((key) => [`${key}-font`, `${key}Font`]),
   ];
 

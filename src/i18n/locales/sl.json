@@ -44,5 +44,7 @@
   "languageError": "Prevoda ni bilo mogoče naložiti. Za zdaj se uporablja angleščina.",
   "backgroundBlend": "Usklajeno",
   "backgroundHelium": "Helium",
-  "style": "Slog"
+  "style": "Slog",
+  "showServiceIcons": "Prikaži ikone storitev",
+  "serviceIconsHelp": "Med vnašanjem ukaza bang nalaga ikone iz Googla. Pošlje naslov spletnega mesta brez iskalnih izrazov ali piškotkov."
 }

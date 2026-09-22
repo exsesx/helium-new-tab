@@ -44,5 +44,7 @@
   "languageError": "Bu çeviri yüklenemedi. Şimdilik İngilizce kullanılıyor.",
   "backgroundBlend": "Uyumlu",
   "backgroundHelium": "Helium",
-  "style": "Stil"
+  "style": "Stil",
+  "showServiceIcons": "Hizmet simgelerini göster",
+  "serviceIconsHelp": "Bir bang yazarken Google’dan simgeleri alır. Arama terimleri veya çerezler olmadan sitenin adresini gönderir."
 }

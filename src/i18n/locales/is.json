@@ -44,5 +44,7 @@
   "languageError": "Ekki tókst að hlaða þýðingunni. Enska er notuð í bili.",
   "backgroundBlend": "Samræmdur",
   "backgroundHelium": "Helium",
-  "style": "Stíll"
+  "style": "Stíll",
+  "showServiceIcons": "Sýna tákn þjónusta",
+  "serviceIconsHelp": "Sækir tákn frá Google á meðan þú skrifar bang. Sendir veffang síðunnar án leitarorða eða vafrakaka."
 }

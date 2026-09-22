@@ -44,5 +44,7 @@
   "languageError": "Preklad sa nepodarilo načítať. Zatiaľ sa používa angličtina.",
   "backgroundBlend": "Zladené",
   "backgroundHelium": "Helium",
-  "style": "Štýl"
+  "style": "Štýl",
+  "showServiceIcons": "Zobrazovať ikony služieb",
+  "serviceIconsHelp": "Pri písaní bangu načítava ikony z Googlu. Odosiela adresu webu bez hľadaných výrazov alebo súborov cookie."
 }

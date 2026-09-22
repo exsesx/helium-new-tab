@@ -9,4 +9,4 @@ document.title = __TAB_TITLES__[selection.language];
 applyAppearance(preferences);
 
 // Hand off the validated preferences without rereading storage or resolving fonts.
-window.__quietTabPreferences = preferences;
+window.__heliumTabPreferences = preferences;

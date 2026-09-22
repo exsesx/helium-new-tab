@@ -1,12 +1,13 @@
 {
   "name": "helium-new-tab",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "bun scripts/dev.js",
     "build": "bun scripts/build.js",
+    "bangs:refresh": "bun scripts/refresh-bangs.js",
     "lint": "oxlint --deny-warnings .",
     "lint:fix": "oxlint --fix --deny-warnings .",
     "format": "oxfmt --write .",

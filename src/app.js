@@ -1,5 +1,8 @@
 import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
-import { readPreferences, searchDestination } from "./lib/model.js";
+import { readPreferences } from "./lib/model.js";
+import { resolveSearchDestination } from "./lib/search.js";
+import { createSearchIcon } from "./lib/search-icon.js";
+import { PREFERENCES_KEY } from "./lib/storage.js";
 import { loadPreferences, applyAppearance } from "./lib/preferences.js";
 import { createDateFormatter, createTimeFormatter } from "./lib/date-time.js";
 
@@ -8,9 +11,9 @@ const clock = $("clock");
 const date = $("date");
 const clockBlock = $("clock-block");
 
-const bootstrapped = Boolean(window.__quietTabPreferences);
-let preferences = window.__quietTabPreferences ?? loadPreferences();
-delete window.__quietTabPreferences;
+const bootstrapped = Boolean(window.__heliumTabPreferences);
+let preferences = window.__heliumTabPreferences ?? loadPreferences();
+delete window.__heliumTabPreferences;
 
 const translator = createTranslator();
 let activeLocale;
@@ -33,7 +36,7 @@ function notify(message) {
 
 function save() {
   try {
-    localStorage.setItem("quiet-tab", JSON.stringify(preferences));
+    localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences));
   } catch {
     notify(translator.text("storageError"));
   }
@@ -110,6 +113,7 @@ function applyPreferences(updateAppearance = true) {
   }
 
   scheduleClock();
+  void updateSearchPreview();
 }
 
 let settings;
@@ -157,25 +161,50 @@ $("open-settings").addEventListener("click", async () => {
 });
 
 const nativeSearch = typeof chrome !== "undefined" && typeof chrome.search?.query === "function";
+const showSearchIcon = createSearchIcon($("search-icon"));
+let searchRevision = 0;
+
+async function updateSearchPreview() {
+  const revision = ++searchRevision;
+  let destination;
+
+  if (!preferences.showServiceIcons) {
+    showSearchIcon();
+  }
+
+  try {
+    destination = await resolveSearchDestination($("search").value);
+  } catch {
+    // A missing catalog leaves the default search icon visible.
+  }
+
+  if (revision !== searchRevision) {
+    return;
+  }
+
+  showSearchIcon(preferences.showServiceIcons ? destination?.favicon : "");
+}
+
+$("search").addEventListener("input", updateSearchPreview);
 
 $("search-form").addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const destination = searchDestination($("search").value);
-
-  if (destination.url) {
-    location.assign(destination.url);
-
-    return;
-  }
-
-  if (!destination.query) {
-    $("search").focus();
-
-    return;
-  }
-
   try {
+    const destination = await resolveSearchDestination($("search").value);
+
+    if (destination.url) {
+      location.assign(destination.url);
+
+      return;
+    }
+
+    if (!destination.query) {
+      $("search").focus();
+
+      return;
+    }
+
     if (nativeSearch) {
       await chrome.search.query({ text: destination.query, disposition: "CURRENT_TAB" });
     } else {
@@ -208,7 +237,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("storage", (event) => {
-  if (event.key !== "quiet-tab" && event.key !== null) {
+  if (event.key !== PREFERENCES_KEY && event.key !== null) {
     return;
   }
 

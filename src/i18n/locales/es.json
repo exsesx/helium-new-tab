@@ -44,5 +44,7 @@
   "languageError": "No se pudo cargar esta traducción. Se usará inglés por ahora.",
   "backgroundBlend": "Integrado",
   "backgroundHelium": "Helium",
-  "style": "Estilo"
+  "style": "Estilo",
+  "showServiceIcons": "Mostrar iconos de servicios",
+  "serviceIconsHelp": "Obtiene iconos de Google mientras escribes un bang. Envía la dirección del sitio, sin términos de búsqueda ni cookies."
 }

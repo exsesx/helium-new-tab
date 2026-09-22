@@ -44,5 +44,7 @@
   "languageError": "Käännöstä ei voitu ladata. Toistaiseksi käytetään englantia.",
   "backgroundBlend": "Yhtenäinen",
   "backgroundHelium": "Helium",
-  "style": "Tyyli"
+  "style": "Tyyli",
+  "showServiceIcons": "Näytä palveluiden kuvakkeet",
+  "serviceIconsHelp": "Lataa kuvakkeet Googlelta, kun kirjoitat bang-komentoa. Lähettää sivuston osoitteen ilman hakusanoja tai evästeitä."
 }

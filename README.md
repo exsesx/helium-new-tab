@@ -34,7 +34,28 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
 The favicon follows the browser's light or dark appearance. The page appearance can
 be overridden separately. Custom browser theme palettes are not detected automatically.
 
-Native Helium bangs remain available in the address bar.
+The search field resolves bangs locally using [Helium's bang catalog](https://services.helium.imput.net/bangs.json),
+with a bundled snapshot that works offline.
+For example, `!yt quiet music`, `quiet !yt music`, and `quiet music !yt` open YouTube directly.
+Aliases are case-insensitive. The catalog's format flags control query encoding and whether
+a bare bang opens the site's home page or its search URL. Bangs that require a hostname,
+such as `!rtfd`, fall back to ordinary search when no valid name is supplied.
+The first bang token is used; an unknown bang stays in the query sent to your default provider.
+Website addresses still open directly.
+
+The bundled catalog loads only when the input contains a bang. The extension does not download
+or cache catalog updates. Maintainers run `bun run bangs:refresh` before each release;
+see [release instructions](docs/releasing.md). Service-worker updates are planned for
+[version 1.2](ROADMAP.md).
+Recognized bangs replace the search icon with the destination's favicon while you type.
+The image has a circular radius and fades in and out; reduced-motion settings disable the fade.
+The icon requests a 64-pixel image from Google's favicon service. Only the service origin
+is included, without search terms, cookies, or a referrer. Chromium's credentialless image
+policy removes cookies; no additional extension permission is needed.
+Turn off **Customize → Show service icons** to stop icon requests.
+Unknown bangs keep the search icon.
+Custom address-bar shortcuts are not included.
+The localhost preview supports the same local bangs and uses DuckDuckGo for ordinary searches.
 
 ## Development
 

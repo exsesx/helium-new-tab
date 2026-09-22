@@ -44,5 +44,7 @@
   "languageError": "Nie udało się wczytać tłumaczenia. Tymczasowo używany jest angielski.",
   "backgroundBlend": "Dopasowane",
   "backgroundHelium": "Helium",
-  "style": "Styl"
+  "style": "Styl",
+  "showServiceIcons": "Pokazuj ikony serwisów",
+  "serviceIconsHelp": "Pobiera ikony z Google podczas wpisywania banga. Wysyła adres witryny bez wyszukiwanych słów i plików cookie."
 }

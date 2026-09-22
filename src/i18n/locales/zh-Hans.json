@@ -44,5 +44,7 @@
   "languageError": "无法加载此翻译。暂时使用英语。",
   "backgroundBlend": "与浏览器融合",
   "backgroundHelium": "Helium",
-  "style": "样式"
+  "style": "样式",
+  "showServiceIcons": "显示服务图标",
+  "serviceIconsHelp": "输入 bang 时从 Google 加载图标。仅发送网站地址，不发送搜索词或 Cookie。"
 }

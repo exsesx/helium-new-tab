@@ -44,5 +44,7 @@
   "languageError": "Oversettelsen kunne ikke lastes inn. Engelsk brukes inntil videre.",
   "backgroundBlend": "Tilpasset",
   "backgroundHelium": "Helium",
-  "style": "Stil"
+  "style": "Stil",
+  "showServiceIcons": "Vis tjenesteikoner",
+  "serviceIconsHelp": "Henter ikoner fra Google mens du skriver en bang. Sender nettstedets adresse uten søkeord eller informasjonskapsler."
 }
