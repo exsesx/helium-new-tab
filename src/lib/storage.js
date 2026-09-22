@@ -1,1 +1,1 @@
-export const preferencesKey = "helium-tab";
+export const PREFERENCES_KEY = "helium-tab";

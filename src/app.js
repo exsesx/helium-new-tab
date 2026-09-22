@@ -2,7 +2,7 @@ import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
 import { readPreferences } from "./lib/model.js";
 import { resolveSearchDestination } from "./lib/search.js";
 import { createSearchIcon } from "./lib/search-icon.js";
-import { preferencesKey } from "./lib/storage.js";
+import { PREFERENCES_KEY } from "./lib/storage.js";
 import { loadPreferences, applyAppearance } from "./lib/preferences.js";
 import { createDateFormatter, createTimeFormatter } from "./lib/date-time.js";
 
@@ -36,7 +36,7 @@ function notify(message) {
 
 function save() {
   try {
-    localStorage.setItem(preferencesKey, JSON.stringify(preferences));
+    localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences));
   } catch {
     notify(translator.text("storageError"));
   }
@@ -237,7 +237,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("storage", (event) => {
-  if (event.key !== preferencesKey && event.key !== null) {
+  if (event.key !== PREFERENCES_KEY && event.key !== null) {
     return;
   }
 
