@@ -23,11 +23,11 @@ concurrency:
 
 jobs:
   upload:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: chrome-web-store
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.tag != '' && format('refs/tags/{0}', inputs.tag) || github.sha }}
 
@@ -44,7 +44,7 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag }}
 
       - name: Check out the uploader from the workflow revision
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
           path: .publisher
