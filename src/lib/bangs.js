@@ -63,7 +63,6 @@ export function resolveBang(text) {
 
     return {
       url: url.href,
-      service: entry.s,
       // Never send query-derived hostnames while the user is still typing.
       favicon: dynamicHost
         ? ""
