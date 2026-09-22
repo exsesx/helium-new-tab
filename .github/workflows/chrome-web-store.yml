@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing release tag, e.g. v1.0.0"
-        required: true
+        description: "Optional release tag; leave blank to build the selected branch"
+        required: false
         type: string
       publish:
         description: "Submit for review and publish after approval"
@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: refs/tags/${{ inputs.tag }}
+          ref: ${{ inputs.tag != '' && format('refs/tags/{0}', inputs.tag) || github.sha }}
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:

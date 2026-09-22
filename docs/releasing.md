@@ -37,8 +37,10 @@ editable artwork and build instructions. The artwork retains its GPL-3.0 license
 ## Chrome Web Store
 
 The repository does not need store credentials for checks or GitHub releases.
-The **Chrome Web Store** workflow runs only when manually dispatched. Select an existing
-release tag and leave **publish** unchecked to upload without submitting for review.
+The **Chrome Web Store** workflow runs only when manually dispatched. Choose `main` under
+**Use workflow from** and leave the optional release tag blank to build its latest commit
+at the time the run starts. Enter an existing release tag to build that version instead.
+Leave **publish** unchecked to upload without submitting for review.
 Selecting **publish** submits the item for review; approval and public availability
 remain controlled by Google. This workflow does not run on commits or tags automatically.
 
@@ -60,9 +62,11 @@ Initial setup in your own Google account:
    The workflow uses the `chrome-web-store` environment, where optional required
    reviewers can add an approval before the upload job runs. Environment secrets and
    variables can also be used instead of repository settings.
-6. Run the workflow from the updated branch for the intended release tag. Later uploads
-   require a higher manifest version. The package is built from the selected tag, while
-   the uploader comes from the workflow revision so older tags use current authentication.
+6. Run the workflow from the updated branch, optionally supplying an existing release tag.
+   Later uploads require a higher manifest version; update `src/manifest.json` and
+   `package.json` together before uploading a new version. The package is built from the
+   selected branch commit or tag, while the uploader comes from the workflow revision so
+   older tags use current authentication.
 
 The uploader exchanges a signed service account JWT for a short-lived access token
 scoped to the Chrome Web Store API. It uses the official v2 API, waits for asynchronous
