@@ -44,7 +44,7 @@
   "languageError": "无法加载此翻译。暂时使用英语。",
   "backgroundBlend": "与浏览器融合",
   "backgroundHelium": "Helium",
-  "style": "样式",
+  "darkBackground": "深色背景",
   "showServiceIcons": "显示服务图标",
   "serviceIconsHelp": "使用浏览器中已保存的网站图标，不会下载任何内容。开启时会请求读取这些图标的权限。"
 }

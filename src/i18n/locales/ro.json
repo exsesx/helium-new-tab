@@ -44,7 +44,7 @@
   "languageError": "Traducerea nu s-a putut încărca. Pentru moment se folosește engleza.",
   "backgroundBlend": "Asortat",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Fundal întunecat",
   "showServiceIcons": "Afișează pictogramele serviciilor",
   "serviceIconsHelp": "Folosește pictogramele site-urilor deja salvate în browser. Nu se descarcă nimic. La activare, se cere permisiunea de a le citi."
 }

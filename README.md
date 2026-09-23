@@ -22,7 +22,7 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
 
 ## Features
 
-- Automatic light and dark appearance, with manual overrides and Blended or Helium styles.
+- Automatic light and dark appearance, with manual overrides and a Blended or Helium dark background.
 - Optional clock and date, with 12-hour or 24-hour time and optional seconds.
 - 37 interface languages, with localized dates and times.
 - Custom installed fonts for the interface, clock, date, and search field.

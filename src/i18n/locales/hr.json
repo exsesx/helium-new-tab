@@ -44,7 +44,7 @@
   "languageError": "Prijevod se ne može učitati. Zasad se koristi engleski.",
   "backgroundBlend": "Usklađena",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Tamna pozadina",
   "showServiceIcons": "Prikaži ikone servisa",
   "serviceIconsHelp": "Koristi ikone web-mjesta već spremljene u pregledniku. Ništa se ne preuzima. Uključivanje traži dopuštenje za njihovo čitanje."
 }

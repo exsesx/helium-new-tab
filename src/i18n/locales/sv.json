@@ -44,7 +44,7 @@
   "languageError": "Översättningen kunde inte laddas. Engelska används tills vidare.",
   "backgroundBlend": "Anpassad",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Mörk bakgrund",
   "showServiceIcons": "Visa tjänsteikoner",
   "serviceIconsHelp": "Använder webbplatsikoner som redan finns sparade i webbläsaren. Inget laddas ned. När du slår på det ombeds du ge behörighet att läsa dem."
 }

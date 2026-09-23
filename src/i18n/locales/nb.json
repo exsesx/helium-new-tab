@@ -44,7 +44,7 @@
   "languageError": "Oversettelsen kunne ikke lastes inn. Engelsk brukes inntil videre.",
   "backgroundBlend": "Tilpasset",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Mørk bakgrunn",
   "showServiceIcons": "Vis tjenesteikoner",
   "serviceIconsHelp": "Bruker nettstedikoner som allerede er lagret i nettleseren. Ingenting lastes ned. Når du slår det på, blir du bedt om tillatelse til å lese dem."
 }

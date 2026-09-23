@@ -44,7 +44,7 @@
   "languageError": "Përkthimi nuk u ngarkua. Për momentin përdoret anglishtja.",
   "backgroundBlend": "I përshtatur",
   "backgroundHelium": "Helium",
-  "style": "Stili",
+  "darkBackground": "Sfondi i errët",
   "showServiceIcons": "Shfaq ikonat e shërbimeve",
   "serviceIconsHelp": "Përdor ikonat e sajteve të ruajtura tashmë në shfletues. Nuk shkarkohet asgjë. Kur e aktivizoni, kërkohet leje për t’i lexuar."
 }

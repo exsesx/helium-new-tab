@@ -44,7 +44,7 @@
   "languageError": "Impossible de charger cette traduction. L’anglais est utilisé pour le moment.",
   "backgroundBlend": "Harmonisé",
   "backgroundHelium": "Helium",
-  "style": "Style",
+  "darkBackground": "Arrière-plan sombre",
   "showServiceIcons": "Afficher les icônes des services",
   "serviceIconsHelp": "Utilise les icônes de sites déjà enregistrées dans le navigateur. Rien n’est téléchargé. L’activation demande l’autorisation de les lire."
 }

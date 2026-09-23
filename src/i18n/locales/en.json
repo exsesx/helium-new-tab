@@ -44,7 +44,7 @@
   "languageError": "This translation could not load. Using English for now.",
   "backgroundBlend": "Blended",
   "backgroundHelium": "Helium",
-  "style": "Style",
+  "darkBackground": "Dark background",
   "showServiceIcons": "Show service icons",
   "serviceIconsHelp": "Uses site icons already saved in your browser. Nothing is downloaded. Turning this on asks for permission to read them."
 }

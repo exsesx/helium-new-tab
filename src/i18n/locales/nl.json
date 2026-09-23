@@ -44,7 +44,7 @@
   "languageError": "Deze vertaling kon niet worden geladen. Voorlopig wordt Engels gebruikt.",
   "backgroundBlend": "Afgestemd",
   "backgroundHelium": "Helium",
-  "style": "Stijl",
+  "darkBackground": "Donkere achtergrond",
   "showServiceIcons": "Dienstpictogrammen tonen",
   "serviceIconsHelp": "Gebruikt websitepictogrammen die al in je browser zijn opgeslagen. Er wordt niets gedownload. Bij inschakelen wordt toestemming gevraagd om ze te lezen."
 }

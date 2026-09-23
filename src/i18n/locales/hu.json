@@ -44,7 +44,7 @@
   "languageError": "A fordítás nem tölthető be. Egyelőre az angol nyelv lesz használatban.",
   "backgroundBlend": "Összehangolt",
   "backgroundHelium": "Helium",
-  "style": "Stílus",
+  "darkBackground": "Sötét háttér",
   "showServiceIcons": "Szolgáltatásikonok megjelenítése",
   "serviceIconsHelp": "A böngészőben már tárolt webhelyikonokat használja. Semmi sem töltődik le. Bekapcsoláskor engedélyt kér az olvasásukhoz."
 }

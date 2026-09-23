@@ -44,7 +44,7 @@
   "languageError": "Překlad se nepodařilo načíst. Prozatím se používá angličtina.",
   "backgroundBlend": "Sladěné",
   "backgroundHelium": "Helium",
-  "style": "Styl",
+  "darkBackground": "Tmavé pozadí",
   "showServiceIcons": "Zobrazovat ikony služeb",
   "serviceIconsHelp": "Používá ikony webů již uložené v prohlížeči. Nic se nestahuje. Po zapnutí se zobrazí žádost o oprávnění je číst."
 }

@@ -44,7 +44,7 @@
   "languageError": "Prevoda ni bilo mogoče naložiti. Za zdaj se uporablja angleščina.",
   "backgroundBlend": "Usklajeno",
   "backgroundHelium": "Helium",
-  "style": "Slog",
+  "darkBackground": "Temno ozadje",
   "showServiceIcons": "Prikaži ikone storitev",
   "serviceIconsHelp": "Uporablja ikone spletnih mest, ki so že shranjene v brskalniku. Nič se ne prenese. Ob vklopu se zahteva dovoljenje za njihovo branje."
 }

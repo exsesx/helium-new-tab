@@ -44,7 +44,7 @@
   "languageError": "No s’ha pogut carregar la traducció. De moment es farà servir l’anglès.",
   "backgroundBlend": "Integrat",
   "backgroundHelium": "Helium",
-  "style": "Estil",
+  "darkBackground": "Fons fosc",
   "showServiceIcons": "Mostra les icones dels serveis",
   "serviceIconsHelp": "Fa servir les icones dels llocs ja desades al navegador. No es baixa res. En activar-ho, es demana permís per llegir-les."
 }

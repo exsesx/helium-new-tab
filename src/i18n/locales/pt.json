@@ -44,7 +44,7 @@
   "languageError": "Não foi possível carregar esta tradução. Será usado inglês por agora.",
   "backgroundBlend": "Integrado",
   "backgroundHelium": "Helium",
-  "style": "Estilo",
+  "darkBackground": "Fundo escuro",
   "showServiceIcons": "Mostrar ícones dos serviços",
   "serviceIconsHelp": "Usa os ícones de sites já guardados no navegador. Nada é transferido. Ao ativar, é pedida permissão para os ler."
 }

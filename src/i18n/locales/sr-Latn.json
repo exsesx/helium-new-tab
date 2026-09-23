@@ -44,7 +44,7 @@
   "languageError": "Prevod nije moguće učitati. Zasad se koristi engleski.",
   "backgroundBlend": "Usklađena",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Tamna pozadina",
   "showServiceIcons": "Prikaži ikone servisa",
   "serviceIconsHelp": "Koristi ikone sajtova već sačuvane u pregledaču. Ništa se ne preuzima. Uključivanje traži dozvolu za njihovo čitanje."
 }

@@ -44,7 +44,7 @@
   "languageError": "Nepavyko įkelti vertimo. Kol kas naudojama anglų kalba.",
   "backgroundBlend": "Suderintas",
   "backgroundHelium": "Helium",
-  "style": "Stilius",
+  "darkBackground": "Tamsus fonas",
   "showServiceIcons": "Rodyti paslaugų piktogramas",
   "serviceIconsHelp": "Naudoja naršyklėje jau išsaugotas svetainių piktogramas. Niekas neatsisiunčiama. Įjungus prašoma leidimo jas skaityti."
 }

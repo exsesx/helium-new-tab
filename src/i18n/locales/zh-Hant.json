@@ -44,7 +44,7 @@
   "languageError": "無法載入此翻譯。暫時使用英文。",
   "backgroundBlend": "與瀏覽器融合",
   "backgroundHelium": "Helium",
-  "style": "樣式",
+  "darkBackground": "深色背景",
   "showServiceIcons": "顯示服務圖示",
   "serviceIconsHelp": "使用瀏覽器中已儲存的網站圖示，不會下載任何內容。開啟時會要求讀取這些圖示的權限。"
 }
