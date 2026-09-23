@@ -50,7 +50,7 @@ The first bang token is used; an unknown bang stays in the query sent to your de
 Website addresses still open directly.
 
 The bundled catalog loads only when the input contains a bang. The extension does not download
-or cache catalog updates. Maintainers run `bun run bangs:refresh` before each release;
+or cache catalog updates. A weekly workflow opens a pull request with catalog updates;
 see [release instructions](docs/releasing.md). Service-worker updates are planned for
 [version 1.2](ROADMAP.md).
 Turn on **Customize → Show service icons** to replace the search icon with the destination's

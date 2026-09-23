@@ -19,7 +19,7 @@ Use Conventional Commits, for example `fix: preserve the selected language on re
 
 ## GitHub release
 
-1. Run `bun run bangs:refresh` to refresh the bundled bang catalog before tagging.
+1. Merge any open bang catalog refresh pull request, or run `bun run bangs:refresh`.
 2. Update the version in `package.json`. The build copies it into the packaged manifest.
 3. Run `bun install` to refresh package metadata in the lockfile, then `bun run check`.
 4. Commit and push the release, then tag that commit with `v<package version>` and push the tag.
@@ -39,7 +39,14 @@ editable artwork and build instructions. The artwork retains its GPL-3.0 license
 
 ### Refresh the bang catalog
 
-Before each release, run:
+The **Refresh bangs** workflow runs every Monday and on manual dispatch. When the upstream
+catalog changed, it runs `bun run bangs:refresh` and `bun run check`, then opens or updates a
+`chore/refresh-bang-catalog` pull request. Review and merge it before releasing.
+It needs **Settings → Actions → General → Allow GitHub Actions to create and approve pull
+requests**. Pull requests created with the workflow token do not trigger other workflows, so
+the refresh workflow runs the same checks itself.
+
+To refresh manually, run:
 
 ```sh
 bun run bangs:refresh
@@ -60,10 +67,9 @@ review its notice and update `licenses/bangs-MIT.txt` and the attribution before
 Release workflows build the committed snapshot so the tag and ZIP contain the same catalog.
 Both the Release and Chrome Web Store workflows run `bun run bangs:refresh --check`
 before building. This downloads the upstream feed and compares its checksum without writing
-files. Publishing stops on a checksum mismatch or download/parsing/license error. The normal
+files. A checksum mismatch or download/parsing/license error adds a warning to the run but
+does not stop publishing, so hotfixes and re-runs of older tags still work. The normal
 `bun run check` step then validates the committed entries before packaging.
-Run the refresh command, review and commit the changes, then publish the updated commit.
-If a release tag already exists, prepare a new version and tag instead of moving that tag.
 Older releases without a bundled bang catalog skip this check.
 The extension does not fetch this file at runtime.
 

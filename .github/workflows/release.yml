@@ -34,9 +34,13 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
-      - name: Verify committed bang catalog is current
+      # An outdated snapshot still ships; the weekly refresh pull request brings it up to date.
+      - name: Check whether the bang catalog is current
         if: ${{ hashFiles('src/data/bangs.json') != '' }}
-        run: bun run bangs:refresh --check
+        run: |
+          if ! bun run bangs:refresh --check; then
+            echo "::warning title=Bang catalog::The committed bang catalog is outdated or could not be checked. This build uses the committed snapshot; merge the refresh pull request before the next release."
+          fi
 
       - run: bun run check
 
