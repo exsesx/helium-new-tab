@@ -124,3 +124,45 @@ for (const [input, destination] of [
     expect((await request).url()).toBe(destination);
   });
 }
+
+// Pages opened in new tabs or windows need the stub at the context level.
+async function routeRemote(context) {
+  await context.route(/^https?:\/\/(?!127\.0\.0\.1)/, (route) =>
+    route.fulfill({ status: 200, contentType: "text/html", body: "<title>remote</title>" }),
+  );
+}
+
+for (const [modifier, name] of [
+  ["Control", "a new tab"],
+  ["Meta", "a new tab"],
+  ["Shift", "a new window"],
+]) {
+  test(`${modifier}+Enter opens the destination in ${name}`, async ({ page, context }) => {
+    await routeRemote(context);
+    await page.goto("/");
+
+    await page.locator("#search").fill("!yt quiet music");
+    const opened = context.waitForEvent("page");
+    await page.locator("#search").press(`${modifier}+Enter`);
+
+    const newPage = await opened;
+    await newPage.waitForURL(/youtube/);
+
+    expect(newPage.url()).toBe("https://www.youtube.com/results?search_query=quiet+music");
+    await expect(page).toHaveURL("/");
+  });
+}
+
+test("a modified click on the submit button opens a new tab", async ({ page, context }) => {
+  await routeRemote(context);
+  await page.goto("/");
+
+  await page.locator("#search").fill("example.com");
+  const opened = context.waitForEvent("page");
+  await page.locator(".search-submit").click({ modifiers: ["ControlOrMeta"] });
+
+  const newPage = await opened;
+  await newPage.waitForURL("https://example.com/");
+
+  await expect(page).toHaveURL("/");
+});

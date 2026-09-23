@@ -48,23 +48,40 @@ export async function readSynced() {
   }
 }
 
+// Debounces writes; flush() sends a pending write at once so closing the tab cannot drop it.
 export function createSyncWriter() {
   let timer;
+  let pending;
 
-  return function write(preferences) {
+  function flush() {
     const area = syncArea();
 
-    if (!area) {
+    clearTimeout(timer);
+
+    if (!area || !pending) {
       return;
     }
 
+    const value = shared(pending);
+    pending = undefined;
+
+    area.set({ [PREFERENCES_KEY]: value }).catch(() => {
+      // Local storage still has the change; sync retries on the next save.
+    });
+  }
+
+  function write(preferences) {
+    if (!syncArea()) {
+      return;
+    }
+
+    pending = preferences;
+
     clearTimeout(timer);
-    timer = setTimeout(() => {
-      area.set({ [PREFERENCES_KEY]: shared(preferences) }).catch(() => {
-        // Local storage still has the change; sync retries on the next save.
-      });
-    }, WRITE_DELAY);
-  };
+    timer = setTimeout(flush, WRITE_DELAY);
+  }
+
+  return { write, flush };
 }
 
 export function onSyncedChange(listener) {

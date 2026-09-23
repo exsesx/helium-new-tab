@@ -30,6 +30,8 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   Bare names open only with a known top-level domain, so `example.com` opens a site while
   `next.js` searches. Local names such as `localhost:3000`, `printer.local`, and IP
   addresses open over HTTP. Press `/` to focus search while the page has focus.
+  Hold Ctrl, Cmd, or Alt while pressing Enter or clicking the arrow to open the result in a
+  new tab; hold Shift to open it in a new window.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
 - Preferences saved in the extension's browser profile and synced across devices when the
   browser syncs extension data. Service icons stay a per-device choice.
@@ -51,9 +53,8 @@ A recognized bang shows the service's name before the query, like Helium's addre
 Website addresses still open directly.
 
 The bundled catalog loads only when the input contains a bang. The extension does not download
-or cache catalog updates. A weekly workflow opens a pull request with catalog updates;
-see [release instructions](docs/releasing.md). Service-worker updates are planned for
-[version 1.3](ROADMAP.md).
+or cache catalog updates; new catalogs ship with extension releases. A weekly workflow opens
+a pull request with catalog updates; see [release instructions](docs/releasing.md).
 Turn on **Customize → Show service icons** to replace the search icon with the destination's
 favicon while you type a recognized bang. Icons come from the browser's own favicon cache
 through the optional `favicon` permission, which the browser asks you to grant when you turn
@@ -119,6 +120,8 @@ The localhost preview uses DuckDuckGo and cannot verify native browser integrati
 - Check the tab title and favicon in light and dark browser appearance, including on a fresh tab.
 - Change appearance, language, clock, and font preferences; open another new tab and confirm
   they persist without a flash of the default settings.
+- Check Ctrl or Cmd+Enter and Shift+Enter open searches, bangs, and addresses in a new tab
+  or window.
 - Check `/` search focus, Escape dismissal, keyboard navigation in Customize, and the
   settings layout in narrow and short windows.
 

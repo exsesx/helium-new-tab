@@ -35,7 +35,7 @@ test("device-only keys stay local when merging synced preferences", () => {
 
 test("writes are debounced and omit device-only keys", async () => {
   const { data } = fakeStorage();
-  const write = createSyncWriter();
+  const { write } = createSyncWriter();
 
   write({ theme: "light", showServiceIcons: true });
   write({ theme: "dark", showServiceIcons: true });
@@ -45,6 +45,31 @@ test("writes are debounced and omit device-only keys", async () => {
 
   expect(data["helium-tab"]).toEqual({ theme: "dark" });
   expect(await readSynced()).toEqual({ theme: "dark" });
+});
+
+test("flush writes a pending change at once and cancels the delayed write", async () => {
+  const { data } = fakeStorage();
+  const { write, flush } = createSyncWriter();
+
+  write({ theme: "dark", showServiceIcons: true });
+  flush();
+  await Bun.sleep(0);
+
+  expect(data["helium-tab"]).toEqual({ theme: "dark" });
+
+  data["helium-tab"] = { theme: "light" };
+  await Bun.sleep(1100);
+
+  expect(data["helium-tab"]).toEqual({ theme: "light" });
+});
+
+test("flush without a pending change writes nothing", async () => {
+  const { data } = fakeStorage();
+
+  createSyncWriter().flush();
+  await Bun.sleep(0);
+
+  expect(data).toEqual({});
 });
 
 test("reports only sync changes to the preferences key", () => {
@@ -62,6 +87,9 @@ test("reports only sync changes to the preferences key", () => {
 
 test("does nothing without extension storage", async () => {
   expect(await readSynced()).toBeUndefined();
-  expect(() => createSyncWriter()({ theme: "dark" })).not.toThrow();
+  const { write, flush } = createSyncWriter();
+
+  expect(() => write({ theme: "dark" })).not.toThrow();
+  expect(() => flush()).not.toThrow();
   expect(() => onSyncedChange(() => {})).not.toThrow();
 });

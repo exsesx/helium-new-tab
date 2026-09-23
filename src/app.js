@@ -27,7 +27,7 @@ const searchForm = createSearchForm({
   getPreferences: () => preferences,
   onError: () => notify(translator.text("searchError")),
 });
-const writeSynced = createSyncWriter();
+const syncWriter = createSyncWriter();
 let activeLocale;
 let toastTimer;
 
@@ -48,10 +48,17 @@ function saveLocal() {
   }
 }
 
-function save() {
+// Typed font names wait for a pause; other changes sync at once so a quick close keeps them.
+function save(key) {
   saveLocal();
-  writeSynced(preferences);
+  syncWriter.write(preferences);
+
+  if (!key.endsWith("CustomFont")) {
+    syncWriter.flush();
+  }
 }
+
+window.addEventListener("pagehide", syncWriter.flush);
 
 function applyPreferences(updateAppearance = true) {
   if (updateAppearance) {
@@ -111,7 +118,7 @@ function updatePreference(key, value) {
     applyPreferences();
   }
 
-  save();
+  save(key);
 }
 
 // Turn icons off when the permission was removed, such as from the extensions page.
@@ -174,7 +181,8 @@ void readSynced().then((value) => {
   const merged = mergeSynced(value, preferences);
 
   if (!merged) {
-    writeSynced(preferences);
+    syncWriter.write(preferences);
+    syncWriter.flush();
   } else if (applyExternal(merged)) {
     saveLocal();
   }
