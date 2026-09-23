@@ -1,6 +1,6 @@
 # Roadmap
 
-## 1.2
+## 1.3
 
 - Move bang-catalog downloads and cache writes into an extension service worker so
   searches and closed new tabs cannot interrupt updates.

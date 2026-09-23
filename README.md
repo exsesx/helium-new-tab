@@ -52,7 +52,7 @@ Website addresses still open directly.
 The bundled catalog loads only when the input contains a bang. The extension does not download
 or cache catalog updates. A weekly workflow opens a pull request with catalog updates;
 see [release instructions](docs/releasing.md). Service-worker updates are planned for
-[version 1.2](ROADMAP.md).
+[version 1.3](ROADMAP.md).
 Turn on **Customize → Show service icons** to replace the search icon with the destination's
 favicon while you type a recognized bang. Icons come from the browser's own favicon cache
 through the optional `favicon` permission, which the browser asks you to grant when you turn
