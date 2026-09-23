@@ -1,4 +1,5 @@
 import markup from "./panel.html" with { type: "text" };
+import { fontFamily, fonts } from "../lib/model.js";
 import { serviceIconsSupported } from "../lib/service-icons.js";
 
 export function createSettings({ getPreferences, onChange, translator, languages }) {
@@ -39,6 +40,14 @@ export function createSettings({ getPreferences, onChange, translator, languages
     ["date-custom-font", "showDate"],
   ];
 
+  // Render each custom name in its own font, so a missing font is visible while typing.
+  function previewFont(key) {
+    const input = find(`${key}-custom-font`);
+    const fallback = key === "mono" ? fonts.mono : fonts.system;
+
+    input.style.fontFamily = fontFamily(input.value, fallback);
+  }
+
   function sync() {
     translator.apply(dialog);
 
@@ -61,6 +70,7 @@ export function createSettings({ getPreferences, onChange, translator, languages
     for (const key of ["ui", "mono", "clock", "date", "search"]) {
       find(`${key}-custom-row`).hidden = preferences[`${key}Font`] !== "custom";
       find(`${key}-custom-font`).value = preferences[`${key}CustomFont`];
+      previewFont(key);
     }
   }
 
@@ -77,6 +87,7 @@ export function createSettings({ getPreferences, onChange, translator, languages
 
   for (const key of ["ui", "mono", "clock", "date", "search"]) {
     find(`${key}-custom-font`).addEventListener("input", (event) => {
+      previewFont(key);
       onChange(`${key}CustomFont`, event.target.value);
     });
   }
