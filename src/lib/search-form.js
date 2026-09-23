@@ -1,6 +1,6 @@
 import { resolveSearchDestination } from "./search.js";
 import { createSearchIcon } from "./search-icon.js";
-import { serviceIconUrl, serviceIconsSupported } from "./service-icons.js";
+import { cachedServiceIconUrl, serviceIconsSupported } from "./service-icons.js";
 
 export function createSearchForm({ form, input, icon, service, getPreferences, onError }) {
   const nativeSearch = typeof chrome !== "undefined" && typeof chrome.search?.query === "function";
@@ -36,8 +36,14 @@ export function createSearchForm({ form, input, icon, service, getPreferences, o
     }
 
     const origin = showServiceIcons ? destination?.siteOrigin : "";
+    const iconUrl = origin ? await cachedServiceIconUrl(origin) : "";
 
-    showSearchIcon(origin ? serviceIconUrl(origin) : "");
+    if (request !== revision) {
+      return;
+    }
+
+    // Sites without a cached icon keep the search icon instead of the browser's globe.
+    showSearchIcon(iconUrl);
   }
 
   input.addEventListener("input", updatePreview);

@@ -57,7 +57,7 @@ see [release instructions](docs/releasing.md). Service-worker updates are planne
 Turn on **Customize → Show service icons** to replace the search icon with the destination's
 favicon while you type a recognized bang. Icons come from the browser's own favicon cache
 through the optional `favicon` permission, which the browser asks you to grant when you turn
-the setting on. Nothing is downloaded, and sites you have never visited show a generic icon.
+the setting on. Nothing is downloaded, and sites you have never visited keep the search icon.
 Removing the permission on the extensions page turns the setting off again.
 The image has a circular radius and fades in and out; reduced-motion settings disable the fade.
 Unknown bangs keep the search icon. The localhost preview cannot show service icons.

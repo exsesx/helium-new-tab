@@ -58,3 +58,33 @@ export function serviceIconUrl(origin, pixelRatio = globalThis.devicePixelRatio 
 
   return url.href;
 }
+
+// The favicon cache answers every site it has no icon for with the same generic globe.
+const UNKNOWN_SITE = "https://unknown.invalid";
+const cachedIcons = new Map();
+
+async function readIcon(url) {
+  const response = await fetch(url);
+
+  return new Uint8Array(await response.arrayBuffer());
+}
+
+function sameBytes(first, second) {
+  return first.length === second.length && first.every((byte, index) => byte === second[index]);
+}
+
+// Resolves to the icon URL, or "" when the browser has no icon of its own for the site.
+export function cachedServiceIconUrl(origin, pixelRatio = globalThis.devicePixelRatio || 1) {
+  const url = serviceIconUrl(origin, pixelRatio);
+
+  if (!cachedIcons.has(url)) {
+    const genericUrl = serviceIconUrl(UNKNOWN_SITE, pixelRatio);
+    const check = Promise.all([readIcon(url), readIcon(genericUrl)])
+      .then(([icon, generic]) => (sameBytes(icon, generic) ? "" : url))
+      .catch(() => "");
+
+    cachedIcons.set(url, check);
+  }
+
+  return cachedIcons.get(url);
+}
