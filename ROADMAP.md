@@ -3,7 +3,7 @@
 Every feature stays local: no external network requests, no permissions with install
 warnings, and no slower first paint.
 
-## 1.3: Bang suggestions
+## Next: Bang suggestions
 
 - Suggest matching bangs while the user types a `!` token, for example `!yo` lists YouTube
   and other services whose aliases start with `yo`, with the alias and service name.
