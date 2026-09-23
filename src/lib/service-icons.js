@@ -46,10 +46,15 @@ export function onServiceIconsRevoked(listener) {
   });
 }
 
-export function serviceIconUrl(origin) {
+// Matches the .search-favicon width in style.css.
+const ICON_SIZE = 20;
+
+export function serviceIconUrl(origin, pixelRatio = globalThis.devicePixelRatio || 1) {
+  // Ask for the screen's device pixels; the browser returns its closest cached size.
+  const size = Math.ceil(ICON_SIZE * pixelRatio);
   const url = new URL(chrome.runtime.getURL("/_favicon/"));
   url.searchParams.set("pageUrl", origin);
-  url.searchParams.set("size", "32");
+  url.searchParams.set("size", String(size));
 
   return url.href;
 }
