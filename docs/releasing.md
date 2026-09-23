@@ -23,8 +23,10 @@ Use Conventional Commits, for example `fix: preserve the selected language on re
 2. Update the version in `package.json`. The build copies it into the packaged manifest.
 3. Run `bun install` to refresh package metadata in the lockfile, then `bun run check`.
 4. Commit and push the release, then tag that commit with `v<package version>` and push the tag.
-5. The Release workflow validates the tag, checks the source, builds the package, and creates
-   a GitHub release with a ZIP and SHA-256 checksum. GitHub supplies the matching source archives.
+5. The Release workflow validates the tag, checks the source, builds the package, attests its
+   build provenance, and creates a GitHub release with a ZIP and SHA-256 checksum. GitHub
+   supplies the matching source archives. Verify a downloaded ZIP with
+   `gh attestation verify helium-new-tab-<version>.zip --repo exsesx/helium-new-tab`.
 
 `bun run package` also creates these files locally in `release/`. The ZIP contains the
 contents of `dist/`, with `manifest.json` at its root. It includes privacy and license
