@@ -1,21 +1,54 @@
-/* Each token lists its light value, then its dark value; index.html sets color-scheme. */
 :root {
-  --text: light-dark(#292b2b, #e3e5e5);
-  --secondary: light-dark(#555858, #c3c6c6);
-  --muted: light-dark(#666969, #acb0b0);
-  --accent: light-dark(#3d4fc4, #bdc4ff);
-  --surface: light-dark(#fff, #353737);
-  --panel: light-dark(#f3f3f3, #242626);
-  --search-bg: light-dark(#ebebeb, #353737);
-  --search-focus-bg: light-dark(#fff, #3b3c3c);
-  --search-focus-ring: light-dark(#4157d2, #7a95f8);
-  --toggle-thumb: light-dark(#fff, #1e2020);
+  --text: #292b2b;
+  --secondary: #555858;
+  --muted: #666969;
+  --accent: #3d4fc4;
+  --surface: #fff;
+  --panel: #f3f3f3;
+  --search-bg: #ebebeb;
+  --search-focus-bg: #fff;
+  --search-focus-ring: #4157d2;
+  --toggle-thumb: #fff;
   /* Off switches keep at least 3:1 contrast against the panel and the tinted rows. */
-  --toggle-off: light-dark(#767979, #8a8e8e);
-  --tint: light-dark(#e6e7e7, #303232);
-  --border: light-dark(#d8dada, #454848);
+  --toggle-off: #767979;
+  --tint: #e6e7e7;
+  --border: #d8dada;
   font-family: var(--interface-font, system-ui, sans-serif);
   font-synthesis: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --text: #e3e5e5;
+    --secondary: #c3c6c6;
+    --muted: #acb0b0;
+    --accent: #bdc4ff;
+    --surface: #353737;
+    --panel: #242626;
+    --search-bg: #353737;
+    --search-focus-bg: #3b3c3c;
+    --search-focus-ring: #7a95f8;
+    --toggle-thumb: #1e2020;
+    --toggle-off: #8a8e8e;
+    --tint: #303232;
+    --border: #454848;
+  }
+}
+
+:root[data-theme="dark"] {
+  --text: #e3e5e5;
+  --secondary: #c3c6c6;
+  --muted: #acb0b0;
+  --accent: #bdc4ff;
+  --surface: #353737;
+  --panel: #242626;
+  --search-bg: #353737;
+  --search-focus-bg: #3b3c3c;
+  --search-focus-ring: #7a95f8;
+  --toggle-thumb: #1e2020;
+  --toggle-off: #8a8e8e;
+  --tint: #303232;
+  --border: #454848;
 }
 
 * {

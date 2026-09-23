@@ -6,21 +6,26 @@
     <!-- Paint the canvas before external assets load, using the saved appearance below. -->
     <style>
       :root {
-        color-scheme: light dark;
-        --bg: light-dark(#fff, #1e2020);
+        color-scheme: light;
+        --dark-bg: #1e2020;
+        --bg: #fff;
         background: var(--bg);
       }
 
-      :root[data-theme="light"] {
-        color-scheme: light;
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          color-scheme: dark;
+          --bg: var(--dark-bg);
+        }
       }
 
       :root[data-theme="dark"] {
         color-scheme: dark;
+        --bg: var(--dark-bg);
       }
 
       :root[data-background="helium"] {
-        --bg: light-dark(#fff, #3b3c3c);
+        --dark-bg: #3b3c3c;
       }
     </style>
     <title data-i18n="newTab">New Tab</title>
