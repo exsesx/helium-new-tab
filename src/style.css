@@ -377,7 +377,7 @@ h2 {
   padding-top: 19px;
   border-top: 1px solid var(--border);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -389,6 +389,14 @@ h2 {
   min-height: 52px;
   border-top: 1px solid var(--border);
   font-size: 14px;
+}
+
+/* Help that belongs to the setting row directly above it. */
+.setting-help {
+  margin: -6px 0 20px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .setting > label {
@@ -569,13 +577,13 @@ input[type="checkbox"]:checked:before {
 }
 
 .font-settings legend {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   padding: 0 0 8px;
 }
 
 .font-note {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   color: var(--muted);
   margin: 8px 0 0;
@@ -588,7 +596,7 @@ input[type="checkbox"]:checked:before {
 .custom-font label {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   margin-bottom: 6px;
 }
 
