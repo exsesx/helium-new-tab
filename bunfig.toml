@@ -1,3 +1,7 @@
+# Save exact versions when adding dependencies, matching package.json.
+[install]
+exact = true
+
 # Keep Bun's test runner on unit tests; Playwright runs the specs in e2e/.
 [test]
 root = "tests"
