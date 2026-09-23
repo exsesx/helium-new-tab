@@ -1,7 +1,7 @@
 version: 2
 
 updates:
-  # Workflows pin actions to commit SHAs; Dependabot keeps the pins and version comments current.
+  # Workflows use major version tags; Dependabot proposes new major versions.
   - package-ecosystem: github-actions
     directory: /
     schedule:
