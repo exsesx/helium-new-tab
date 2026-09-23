@@ -10,6 +10,8 @@
   --search-focus-bg: light-dark(#fff, #3b3c3c);
   --search-focus-ring: light-dark(#4157d2, #7a95f8);
   --toggle-thumb: light-dark(#fff, #1e2020);
+  /* Off switches keep at least 3:1 contrast against the panel and the tinted rows. */
+  --toggle-off: light-dark(#767979, #8a8e8e);
   --tint: light-dark(#e6e7e7, #303232);
   --border: light-dark(#d8dada, #454848);
   font-family: var(--interface-font, system-ui, sans-serif);
@@ -433,7 +435,8 @@ input[type="checkbox"] {
   width: 34px;
   height: 21px;
   border-radius: 14px;
-  background: var(--border);
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--toggle-off);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
@@ -445,13 +448,14 @@ input[type="checkbox"]:before {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: var(--surface);
+  background: var(--toggle-off);
   top: 3px;
   left: 3px;
 }
 
 input[type="checkbox"]:checked {
   background: var(--accent);
+  box-shadow: none;
 }
 
 input[type="checkbox"]:checked:before {
