@@ -27,3 +27,10 @@ rules to authored source, scripts, tests, and configuration.
 For readability-only changes, preserve behavior and keep unrelated edits out of
 the change. Review the formatted diff to confirm the logical grouping still reads
 clearly.
+
+# Commits and pull requests
+
+- Do not add AI attribution anywhere in Git history or pull requests: no
+  `Co-Authored-By` or session trailers in commits, and no "Generated with" lines,
+  footers, or links in pull request titles, descriptions, or comments.
+- Commit under the repository owner's configured Git identity, never as an AI tool.
