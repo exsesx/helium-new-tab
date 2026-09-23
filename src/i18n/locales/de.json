@@ -37,7 +37,7 @@
   "searchFamily": "Schriftart der Suche",
   "fontExample": "z. B. {font}",
   "overrideHelp": "Standard verwendet die globale Schriftart. Fehlende Schriftarten werden durch die Standardschrift ersetzt.",
-  "privacy": "Nur auf diesem Gerät gespeichert. Ohne Tracking oder Konten.",
+  "privacy": "Im Browserprofil gespeichert. Ohne Tracking oder Konten.",
   "storageError": "Der Speicher ist nicht verfügbar. Änderungen gelten bis zum Schließen dieses Tabs.",
   "searchError": "Die Suche ist nicht verfügbar. Verwende die Adressleiste des Browsers.",
   "settingsError": "Die Anpassung konnte nicht geladen werden. Lade den Tab erneut, um es noch einmal zu versuchen.",

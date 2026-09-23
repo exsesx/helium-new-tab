@@ -37,7 +37,7 @@
   "searchFamily": "Shkronjat e kërkimit",
   "fontExample": "p.sh. {font}",
   "overrideHelp": "Parazgjedhja përdor shkronjat e përgjithshme. Shkronjat që mungojnë zëvendësohen me ato të parazgjedhura.",
-  "privacy": "Ruhet vetëm në këtë pajisje. Pa gjurmim dhe pa llogari.",
+  "privacy": "Ruhet në profilin e shfletuesit. Pa gjurmim dhe pa llogari.",
   "storageError": "Ruajtja nuk është e disponueshme. Ndryshimet vlejnë deri në mbylljen e kësaj skede.",
   "searchError": "Kërkimi nuk është i disponueshëm. Përdorni shiritin e adresës së shfletuesit.",
   "settingsError": "Personalizimi nuk u ngarkua. Ringarkoni skedën për të provuar përsëri.",

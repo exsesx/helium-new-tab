@@ -8,6 +8,7 @@ import {
   requestServiceIcons,
 } from "./lib/service-icons.js";
 import { PREFERENCES_KEY } from "./lib/storage.js";
+import { createSyncWriter, mergeSynced, onSyncedChange, readSynced } from "./lib/sync.js";
 import { loadPreferences, applyAppearance } from "./lib/preferences.js";
 
 const $ = (id) => document.getElementById(id);
@@ -25,6 +26,7 @@ const searchForm = createSearchForm({
   getPreferences: () => preferences,
   onError: () => notify(translator.text("searchError")),
 });
+const writeSynced = createSyncWriter();
 let activeLocale;
 let toastTimer;
 
@@ -37,12 +39,17 @@ function notify(message) {
   }, 3500);
 }
 
-function save() {
+function saveLocal() {
   try {
     localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences));
   } catch {
     notify(translator.text("storageError"));
   }
+}
+
+function save() {
+  saveLocal();
+  writeSynced(preferences);
 }
 
 function applyPreferences(updateAppearance = true) {
@@ -123,21 +130,52 @@ if (preferences.showServiceIcons) {
   });
 }
 
+// Apply preferences changed by another tab or device. Returns whether anything changed.
+function applyExternal(value) {
+  const next = readPreferences(value);
+
+  // Keep an in-progress edit intact; the next new tab loads the latest preferences.
+  if (
+    document.querySelector("dialog[open]") ||
+    JSON.stringify(next) === JSON.stringify(preferences)
+  ) {
+    return false;
+  }
+
+  preferences = next;
+  void updateLanguage(true);
+
+  return true;
+}
+
 window.addEventListener("storage", (event) => {
   if (event.key !== PREFERENCES_KEY && event.key !== null) {
     return;
   }
 
-  // Keep an in-progress edit intact; the next new tab loads the latest preferences.
-  if (document.querySelector("dialog[open]")) {
-    return;
-  }
-
   try {
-    preferences = readPreferences(JSON.parse(event.newValue));
-    void updateLanguage(true);
+    applyExternal(JSON.parse(event.newValue));
   } catch {
     /* Ignore malformed external data. */
+  }
+});
+
+onSyncedChange((value) => {
+  const merged = mergeSynced(value, preferences);
+
+  if (merged && applyExternal(merged)) {
+    saveLocal();
+  }
+});
+
+// Synced preferences win once they exist; otherwise this device seeds them.
+void readSynced().then((value) => {
+  const merged = mergeSynced(value, preferences);
+
+  if (!merged) {
+    writeSynced(preferences);
+  } else if (applyExternal(merged)) {
+    saveLocal();
   }
 });
 

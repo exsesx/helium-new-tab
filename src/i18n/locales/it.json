@@ -37,7 +37,7 @@
   "searchFamily": "Carattere della ricerca",
   "fontExample": "ad es. {font}",
   "overrideHelp": "Predefinito usa il carattere globale. I caratteri mancanti vengono sostituiti con quello predefinito.",
-  "privacy": "Salvato solo su questo dispositivo. Nessun tracciamento né account.",
+  "privacy": "Salvato nel profilo del browser. Nessun tracciamento né account.",
   "storageError": "L’archiviazione non è disponibile. Le modifiche dureranno fino alla chiusura di questa scheda.",
   "searchError": "La ricerca non è disponibile. Usa la barra degli indirizzi del browser.",
   "settingsError": "Impossibile caricare la personalizzazione. Ricarica la scheda per riprovare.",

@@ -37,7 +37,7 @@
   "searchFamily": "Tipus de lletra de la cerca",
   "fontExample": "p. ex., {font}",
   "overrideHelp": "Per defecte utilitza el tipus de lletra global. Els tipus de lletra absents se substitueixen pel predeterminat.",
-  "privacy": "Desat només en aquest dispositiu. Sense seguiment ni comptes.",
+  "privacy": "Desat al perfil del navegador. Sense seguiment ni comptes.",
   "storageError": "L’emmagatzematge no està disponible. Els canvis duraran fins que es tanqui aquesta pestanya.",
   "searchError": "La cerca no està disponible. Fes servir la barra d’adreces del navegador.",
   "settingsError": "No s’ha pogut carregar la personalització. Torna a carregar la pestanya per provar-ho de nou.",

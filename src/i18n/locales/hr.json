@@ -37,7 +37,7 @@
   "searchFamily": "Font pretraživanja",
   "fontExample": "npr. {font}",
   "overrideHelp": "Zadano koristi opći font. Nedostupni fontovi zamjenjuju se zadanim.",
-  "privacy": "Sprema se samo na ovaj uređaj. Bez praćenja i računa.",
+  "privacy": "Sprema se u profil preglednika. Bez praćenja i računa.",
   "storageError": "Pohrana nije dostupna. Promjene vrijede do zatvaranja ove kartice.",
   "searchError": "Pretraživanje nije dostupno. Upotrijebite adresnu traku preglednika.",
   "settingsError": "Prilagodba se ne može učitati. Ponovno učitajte karticu i pokušajte opet.",

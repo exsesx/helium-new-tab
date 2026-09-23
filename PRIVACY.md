@@ -1,7 +1,10 @@
 # Privacy
 
 Helium New Tab stores appearance, language, clock, font, and service-icon preferences in local
-storage within your browser profile. It has no account, analytics, advertising,
+storage within your browser profile. It also copies them, except the service-icon choice, to
+the browser's extension sync storage. If your browser syncs extension data through your
+browser account, those preferences follow you to your other devices; otherwise they stay on
+this device. It has no account, analytics, advertising,
 telemetry, or backend. It does not collect or transmit browsing history.
 
 The extension makes no external network requests. Translations, images, scripts,

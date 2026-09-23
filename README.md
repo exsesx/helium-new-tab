@@ -31,10 +31,11 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   `next.js` searches. Local names such as `localhost:3000`, `printer.local`, and IP
   addresses open over HTTP. Press `/` to focus search while the page has focus.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
-- Preferences saved locally in the extension's browser profile.
+- Preferences saved in the extension's browser profile and synced across devices when the
+  browser syncs extension data. Service icons stay a per-device choice.
 - No analytics, remote fonts, or external network requests.
-  The only required extension permission is `search`; service icons ask for the optional
-  `favicon` permission when you turn them on.
+  Required permissions are `search` and `storage`, neither of which shows an install warning.
+  Service icons ask for the optional `favicon` permission when you turn them on.
 
 The favicon follows the browser's light or dark appearance. The page appearance can
 be overridden separately. Custom browser theme palettes are not detected automatically.

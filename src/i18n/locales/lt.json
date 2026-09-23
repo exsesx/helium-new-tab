@@ -37,7 +37,7 @@
   "searchFamily": "Paieškos šriftas",
   "fontExample": "pvz., {font}",
   "overrideHelp": "Numatytasis naudoja bendrąjį šriftą. Trūkstami šriftai pakeičiami numatytuoju.",
-  "privacy": "Įrašoma tik šiame įrenginyje. Be sekimo ir paskyrų.",
+  "privacy": "Įrašoma naršyklės profilyje. Be sekimo ir paskyrų.",
   "storageError": "Saugykla nepasiekiama. Pakeitimai galios iki šio skirtuko užvėrimo.",
   "searchError": "Paieška nepasiekiama. Naudokite naršyklės adreso juostą.",
   "settingsError": "Nepavyko įkelti tinkinimo. Bandykite iš naujo įkelti skirtuką.",

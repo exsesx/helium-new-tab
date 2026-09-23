@@ -37,7 +37,7 @@
   "searchFamily": "Sökfältets teckensnitt",
   "fontExample": "t.ex. {font}",
   "overrideHelp": "Standard följer det globala teckensnittet. Saknade teckensnitt ersätts med standardteckensnittet.",
-  "privacy": "Sparas bara på den här enheten. Ingen spårning, inga konton.",
+  "privacy": "Sparas i webbläsarprofilen. Ingen spårning, inga konton.",
   "storageError": "Lagring är inte tillgänglig. Ändringarna gäller tills fliken stängs.",
   "searchError": "Sökning är inte tillgänglig. Använd webbläsarens adressfält.",
   "settingsError": "Anpassning kunde inte laddas. Ladda om fliken för att försöka igen.",

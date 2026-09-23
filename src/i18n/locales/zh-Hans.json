@@ -37,7 +37,7 @@
   "searchFamily": "搜索框字体",
   "fontExample": "例如 {font}",
   "overrideHelp": "默认选项使用全局字体。缺失的字体会替换为默认字体。",
-  "privacy": "仅保存在此设备上。无跟踪，无账号。",
+  "privacy": "保存在浏览器配置文件中。无跟踪，无账号。",
   "storageError": "存储不可用。更改仅在关闭此标签页之前有效。",
   "searchError": "搜索不可用。请使用浏览器地址栏。",
   "settingsError": "无法加载自定义设置。请重新加载标签页后重试。",

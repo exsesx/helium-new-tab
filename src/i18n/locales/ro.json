@@ -37,7 +37,7 @@
   "searchFamily": "Fontul căutării",
   "fontExample": "de ex. {font}",
   "overrideHelp": "Implicit folosește fontul global. Fonturile lipsă sunt înlocuite cu cel implicit.",
-  "privacy": "Salvat doar pe acest dispozitiv. Fără urmărire sau conturi.",
+  "privacy": "Salvat în profilul browserului. Fără urmărire sau conturi.",
   "storageError": "Stocarea nu este disponibilă. Modificările se păstrează până la închiderea acestei file.",
   "searchError": "Căutarea nu este disponibilă. Folosește bara de adrese a browserului.",
   "settingsError": "Personalizarea nu s-a putut încărca. Reîncarcă fila pentru a încerca din nou.",

@@ -37,7 +37,7 @@
   "searchFamily": "Search font family",
   "fontExample": "e.g. {font}",
   "overrideHelp": "Default follows your global font. Missing fonts use the default.",
-  "privacy": "Saved only on this device. No tracking, no accounts.",
+  "privacy": "Saved in your browser profile. No tracking, no accounts.",
   "storageError": "Storage is unavailable. Changes will last until this tab closes.",
   "searchError": "Search is unavailable. Try your browser’s address bar.",
   "settingsError": "Customize could not load. Reload this tab to try again.",

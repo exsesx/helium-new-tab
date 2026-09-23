@@ -37,7 +37,7 @@
   "searchFamily": "Arama yazı tipi",
   "fontExample": "ör. {font}",
   "overrideHelp": "Varsayılan, genel yazı tipini kullanır. Eksik yazı tipleri varsayılanla değiştirilir.",
-  "privacy": "Yalnızca bu cihazda saklanır. Takip ve hesap yok.",
+  "privacy": "Tarayıcı profilinde saklanır. Takip ve hesap yok.",
   "storageError": "Depolama kullanılamıyor. Değişiklikler bu sekme kapanana kadar geçerlidir.",
   "searchError": "Arama kullanılamıyor. Tarayıcınızın adres çubuğunu kullanın.",
   "settingsError": "Özelleştirme yüklenemedi. Yeniden denemek için sekmeyi yenileyin.",

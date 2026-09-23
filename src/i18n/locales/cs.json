@@ -37,7 +37,7 @@
   "searchFamily": "Písmo vyhledávání",
   "fontExample": "např. {font}",
   "overrideHelp": "Výchozí používá globální písmo. Chybějící písma se nahrazují výchozím.",
-  "privacy": "Uloženo pouze v tomto zařízení. Bez sledování a účtů.",
+  "privacy": "Uloženo v profilu prohlížeče. Bez sledování a účtů.",
   "storageError": "Úložiště není dostupné. Změny budou platit do zavření této karty.",
   "searchError": "Vyhledávání není dostupné. Použijte adresní řádek prohlížeče.",
   "settingsError": "Přizpůsobení se nepodařilo načíst. Zkuste kartu načíst znovu.",

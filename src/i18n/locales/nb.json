@@ -37,7 +37,7 @@
   "searchFamily": "Søkefeltets skrifttype",
   "fontExample": "f.eks. {font}",
   "overrideHelp": "Standard følger den globale skrifttypen. Manglende skrifttyper erstattes med standardskrifttypen.",
-  "privacy": "Lagres bare på denne enheten. Ingen sporing eller kontoer.",
+  "privacy": "Lagres i nettleserprofilen. Ingen sporing eller kontoer.",
   "storageError": "Lagring er ikke tilgjengelig. Endringer gjelder til fanen lukkes.",
   "searchError": "Søk er ikke tilgjengelig. Bruk nettleserens adressefelt.",
   "settingsError": "Tilpasning kunne ikke lastes inn. Last inn fanen på nytt for å prøve igjen.",

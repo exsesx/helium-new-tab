@@ -37,7 +37,7 @@
   "searchFamily": "Lettertype voor zoeken",
   "fontExample": "bijv. {font}",
   "overrideHelp": "Standaard gebruikt het algemene lettertype. Ontbrekende lettertypen worden door het standaardlettertype vervangen.",
-  "privacy": "Alleen op dit apparaat opgeslagen. Geen tracking of accounts.",
+  "privacy": "Opgeslagen in je browserprofiel. Geen tracking of accounts.",
   "storageError": "Opslag is niet beschikbaar. Wijzigingen blijven geldig totdat dit tabblad sluit.",
   "searchError": "Zoeken is niet beschikbaar. Gebruik de adresbalk van de browser.",
   "settingsError": "Aanpassen kon niet worden geladen. Laad het tabblad opnieuw om het nogmaals te proberen.",

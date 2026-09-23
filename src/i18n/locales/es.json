@@ -37,7 +37,7 @@
   "searchFamily": "Fuente de búsqueda",
   "fontExample": "p. ej., {font}",
   "overrideHelp": "La opción predeterminada usa la fuente global. Las fuentes no disponibles usan la predeterminada.",
-  "privacy": "Se guarda solo en este dispositivo. Sin seguimiento ni cuentas.",
+  "privacy": "Se guarda en el perfil del navegador. Sin seguimiento ni cuentas.",
   "storageError": "El almacenamiento no está disponible. Los cambios durarán hasta cerrar esta pestaña.",
   "searchError": "La búsqueda no está disponible. Usa la barra de direcciones del navegador.",
   "settingsError": "No se pudo cargar la personalización. Recarga la pestaña para intentarlo de nuevo.",

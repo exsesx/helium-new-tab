@@ -37,7 +37,7 @@
   "searchFamily": "搜尋框字型",
   "fontExample": "例如 {font}",
   "overrideHelp": "預設選項使用全域字型。缺少的字型會以預設字型取代。",
-  "privacy": "僅儲存在此裝置上。無追蹤、無帳號。",
+  "privacy": "儲存在瀏覽器設定檔中。無追蹤、無帳號。",
   "storageError": "儲存空間無法使用。變更僅在關閉此分頁前有效。",
   "searchError": "搜尋無法使用。請使用瀏覽器網址列。",
   "settingsError": "無法載入自訂設定。請重新載入分頁後再試一次。",

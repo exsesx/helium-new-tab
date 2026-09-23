@@ -37,7 +37,7 @@
   "searchFamily": "Police de la recherche",
   "fontExample": "p. ex. {font}",
   "overrideHelp": "Par défaut reprend la police globale. Les polices absentes sont remplacées par celle par défaut.",
-  "privacy": "Enregistré uniquement sur cet appareil. Sans suivi ni compte.",
+  "privacy": "Enregistré dans le profil du navigateur. Sans suivi ni compte.",
   "storageError": "Le stockage est indisponible. Les modifications seront conservées jusqu’à la fermeture de cet onglet.",
   "searchError": "La recherche est indisponible. Utilisez la barre d’adresse du navigateur.",
   "settingsError": "Impossible de charger la personnalisation. Rechargez l’onglet pour réessayer.",

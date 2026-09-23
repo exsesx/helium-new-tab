@@ -37,7 +37,7 @@
   "searchFamily": "Pisava iskanja",
   "fontExample": "npr. {font}",
   "overrideHelp": "Privzeto uporablja splošno pisavo. Manjkajoče pisave se nadomestijo s privzeto.",
-  "privacy": "Shranjeno le v tej napravi. Brez sledenja in računov.",
+  "privacy": "Shranjeno v profilu brskalnika. Brez sledenja in računov.",
   "storageError": "Shramba ni na voljo. Spremembe veljajo do zaprtja tega zavihka.",
   "searchError": "Iskanje ni na voljo. Uporabite naslovno vrstico brskalnika.",
   "settingsError": "Prilagajanja ni bilo mogoče naložiti. Znova naložite zavihek in poskusite ponovno.",

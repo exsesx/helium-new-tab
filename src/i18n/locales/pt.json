@@ -37,7 +37,7 @@
   "searchFamily": "Tipo de letra da pesquisa",
   "fontExample": "por ex., {font}",
   "overrideHelp": "A opção predefinida usa o tipo de letra global. Tipos de letra em falta usam o predefinido.",
-  "privacy": "Guardado apenas neste dispositivo. Sem rastreio nem contas.",
+  "privacy": "Guardado no perfil do navegador. Sem rastreio nem contas.",
   "storageError": "O armazenamento não está disponível. As alterações duram até fechar este separador.",
   "searchError": "A pesquisa não está disponível. Use a barra de endereço do navegador.",
   "settingsError": "Não foi possível carregar a personalização. Recarregue o separador para tentar novamente.",

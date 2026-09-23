@@ -37,7 +37,7 @@
   "searchFamily": "Czcionka wyszukiwarki",
   "fontExample": "np. {font}",
   "overrideHelp": "Domyślna używa czcionki ogólnej. Niedostępne czcionki są zastępowane domyślną.",
-  "privacy": "Zapis tylko na tym urządzeniu. Bez śledzenia i kont.",
+  "privacy": "Zapis w profilu przeglądarki. Bez śledzenia i kont.",
   "storageError": "Zapis jest niedostępny. Zmiany będą działać do zamknięcia tej karty.",
   "searchError": "Wyszukiwanie jest niedostępne. Użyj paska adresu przeglądarki.",
   "settingsError": "Nie udało się wczytać ustawień. Odśwież kartę, aby spróbować ponownie.",

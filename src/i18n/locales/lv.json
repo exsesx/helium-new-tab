@@ -37,7 +37,7 @@
   "searchFamily": "Meklēšanas fonts",
   "fontExample": "piem., {font}",
   "overrideHelp": "Noklusējuma opcija izmanto kopējo fontu. Trūkstošie fonti tiek aizstāti ar noklusējuma fontu.",
-  "privacy": "Saglabāts tikai šajā ierīcē. Bez izsekošanas un kontiem.",
+  "privacy": "Saglabāts pārlūka profilā. Bez izsekošanas un kontiem.",
   "storageError": "Krātuve nav pieejama. Izmaiņas būs spēkā līdz cilnes aizvēršanai.",
   "searchError": "Meklēšana nav pieejama. Izmantojiet pārlūka adreses joslu.",
   "settingsError": "Pielāgošanu neizdevās ielādēt. Pārlādējiet cilni, lai mēģinātu vēlreiz.",

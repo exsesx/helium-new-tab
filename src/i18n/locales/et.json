@@ -37,7 +37,7 @@
   "searchFamily": "Otsingu font",
   "fontExample": "nt {font}",
   "overrideHelp": "Vaikimisi kasutatakse üldist fonti. Puuduvad fondid asendatakse vaikefondiga.",
-  "privacy": "Salvestatakse ainult sellesse seadmesse. Jälgimise ja kontodeta.",
+  "privacy": "Salvestatakse brauseri profiili. Jälgimise ja kontodeta.",
   "storageError": "Salvestusruum pole saadaval. Muudatused kehtivad vahekaardi sulgemiseni.",
   "searchError": "Otsing pole saadaval. Kasuta brauseri aadressiriba.",
   "settingsError": "Kohandamist ei saanud laadida. Proovi vahekaarti uuesti laadida.",

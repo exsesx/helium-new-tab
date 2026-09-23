@@ -37,7 +37,7 @@
   "searchFamily": "Hakukentän fontti",
   "fontExample": "esim. {font}",
   "overrideHelp": "Oletus käyttää yleistä fonttia. Puuttuvat fontit korvataan oletusfontilla.",
-  "privacy": "Tallennetaan vain tälle laitteelle. Ei seurantaa eikä tilejä.",
+  "privacy": "Tallennetaan selaimen profiiliin. Ei seurantaa eikä tilejä.",
   "storageError": "Tallennustila ei ole käytettävissä. Muutokset säilyvät välilehden sulkemiseen asti.",
   "searchError": "Haku ei ole käytettävissä. Käytä selaimen osoitepalkkia.",
   "settingsError": "Mukautusta ei voitu ladata. Yritä uudelleen lataamalla välilehti uudelleen.",
