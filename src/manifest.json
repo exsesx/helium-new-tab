@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Helium New Tab",
   "minimum_chrome_version": "117",
-  "description": "A lightweight New Tab page for Helium with search, a clock, and local customization.",
+  "description": "Unofficial Helium-style new tab with 10,000+ local bangs, a clock, custom fonts and synced settings. No tracking.",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
