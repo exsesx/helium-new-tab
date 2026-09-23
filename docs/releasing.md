@@ -6,9 +6,11 @@ Use Bun 1.4.2, as pinned in `.bun-version` and `package.json`.
 Use Node 26 for developer tooling. CI installs the latest Node 26 release explicitly.
 Run `bun install --frozen-lockfile` after cloning. The `prepare` script automatically
 sets up [Husky](https://typicode.github.io/husky/get-started.html); no separate hook
-installation is needed. The tracked `.husky/pre-commit` runs `bun run check`, including
-lint, formatting, tests, and a production build. It checks the current worktree, so
-review staged and unstaged changes before committing.
+installation is needed. The tracked `.husky/pre-commit` runs
+[lint-staged](https://github.com/lint-staged/lint-staged), which lints and formats only the
+staged files and adds its formatting fixes to the commit. The tracked `.husky/pre-push` runs
+`bun run check`, including lint, formatting, tests, and a production build, on the current
+worktree before anything reaches GitHub.
 
 If hooks need reinstalling, run `bun run prepare`. Git GUI clients must be able to
 find Bun and Node on their PATH; see Husky's [GUI setup guidance](https://typicode.github.io/husky/how-to.html#node-version-managers-and-guis).

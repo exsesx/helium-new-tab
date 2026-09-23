@@ -21,9 +21,17 @@
   "devDependencies": {
     "@playwright/test": "1.63.0",
     "husky": "9.1.7",
+    "lint-staged": "17.5.1",
     "oxfmt": "^0.70.0",
     "oxlint": "^1.85.0",
     "tlds": "1.261.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "oxlint --deny-warnings",
+      "oxfmt"
+    ],
+    "*.{json,md,yml,yaml,css,html,toml}": "oxfmt"
   },
   "packageManager": "bun@1.4.2"
 }

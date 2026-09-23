@@ -65,7 +65,7 @@ The localhost preview supports the same local bangs and uses DuckDuckGo for ordi
 
 ## Development
 
-Use Bun 1.4.2 and Node 26 for development tooling. Run `bun install --frozen-lockfile`, then `bun run dev` and open http://127.0.0.1:4173. Installation also sets up the Husky pre-commit hook automatically. The dev command builds the extension and watches all of `src/` with one serialized rebuild pipeline. Refresh the preview after edits. Restart the dev command after editing build scripts.
+Use Bun 1.4.2 and Node 26 for development tooling. Run `bun install --frozen-lockfile`, then `bun run dev` and open http://127.0.0.1:4173. Installation also sets up the Husky pre-commit and pre-push hooks automatically. The dev command builds the extension and watches all of `src/` with one serialized rebuild pipeline. Refresh the preview after edits. Restart the dev command after editing build scripts.
 
 ```text
 src/                       # Everything that ships: edit here
@@ -140,8 +140,8 @@ on the browser's built-in locale support and may fall back to another locale.
 
 ## Releases and contributing
 
-Use Conventional Commits. The local pre-commit hook runs lint, formatting, tests, and
-the build. GitHub Actions repeats these checks on pull requests and `main` pushes.
+Use Conventional Commits. The local pre-commit hook lints and formats staged files, and the
+pre-push hook runs lint, formatting, tests, and the build. GitHub Actions repeats these checks on pull requests and `main` pushes.
 Version tags create release ZIPs with checksums. Chrome Web Store upload and optional
 review submission use a separate manual workflow after account setup.
 See [release instructions](docs/releasing.md).
