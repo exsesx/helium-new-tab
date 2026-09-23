@@ -59,7 +59,7 @@ favicon while you type a recognized bang. Icons come from the browser's own favi
 through the optional `favicon` permission, which the browser asks you to grant when you turn
 the setting on. Nothing is downloaded, and sites you have never visited keep the search icon.
 Removing the permission on the extensions page turns the setting off again.
-The image has a circular radius and fades in and out; reduced-motion settings disable the fade.
+The image has rounded corners and fades in and out; reduced-motion settings disable the fade.
 Unknown bangs keep the search icon. The localhost preview cannot show service icons.
 Custom address-bar shortcuts are not included.
 The localhost preview supports the same local bangs and uses DuckDuckGo for ordinary searches.

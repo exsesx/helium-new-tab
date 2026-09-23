@@ -218,7 +218,8 @@ h1 {
   inset: 0;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  /* Soften square icons like app icons do, without cutting much of their corners. */
+  border-radius: 25%;
   object-fit: contain;
   opacity: 0;
   transition: opacity 160ms ease;
