@@ -25,7 +25,7 @@
   "custom": "Personnalisée…",
   "uiFamily": "Police de l’interface",
   "monoFamily": "Police à chasse fixe",
-  "fontHelp": "La police d’interface est utilisée pour les textes et les commandes. La police à chasse fixe est utilisée pour l’horloge. Les polices personnalisées doivent être installées sur cet appareil.",
+  "fontHelp": "La police d’interface est utilisée pour les textes, les commandes et l’horloge. La police à chasse fixe est utilisée pour les raccourcis clavier. Les polices personnalisées doivent être installées sur cet appareil.",
   "overrides": "Polices par élément",
   "clock": "Horloge",
   "date": "Date",
@@ -37,14 +37,14 @@
   "searchFamily": "Police de la recherche",
   "fontExample": "p. ex. {font}",
   "overrideHelp": "Par défaut reprend la police globale. Les polices absentes sont remplacées par celle par défaut.",
-  "privacy": "Enregistré uniquement sur cet appareil. Sans suivi ni compte.",
+  "privacy": "Enregistré dans le profil du navigateur. Sans suivi ni compte.",
   "storageError": "Le stockage est indisponible. Les modifications seront conservées jusqu’à la fermeture de cet onglet.",
   "searchError": "La recherche est indisponible. Utilisez la barre d’adresse du navigateur.",
   "settingsError": "Impossible de charger la personnalisation. Rechargez l’onglet pour réessayer.",
   "languageError": "Impossible de charger cette traduction. L’anglais est utilisé pour le moment.",
   "backgroundBlend": "Harmonisé",
   "backgroundHelium": "Helium",
-  "style": "Style",
+  "darkBackground": "Arrière-plan sombre",
   "showServiceIcons": "Afficher les icônes des services",
-  "serviceIconsHelp": "Charge les icônes depuis Google pendant la saisie d’un bang. Envoie l’adresse du site, sans termes de recherche ni cookies."
+  "serviceIconsHelp": "Utilise les icônes de sites déjà enregistrées dans le navigateur. Rien n’est téléchargé. L’activation demande l’autorisation de les lire."
 }

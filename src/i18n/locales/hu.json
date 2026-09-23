@@ -25,7 +25,7 @@
   "custom": "Egyéni…",
   "uiFamily": "Felület betűtípusa",
   "monoFamily": "Fix szélességű betűtípus",
-  "fontHelp": "A felület betűtípusa a szövegekhez és vezérlőkhöz, a fix szélességű az órához használatos. Az egyéni betűtípusokat telepíteni kell erre az eszközre.",
+  "fontHelp": "A felület betűtípusa a szövegekhez, vezérlőkhöz és az órához, a fix szélességű a billentyűparancsokhoz használatos. Az egyéni betűtípusokat telepíteni kell erre az eszközre.",
   "overrides": "Elemenkénti betűtípusok",
   "clock": "Óra",
   "date": "Dátum",
@@ -37,14 +37,14 @@
   "searchFamily": "Keresés betűtípusa",
   "fontExample": "pl. {font}",
   "overrideHelp": "Az alapértelmezett az általános betűtípust használja. A hiányzó betűtípusokat az alapértelmezett helyettesíti.",
-  "privacy": "Csak ezen az eszközön tárolva. Nincs követés vagy fiók.",
+  "privacy": "A böngészőprofilban tárolva. Nincs követés vagy fiók.",
   "storageError": "A tárhely nem érhető el. A módosítások a lap bezárásáig maradnak érvényben.",
   "searchError": "A keresés nem érhető el. Használd a böngésző címsorát.",
   "settingsError": "A testreszabás nem tölthető be. Próbáld újratölteni a lapot.",
   "languageError": "A fordítás nem tölthető be. Egyelőre az angol nyelv lesz használatban.",
   "backgroundBlend": "Összehangolt",
   "backgroundHelium": "Helium",
-  "style": "Stílus",
+  "darkBackground": "Sötét háttér",
   "showServiceIcons": "Szolgáltatásikonok megjelenítése",
-  "serviceIconsHelp": "A bang beírása közben ikonokat tölt le a Google-tól. A webhely címét küldi el, keresőkifejezések és sütik nélkül."
+  "serviceIconsHelp": "A böngészőben már tárolt webhelyikonokat használja. Semmi sem töltődik le. Bekapcsoláskor engedélyt kér az olvasásukhoz."
 }

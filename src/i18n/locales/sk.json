@@ -25,7 +25,7 @@
   "custom": "Vlastné…",
   "uiFamily": "Písmo rozhrania",
   "monoFamily": "Neproporcionálne písmo",
-  "fontHelp": "Písmo rozhrania sa používa na text a ovládacie prvky, neproporcionálne písmo na hodiny. Vlastné písma musia byť nainštalované v tomto zariadení.",
+  "fontHelp": "Písmo rozhrania sa používa na text, ovládacie prvky a hodiny, neproporcionálne písmo na klávesové skratky. Vlastné písma musia byť nainštalované v tomto zariadení.",
   "overrides": "Písma jednotlivých prvkov",
   "clock": "Hodiny",
   "date": "Dátum",
@@ -37,14 +37,14 @@
   "searchFamily": "Písmo vyhľadávania",
   "fontExample": "napr. {font}",
   "overrideHelp": "Predvolené používa globálne písmo. Chýbajúce písma sa nahrádzajú predvoleným.",
-  "privacy": "Uložené iba v tomto zariadení. Bez sledovania a účtov.",
+  "privacy": "Uložené v profile prehliadača. Bez sledovania a účtov.",
   "storageError": "Úložisko nie je dostupné. Zmeny budú platiť do zatvorenia tejto karty.",
   "searchError": "Vyhľadávanie nie je dostupné. Použite panel s adresou prehliadača.",
   "settingsError": "Prispôsobenie sa nepodarilo načítať. Skúste kartu načítať znova.",
   "languageError": "Preklad sa nepodarilo načítať. Zatiaľ sa používa angličtina.",
   "backgroundBlend": "Zladené",
   "backgroundHelium": "Helium",
-  "style": "Štýl",
+  "darkBackground": "Tmavé pozadie",
   "showServiceIcons": "Zobrazovať ikony služieb",
-  "serviceIconsHelp": "Pri písaní bangu načítava ikony z Googlu. Odosiela adresu webu bez hľadaných výrazov alebo súborov cookie."
+  "serviceIconsHelp": "Používa ikony webov už uložené v prehliadači. Nič sa nesťahuje. Po zapnutí sa zobrazí žiadosť o povolenie ich čítať."
 }

@@ -9,8 +9,13 @@
   --search-focus-bg: #fff;
   --search-focus-ring: #4157d2;
   --toggle-thumb: #fff;
+  /* Off switches keep at least 3:1 contrast against the panel and the tinted rows. */
+  --toggle-off: #767979;
   --tint: #e6e7e7;
   --border: #d8dada;
+  /* Flip favicons cached in the other theme's color; see markIconTone. */
+  --light-icon-filter: invert(1) hue-rotate(180deg);
+  --dark-icon-filter: none;
   font-family: var(--interface-font, system-ui, sans-serif);
   font-synthesis: none;
 }
@@ -27,8 +32,11 @@
     --search-focus-bg: #3b3c3c;
     --search-focus-ring: #7a95f8;
     --toggle-thumb: #1e2020;
+    --toggle-off: #8a8e8e;
     --tint: #303232;
     --border: #454848;
+    --light-icon-filter: none;
+    --dark-icon-filter: invert(1) hue-rotate(180deg);
   }
 }
 
@@ -43,8 +51,11 @@
   --search-focus-bg: #3b3c3c;
   --search-focus-ring: #7a95f8;
   --toggle-thumb: #1e2020;
+  --toggle-off: #8a8e8e;
   --tint: #303232;
   --border: #454848;
+  --light-icon-filter: none;
+  --dark-icon-filter: invert(1) hue-rotate(180deg);
 }
 
 * {
@@ -72,19 +83,21 @@ a,
 input,
 select {
   -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 button {
+  color: inherit;
+  border: 0;
   cursor: pointer;
 }
 
 button,
 a {
   touch-action: manipulation;
-}
-
-button {
-  color: inherit;
 }
 
 button:focus-visible,
@@ -96,24 +109,10 @@ summary:focus-visible {
   outline-offset: 2px;
 }
 
-button {
-  border: 0;
-}
-
 svg {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-}
-
-button,
-a,
-input,
-select {
-  transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    box-shadow 0.15s;
 }
 
 a {
@@ -130,8 +129,20 @@ main {
 }
 
 .start {
-  width: min(100%, 560px);
+  width: min(100%, 640px);
   text-align: center;
+}
+
+.helium-logo {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 28px;
+}
+
+.helium-logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .clock-block {
@@ -146,6 +157,7 @@ h1 {
   letter-spacing: -0.035em;
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
+  min-height: 1.15em;
 }
 
 .day-period {
@@ -161,6 +173,7 @@ h1 {
   font-size: 15px;
   letter-spacing: 0.01em;
   color: var(--secondary);
+  min-height: 1.3em;
 }
 
 #search-form {
@@ -205,7 +218,8 @@ h1 {
   inset: 0;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  /* Soften square icons like app icons do, without cutting much of their corners. */
+  border-radius: 25%;
   object-fit: contain;
   opacity: 0;
   transition: opacity 160ms ease;
@@ -219,6 +233,53 @@ h1 {
   .search-favicon.is-visible {
     opacity: 0;
   }
+}
+
+.search-favicon.is-light {
+  filter: var(--light-icon-filter);
+}
+
+.search-favicon.is-dark {
+  filter: var(--dark-icon-filter);
+}
+
+/* Like Helium's omnibox keyword mode: the service name, then a divider before the query. */
+.search-service {
+  flex-shrink: 0;
+  max-width: 30%;
+  overflow: hidden;
+  color: var(--accent);
+  font-size: 16px;
+  line-height: 24px;
+  font-family: var(--search-font, var(--interface-font, system-ui));
+  white-space: nowrap;
+  transition: opacity 160ms ease;
+  /* A scroll timeline is active only while the name overflows, so only cut-off names fade. */
+  animation: fade-cut-off-name linear both;
+  animation-timeline: scroll(self inline);
+}
+
+@keyframes fade-cut-off-name {
+  from,
+  to {
+    mask-image: linear-gradient(to right, #000 calc(100% - 2em), transparent);
+  }
+}
+
+@starting-style {
+  .search-service {
+    opacity: 0;
+  }
+}
+
+#search-form:has(.search-service:not([hidden])) .search-icon {
+  color: var(--accent);
+}
+
+/* The divider sits on the input so the name's fade never reaches it. */
+#search-form:has(.search-service:not([hidden])) #search {
+  padding-inline-start: 10px;
+  border-inline-start: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
 }
 
 #search {
@@ -276,7 +337,7 @@ footer {
 
 kbd {
   flex-shrink: 0;
-  font-family: inherit;
+  font-family: var(--mono-font, monospace);
   border: 1px solid var(--border);
   border-radius: 5px;
   width: 21px;
@@ -400,6 +461,9 @@ h2 {
 }
 
 .privacy-note {
+  margin-bottom: 0;
+  padding-top: 19px;
+  border-top: 1px solid var(--border);
   color: var(--muted);
   font-size: 12px;
   line-height: 1.6;
@@ -413,6 +477,14 @@ h2 {
   min-height: 52px;
   border-top: 1px solid var(--border);
   font-size: 14px;
+}
+
+/* Help that belongs to the setting row directly above it. */
+.setting-help {
+  margin: -6px 0 20px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .setting > label {
@@ -459,7 +531,8 @@ input[type="checkbox"] {
   width: 34px;
   height: 21px;
   border-radius: 14px;
-  background: var(--border);
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--toggle-off);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
@@ -471,25 +544,30 @@ input[type="checkbox"]:before {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: var(--surface);
+  background: var(--toggle-off);
   top: 3px;
   left: 3px;
 }
 
+.setting:has(:disabled) > label,
+.custom-font:has(:disabled) {
+  opacity: 0.5;
+}
+
+select:disabled,
+input:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
 input[type="checkbox"]:checked {
   background: var(--accent);
+  box-shadow: none;
 }
 
 input[type="checkbox"]:checked:before {
   background: var(--toggle-thumb);
   left: 16px;
-}
-
-.privacy-note {
-  border-top: 1px solid var(--border);
-  padding-top: 19px;
-  margin-bottom: 0;
-  font-size: 11px;
 }
 
 .toast {
@@ -506,8 +584,18 @@ input[type="checkbox"]:checked:before {
   max-width: 90%;
 }
 
-.toast:empty {
-  display: none;
+/* Screen readers announce only live regions that stay in the page, so hide it visually. */
+.toast:empty,
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 [hidden] {
@@ -556,6 +644,11 @@ input[type="checkbox"]:checked:before {
 }
 
 @media (pointer: coarse) {
+  /* Touch screens usually have no keyboard for the "/" shortcut; keep the footer layout. */
+  .keyboard-hint {
+    visibility: hidden;
+  }
+
   .settings-button,
   .close-button {
     min-height: 44px;
@@ -565,24 +658,18 @@ input[type="checkbox"]:checked:before {
   select {
     min-height: 44px;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
+  .custom-font input {
+    font-size: 16px;
+    min-height: 44px;
   }
 }
 
-.helium-logo {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 28px;
-}
-
-.helium-logo svg {
-  display: block;
-  width: 100%;
-  height: 100%;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::backdrop {
+    transition: none !important;
+  }
 }
 
 .font-settings {
@@ -593,13 +680,13 @@ input[type="checkbox"]:checked:before {
 }
 
 .font-settings legend {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   padding: 0 0 8px;
 }
 
 .font-note {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   color: var(--muted);
   margin: 8px 0 0;
@@ -612,7 +699,7 @@ input[type="checkbox"]:checked:before {
 .custom-font label {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   margin-bottom: 6px;
 }
 
@@ -626,13 +713,6 @@ input[type="checkbox"]:checked:before {
   background: var(--surface);
 }
 
-@media (pointer: coarse) {
-  .custom-font input {
-    font-size: 16px;
-    min-height: 44px;
-  }
-}
-
 .font-overrides {
   margin-top: 24px;
 }
@@ -642,11 +722,6 @@ input[type="checkbox"]:checked:before {
   font-size: 13px;
   color: var(--secondary);
   padding-block: 12px;
-}
-
-kbd {
-  flex-shrink: 0;
-  font-family: var(--mono-font, monospace);
 }
 
 @media (max-width: 520px) {
@@ -671,26 +746,9 @@ kbd {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  dialog,
-  dialog::backdrop,
-  .search-icon > svg,
-  .search-favicon {
-    transition: none !important;
-  }
-}
-
 /* Reserve the clock's space until its real text is ready; never paint a placeholder. */
 .clock-block:not([data-ready]) {
   visibility: hidden;
-}
-
-h1 {
-  min-height: 1.15em;
-}
-
-#date {
-  min-height: 1.3em;
 }
 
 :root[data-show-clock="false"] h1,

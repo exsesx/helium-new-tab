@@ -6,9 +6,11 @@ Use Bun 1.4.2, as pinned in `.bun-version` and `package.json`.
 Use Node 26 for developer tooling. CI installs the latest Node 26 release explicitly.
 Run `bun install --frozen-lockfile` after cloning. The `prepare` script automatically
 sets up [Husky](https://typicode.github.io/husky/get-started.html); no separate hook
-installation is needed. The tracked `.husky/pre-commit` runs `bun run check`, including
-lint, formatting, tests, and a production build. It checks the current worktree, so
-review staged and unstaged changes before committing.
+installation is needed. The tracked `.husky/pre-commit` runs
+[lint-staged](https://github.com/lint-staged/lint-staged), which lints and formats only the
+staged files and adds its formatting fixes to the commit. The tracked `.husky/pre-push` runs
+`bun run check`, including lint, formatting, tests, and a production build, on the current
+worktree before anything reaches GitHub.
 
 If hooks need reinstalling, run `bun run prepare`. Git GUI clients must be able to
 find Bun and Node on their PATH; see Husky's [GUI setup guidance](https://typicode.github.io/husky/how-to.html#node-version-managers-and-guis).
@@ -19,12 +21,14 @@ Use Conventional Commits, for example `fix: preserve the selected language on re
 
 ## GitHub release
 
-1. Run `bun run bangs:refresh` to refresh the bundled bang catalog before tagging.
-2. Update the versions in `src/manifest.json` and `package.json` together.
+1. Merge any open bang catalog refresh pull request, or run `bun run bangs:refresh`.
+2. Update the version in `package.json`. The build copies it into the packaged manifest.
 3. Run `bun install` to refresh package metadata in the lockfile, then `bun run check`.
-4. Commit and push the release, then tag that commit with `v<manifest version>` and push the tag.
-5. The Release workflow validates the tag, checks the source, builds the package, and creates
-   a GitHub release with a ZIP and SHA-256 checksum. GitHub supplies the matching source archives.
+4. Commit and push the release, then tag that commit with `v<package version>` and push the tag.
+5. The Release workflow validates the tag, checks the source, builds the package, attests its
+   build provenance, and creates a GitHub release with a ZIP and SHA-256 checksum. GitHub
+   supplies the matching source archives. Verify a downloaded ZIP with
+   `gh attestation verify helium-new-tab-<version>.zip --repo exsesx/helium-new-tab`.
 
 `bun run package` also creates these files locally in `release/`. The ZIP contains the
 contents of `dist/`, with `manifest.json` at its root. It includes privacy and license
@@ -37,7 +41,14 @@ editable artwork and build instructions. The artwork retains its GPL-3.0 license
 
 ### Refresh the bang catalog
 
-Before each release, run:
+The **Refresh bangs** workflow runs every Monday and on manual dispatch. When the upstream
+catalog changed, it runs `bun run bangs:refresh` and `bun run check`, then opens or updates a
+`chore/refresh-bang-catalog` pull request. Review and merge it before releasing.
+It needs **Settings → Actions → General → Allow GitHub Actions to create and approve pull
+requests**. Pull requests created with the workflow token do not trigger other workflows, so
+the refresh workflow runs the same checks itself.
+
+To refresh manually, run:
 
 ```sh
 bun run bangs:refresh
@@ -58,10 +69,9 @@ review its notice and update `licenses/bangs-MIT.txt` and the attribution before
 Release workflows build the committed snapshot so the tag and ZIP contain the same catalog.
 Both the Release and Chrome Web Store workflows run `bun run bangs:refresh --check`
 before building. This downloads the upstream feed and compares its checksum without writing
-files. Publishing stops on a checksum mismatch or download/parsing/license error. The normal
+files. A checksum mismatch or download/parsing/license error adds a warning to the run but
+does not stop publishing, so hotfixes and re-runs of older tags still work. The normal
 `bun run check` step then validates the committed entries before packaging.
-Run the refresh command, review and commit the changes, then publish the updated commit.
-If a release tag already exists, prepare a new version and tag instead of moving that tag.
 Older releases without a bundled bang catalog skip this check.
 The extension does not fetch this file at runtime.
 
@@ -94,8 +104,8 @@ Initial setup in your own Google account:
    reviewers can add an approval before the upload job runs. Environment secrets and
    variables can also be used instead of repository settings.
 6. Run the workflow from the updated branch, optionally supplying an existing release tag.
-   Later uploads require a higher manifest version; update `src/manifest.json` and
-   `package.json` together before uploading a new version. The package is built from the
+   Later uploads require a higher version; update `package.json` before uploading a
+   new version. The package is built from the
    selected branch commit or tag, while the uploader comes from the workflow revision so
    older tags use current authentication.
 
@@ -108,4 +118,6 @@ reach Google.
 
 Store listing text must describe this as an unofficial extension. The `search` permission
 is used only to submit a user's query through the browser's configured search provider.
+The optional `favicon` permission is requested only when the user turns on service icons
+and is used only to show locally cached icons for recognized bangs.
 No remote code, tracking, or external startup requests are used.

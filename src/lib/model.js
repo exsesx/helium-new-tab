@@ -14,7 +14,7 @@ export const defaults = {
   timeFormat: "auto",
   showSeconds: false,
   showDate: true,
-  showServiceIcons: true,
+  showServiceIcons: false,
   uiFont: "system",
   monoFont: "system",
   uiCustomFont: "",
@@ -26,46 +26,6 @@ export const defaults = {
   dateCustomFont: "",
   searchCustomFont: "",
 };
-
-export function websiteUrl(value) {
-  const text = value.trim();
-
-  if (!text || /\s/.test(text)) {
-    throw new Error("Enter a website, such as example.com.");
-  }
-
-  const hasScheme = /^[a-z][a-z\d+.-]*:/i.test(text);
-  const hasHostPort = /^[^/:]+:\d+(?:\/|$)/.test(text);
-  const url = new URL(hasScheme && !hasHostPort ? text : `https://${text}`);
-
-  if (
-    !["https:", "http:"].includes(url.protocol) ||
-    !url.hostname ||
-    url.username ||
-    url.password
-  ) {
-    throw new Error("Use an http or https website address without login details.");
-  }
-
-  return url.href;
-}
-
-export function searchDestination(value) {
-  const text = value.trim();
-
-  if (
-    /^https?:\/\//i.test(text) ||
-    /^(?:localhost|(?:[a-z\d-]+\.)+[a-z\d-]{2,})(?::\d+)?(?:[/?#]|$)/i.test(text)
-  ) {
-    try {
-      return { url: websiteUrl(text) };
-    } catch {
-      /* Treat other input as a search. */
-    }
-  }
-
-  return { query: text };
-}
 
 export function readPreferences(value) {
   const result = structuredClone(defaults);
@@ -188,17 +148,13 @@ export function resolvedFonts(preferences) {
       : fonts.mono;
   const result = { interface: ui, mono };
 
+  // Components default to the UI font. The clock's tabular numbers keep it steady without Mono.
   for (const key of ["clock", "date", "search"]) {
-    const fallback = key === "clock" ? mono : ui;
     const choice = preferences[`${key}Font`];
 
     switch (choice) {
       case "custom":
-        result[key] = fontFamily(preferences[`${key}CustomFont`], fallback);
-        break;
-
-      case "ui":
-        result[key] = ui;
+        result[key] = fontFamily(preferences[`${key}CustomFont`], ui);
         break;
 
       case "mono":
@@ -206,7 +162,7 @@ export function resolvedFonts(preferences) {
         break;
 
       default:
-        result[key] = fallback;
+        result[key] = ui;
     }
   }
 

@@ -1,1 +1,1 @@
-bun run check
+bun x lint-staged

@@ -35,6 +35,10 @@ jobs:
 
       - run: bun run check
 
+      - run: bun x playwright install --with-deps chromium
+
+      - run: bun run test:e2e
+
       - run: bun scripts/package.js
 
       - uses: actions/upload-artifact@v7

@@ -1,22 +1,17 @@
 import { expect, test } from "bun:test";
 import { resolveSearchDestination } from "../src/lib/search.js";
 import catalog from "../src/data/bangs.json";
-import { resolveBang } from "../src/lib/bangs.js";
+import { compactCatalog, createBangResolver } from "../src/lib/bangs.js";
 
-test("favicon previews use only a recognized service origin, never query terms", () => {
-  const youtube = new URL(resolveBang("!yt private query").favicon);
-  expect(youtube.origin).toBe("https://www.google.com");
-  expect([...youtube.searchParams]).toEqual([
-    ["domain_url", "https://www.youtube.com"],
-    ["sz", "64"],
-  ]);
-  expect(resolveBang("private query !YouTube").favicon).toBe(youtube.href);
-  expect(new URL(resolveBang("!gh private query").favicon).searchParams.get("domain_url")).toBe(
-    "https://github.com",
-  );
+const resolveBang = createBangResolver(catalog);
+
+test("service icons use only a recognized site origin, never query terms", () => {
+  expect(resolveBang("!yt private query").siteOrigin).toBe("https://www.youtube.com");
+  expect(resolveBang("private query !YouTube").siteOrigin).toBe("https://www.youtube.com");
+  expect(resolveBang("!gh private query").siteOrigin).toBe("https://github.com");
   expect(resolveBang("!unknown-bang-8294 query")).toBeNull();
   expect(resolveBang("plain query")).toBeNull();
-  expect(resolveBang("!rtfd private-query").favicon).toBe("");
+  expect(resolveBang("!rtfd private-query").siteOrigin).toBe("");
 });
 
 test("resolves YouTube bangs locally at the start, middle, or end", async () => {
@@ -28,6 +23,7 @@ test("resolves YouTube bangs locally at the start, middle, or end", async () => 
   ]) {
     expect(await resolveSearchDestination(input)).toMatchObject({
       url: "https://www.youtube.com/results?search_query=quiet+music",
+      service: "YouTube",
     });
   }
 });
@@ -85,7 +81,8 @@ test("unknown bangs, punctuation and ordinary searches keep the default provider
 test("hostname bangs navigate valid names and fall back for invalid names", async () => {
   expect(await resolveSearchDestination("!rtfd example")).toMatchObject({
     url: "https://example.rtfd.io/",
-    favicon: "",
+    service: "Read the Docs",
+    siteOrigin: "",
   });
 
   for (const query of ["!rtfd", "!rtfd two words", "!rtfd .", "!dauser", "!wpblog", "!hypestat"]) {
@@ -113,10 +110,26 @@ test("bundled entries retain valid names, aliases, formats and safe destinations
     }
 
     const destination = resolveBang(`!${ts[0]} example`);
+    expect(destination?.service).toBe(s);
 
     const url = new URL(destination.url);
     expect(["https:", "http:"]).toContain(url.protocol);
     expect(url.username).toBe("");
     expect(url.password).toBe("");
+  }
+});
+
+test("the compact catalog keeps every field the resolver reads", () => {
+  const compact = compactCatalog(catalog);
+  const resolveCompact = createBangResolver(compact);
+
+  expect(
+    compact.every((entry) =>
+      Object.keys(entry).every((key) => ["s", "ts", "u", "f"].includes(key)),
+    ),
+  ).toBe(true);
+
+  for (const { ts } of catalog) {
+    expect(resolveCompact(`!${ts[0]} example`)).toEqual(resolveBang(`!${ts[0]} example`));
   }
 });

@@ -1,0 +1,22 @@
+version: 2
+
+updates:
+  # Workflows use major version tags; Dependabot proposes new major versions.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+
+  # The bun ecosystem updates bun.lock with package.json, so frozen installs in CI still pass.
+  # Grouping keeps it to one weekly pull request listing every available upgrade.
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+    groups:
+      dev-dependencies:
+        patterns: ["*"]

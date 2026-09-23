@@ -25,7 +25,7 @@
   "custom": "Të personalizuara…",
   "uiFamily": "Shkronjat e ndërfaqes",
   "monoFamily": "Shkronjat me gjerësi fikse",
-  "fontHelp": "Shkronjat e ndërfaqes përdoren për tekstin dhe kontrollet; ato me gjerësi fikse për orën. Shkronjat e personalizuara duhet të jenë të instaluara në këtë pajisje.",
+  "fontHelp": "Shkronjat e ndërfaqes përdoren për tekstin, kontrollet dhe orën; ato me gjerësi fikse për shkurtoret e tastierës. Shkronjat e personalizuara duhet të jenë të instaluara në këtë pajisje.",
   "overrides": "Shkronjat sipas elementit",
   "clock": "Ora",
   "date": "Data",
@@ -37,14 +37,14 @@
   "searchFamily": "Shkronjat e kërkimit",
   "fontExample": "p.sh. {font}",
   "overrideHelp": "Parazgjedhja përdor shkronjat e përgjithshme. Shkronjat që mungojnë zëvendësohen me ato të parazgjedhura.",
-  "privacy": "Ruhet vetëm në këtë pajisje. Pa gjurmim dhe pa llogari.",
+  "privacy": "Ruhet në profilin e shfletuesit. Pa gjurmim dhe pa llogari.",
   "storageError": "Ruajtja nuk është e disponueshme. Ndryshimet vlejnë deri në mbylljen e kësaj skede.",
   "searchError": "Kërkimi nuk është i disponueshëm. Përdorni shiritin e adresës së shfletuesit.",
   "settingsError": "Personalizimi nuk u ngarkua. Ringarkoni skedën për të provuar përsëri.",
   "languageError": "Përkthimi nuk u ngarkua. Për momentin përdoret anglishtja.",
   "backgroundBlend": "I përshtatur",
   "backgroundHelium": "Helium",
-  "style": "Stili",
+  "darkBackground": "Sfondi i errët",
   "showServiceIcons": "Shfaq ikonat e shërbimeve",
-  "serviceIconsHelp": "Merr ikona nga Google ndërsa shkruani një bang. Dërgon adresën e faqes, pa termat e kërkimit ose cookie."
+  "serviceIconsHelp": "Përdor ikonat e sajteve të ruajtura tashmë në shfletues. Nuk shkarkohet asgjë. Kur e aktivizoni, kërkohet leje për t’i lexuar."
 }

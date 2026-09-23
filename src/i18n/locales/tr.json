@@ -25,7 +25,7 @@
   "custom": "Özel…",
   "uiFamily": "Arayüz yazı tipi",
   "monoFamily": "Eş aralıklı yazı tipi",
-  "fontHelp": "Arayüz yazı tipi metin ve denetimlerde, eş aralıklı yazı tipi ise saatte kullanılır. Özel yazı tiplerinin bu cihazda yüklü olması gerekir.",
+  "fontHelp": "Arayüz yazı tipi metin, denetimler ve saatte, eş aralıklı yazı tipi ise klavye kısayollarında kullanılır. Özel yazı tiplerinin bu cihazda yüklü olması gerekir.",
   "overrides": "Öğelere özel yazı tipleri",
   "clock": "Saat",
   "date": "Tarih",
@@ -37,14 +37,14 @@
   "searchFamily": "Arama yazı tipi",
   "fontExample": "ör. {font}",
   "overrideHelp": "Varsayılan, genel yazı tipini kullanır. Eksik yazı tipleri varsayılanla değiştirilir.",
-  "privacy": "Yalnızca bu cihazda saklanır. Takip ve hesap yok.",
+  "privacy": "Tarayıcı profilinde saklanır. Takip ve hesap yok.",
   "storageError": "Depolama kullanılamıyor. Değişiklikler bu sekme kapanana kadar geçerlidir.",
   "searchError": "Arama kullanılamıyor. Tarayıcınızın adres çubuğunu kullanın.",
   "settingsError": "Özelleştirme yüklenemedi. Yeniden denemek için sekmeyi yenileyin.",
   "languageError": "Bu çeviri yüklenemedi. Şimdilik İngilizce kullanılıyor.",
   "backgroundBlend": "Uyumlu",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Koyu arka plan",
   "showServiceIcons": "Hizmet simgelerini göster",
-  "serviceIconsHelp": "Bir bang yazarken Google’dan simgeleri alır. Arama terimleri veya çerezler olmadan sitenin adresini gönderir."
+  "serviceIconsHelp": "Tarayıcıda zaten kayıtlı site simgelerini kullanır. Hiçbir şey indirilmez. Açıldığında bunları okumak için izin istenir."
 }

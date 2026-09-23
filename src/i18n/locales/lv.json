@@ -25,7 +25,7 @@
   "custom": "Pielāgots…",
   "uiFamily": "Saskarnes fonts",
   "monoFamily": "Vienplatuma fonts",
-  "fontHelp": "Saskarnes fonts tiek izmantots tekstam un vadīklām, vienplatuma fonts — pulkstenim. Pielāgotajiem fontiem jābūt instalētiem šajā ierīcē.",
+  "fontHelp": "Saskarnes fonts tiek izmantots tekstam, vadīklām un pulkstenim, vienplatuma fonts — īsinājumtaustiņiem. Pielāgotajiem fontiem jābūt instalētiem šajā ierīcē.",
   "overrides": "Atsevišķu elementu fonti",
   "clock": "Pulkstenis",
   "date": "Datums",
@@ -37,14 +37,14 @@
   "searchFamily": "Meklēšanas fonts",
   "fontExample": "piem., {font}",
   "overrideHelp": "Noklusējuma opcija izmanto kopējo fontu. Trūkstošie fonti tiek aizstāti ar noklusējuma fontu.",
-  "privacy": "Saglabāts tikai šajā ierīcē. Bez izsekošanas un kontiem.",
+  "privacy": "Saglabāts pārlūka profilā. Bez izsekošanas un kontiem.",
   "storageError": "Krātuve nav pieejama. Izmaiņas būs spēkā līdz cilnes aizvēršanai.",
   "searchError": "Meklēšana nav pieejama. Izmantojiet pārlūka adreses joslu.",
   "settingsError": "Pielāgošanu neizdevās ielādēt. Pārlādējiet cilni, lai mēģinātu vēlreiz.",
   "languageError": "Tulkojumu neizdevās ielādēt. Pagaidām tiek izmantota angļu valoda.",
   "backgroundBlend": "Saskaņots",
   "backgroundHelium": "Helium",
-  "style": "Stils",
+  "darkBackground": "Tumšais fons",
   "showServiceIcons": "Rādīt pakalpojumu ikonas",
-  "serviceIconsHelp": "Ielādē ikonas no Google, kamēr rakstāt bang komandu. Nosūta vietnes adresi bez meklēšanas vārdiem vai sīkfailiem."
+  "serviceIconsHelp": "Izmanto pārlūkā jau saglabātās vietņu ikonas. Nekas netiek lejupielādēts. Ieslēdzot tiek prasīta atļauja tās lasīt."
 }

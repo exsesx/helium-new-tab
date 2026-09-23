@@ -1,0 +1,67 @@
+name: Refresh bangs
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+env:
+  HUSKY: "0"
+  BRANCH: chore/refresh-bang-catalog
+
+concurrency:
+  group: refresh-bangs
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "26"
+          check-latest: true
+          package-manager-cache: false
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - run: bun install --frozen-lockfile
+
+      - run: bun run bangs:refresh
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Pull requests opened with the workflow token do not trigger the Checks workflow.
+      - if: steps.changes.outputs.changed == 'true'
+        run: bun run check
+
+      - name: Open or update the refresh pull request
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git commit -am "chore: refresh the bang catalog"
+          git push --force origin "$BRANCH"
+
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            gh pr create --head "$BRANCH" --title "chore: refresh the bang catalog" \
+              --body "Automated weekly refresh from Helium's published bang catalog. The workflow ran \`bun run check\` on this commit. Review the catalog diff and the snapshot dates in THIRD_PARTY_NOTICES.md."
+          fi

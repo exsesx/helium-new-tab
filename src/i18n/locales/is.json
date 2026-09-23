@@ -25,7 +25,7 @@
   "custom": "Sérsniðið…",
   "uiFamily": "Letur viðmóts",
   "monoFamily": "Jafnbreitt letur",
-  "fontHelp": "Viðmótsletur er notað fyrir texta og stýringar, en jafnbreitt letur fyrir klukkuna. Sérsniðin letur þurfa að vera uppsett á þessu tæki.",
+  "fontHelp": "Viðmótsletur er notað fyrir texta, stýringar og klukkuna, en jafnbreitt letur fyrir flýtilykla. Sérsniðin letur þurfa að vera uppsett á þessu tæki.",
   "overrides": "Letur einstakra hluta",
   "clock": "Klukka",
   "date": "Dagsetning",
@@ -37,14 +37,14 @@
   "searchFamily": "Letur leitar",
   "fontExample": "t.d. {font}",
   "overrideHelp": "Sjálfgefið notar almenna letrið. Letur sem vantar er skipt út fyrir sjálfgefna letrið.",
-  "privacy": "Aðeins vistað á þessu tæki. Engin rakning eða aðgangar.",
+  "privacy": "Vistað í vafrasniðinu. Engin rakning eða aðgangar.",
   "storageError": "Geymsla er ekki tiltæk. Breytingar gilda þar til þessum flipa er lokað.",
   "searchError": "Leit er ekki tiltæk. Notaðu veffangastiku vafrans.",
   "settingsError": "Ekki tókst að hlaða sérsniðnum stillingum. Endurhladdu flipanum til að reyna aftur.",
   "languageError": "Ekki tókst að hlaða þýðingunni. Enska er notuð í bili.",
   "backgroundBlend": "Samræmdur",
   "backgroundHelium": "Helium",
-  "style": "Stíll",
+  "darkBackground": "Dökkur bakgrunnur",
   "showServiceIcons": "Sýna tákn þjónusta",
-  "serviceIconsHelp": "Sækir tákn frá Google á meðan þú skrifar bang. Sendir veffang síðunnar án leitarorða eða vafrakaka."
+  "serviceIconsHelp": "Notar tákn vefsvæða sem þegar eru vistuð í vafranum. Engu er hlaðið niður. Þegar kveikt er á þessu er beðið um heimild til að lesa þau."
 }

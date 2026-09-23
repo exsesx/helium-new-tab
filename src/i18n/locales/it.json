@@ -25,7 +25,7 @@
   "custom": "Personalizzato…",
   "uiFamily": "Carattere dell’interfaccia",
   "monoFamily": "Carattere monospazio",
-  "fontHelp": "Il carattere dell’interfaccia viene usato per testi e controlli. Quello monospazio viene usato per l’orologio. I caratteri personalizzati devono essere installati su questo dispositivo.",
+  "fontHelp": "Il carattere dell’interfaccia viene usato per testi, controlli e orologio. Quello monospazio viene usato per le scorciatoie da tastiera. I caratteri personalizzati devono essere installati su questo dispositivo.",
   "overrides": "Caratteri per componente",
   "clock": "Orologio",
   "date": "Data",
@@ -37,14 +37,14 @@
   "searchFamily": "Carattere della ricerca",
   "fontExample": "ad es. {font}",
   "overrideHelp": "Predefinito usa il carattere globale. I caratteri mancanti vengono sostituiti con quello predefinito.",
-  "privacy": "Salvato solo su questo dispositivo. Nessun tracciamento né account.",
+  "privacy": "Salvato nel profilo del browser. Nessun tracciamento né account.",
   "storageError": "L’archiviazione non è disponibile. Le modifiche dureranno fino alla chiusura di questa scheda.",
   "searchError": "La ricerca non è disponibile. Usa la barra degli indirizzi del browser.",
   "settingsError": "Impossibile caricare la personalizzazione. Ricarica la scheda per riprovare.",
   "languageError": "Impossibile caricare questa traduzione. Per ora verrà usato l’inglese.",
   "backgroundBlend": "Integrato",
   "backgroundHelium": "Helium",
-  "style": "Stile",
+  "darkBackground": "Sfondo scuro",
   "showServiceIcons": "Mostra le icone dei servizi",
-  "serviceIconsHelp": "Carica le icone da Google mentre digiti un bang. Invia l’indirizzo del sito, senza termini di ricerca o cookie."
+  "serviceIconsHelp": "Usa le icone dei siti già salvate nel browser. Non viene scaricato nulla. Attivandola viene chiesto il permesso di leggerle."
 }

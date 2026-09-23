@@ -1,5 +1,6 @@
 import { cp, mkdir, rm } from "node:fs/promises";
 import { languages } from "../src/i18n/languages.js";
+import { compactCatalog } from "../src/lib/bangs.js";
 
 export const root = new URL("../", import.meta.url).pathname;
 
@@ -24,14 +25,23 @@ export async function build() {
 
   await rm(`${root}dist`, { recursive: true, force: true });
   await mkdir(`${root}dist/locales`, { recursive: true });
+  await mkdir(`${root}dist/data`, { recursive: true });
 
-  for (const name of ["index.html", "manifest.json", "assets"]) {
+  for (const name of ["index.html", "assets"]) {
     await cp(`${root}src/${name}`, `${root}dist/${name}`, { recursive: true });
   }
 
   for (const name of ["LICENSE", "THIRD_PARTY_NOTICES.md", "PRIVACY.md", "licenses"]) {
     await cp(`${root}${name}`, `${root}dist/${name}`, { recursive: true });
   }
+
+  // package.json is the single source of the release version.
+  const { version } = await Bun.file(`${root}package.json`).json();
+  const manifest = await Bun.file(`${root}src/manifest.json`).json();
+  await Bun.write(
+    `${root}dist/manifest.json`,
+    `${JSON.stringify({ ...manifest, version }, null, 2)}\n`,
+  );
 
   // Keep authored images in src/assets; embed only the tab icons in the page head.
   let html = await Bun.file(`${root}src/index.html`).text();
@@ -43,7 +53,13 @@ export async function build() {
     const image = await Bun.file(`${root}src/assets/${name}`).arrayBuffer();
     const data = Buffer.from(image).toString("base64");
 
-    html = html.replace(`href="assets/${name}"`, `href="data:${type};base64,${data}"`);
+    const reference = `href="assets/${name}"`;
+
+    if (!html.includes(reference)) {
+      throw new Error(`index.html no longer references assets/${name}`);
+    }
+
+    html = html.replace(reference, `href="data:${type};base64,${data}"`);
   }
 
   await Bun.write(`${root}dist/index.html`, html);
@@ -52,8 +68,12 @@ export async function build() {
     await Bun.write(`${root}dist/locales/${language}.json`, JSON.stringify(messages));
   }
 
-  const startup = await Bun.build({
-    entrypoints: [`${root}src/theme.js`],
+  // JSON.parse on fetched data is faster than evaluating a megabyte-sized object literal.
+  const bangs = await Bun.file(`${root}src/data/bangs.json`).json();
+  await Bun.write(`${root}dist/data/bangs.json`, JSON.stringify(compactCatalog(bangs)));
+
+  const startup = await bundle({
+    entrypoints: [`${root}src/bootstrap.js`],
     target: "browser",
     format: "iife",
     minify: true,
@@ -64,42 +84,35 @@ export async function build() {
     },
   });
 
-  if (!startup.success) {
-    throw new AggregateError(startup.logs, "Startup build failed");
+  await Bun.write(`${root}dist/bootstrap.js`, startup.outputs[0]);
+
+  await bundle({
+    entrypoints: [`${root}src/app.js`],
+    outdir: `${root}dist/assets`,
+    target: "browser",
+    format: "esm",
+    splitting: true,
+    minify: true,
+    modulePreload: false,
+    // Entry names are referenced from index.html; chunk hashes keep split names unique.
+    naming: { entry: "[name].[ext]", chunk: "[name]-[hash].[ext]" },
+  });
+
+  await bundle({
+    entrypoints: [`${root}src/style.css`],
+    outdir: `${root}dist`,
+    minify: true,
+  });
+}
+
+async function bundle(options) {
+  const result = await Bun.build(options);
+
+  if (!result.success) {
+    throw new AggregateError(result.logs, "Build failed");
   }
 
-  await Bun.write(`${root}dist/theme.js`, startup.outputs[0]);
-
-  for (const args of [
-    [
-      "bun",
-      "build",
-      "src/app.js",
-      "--outdir",
-      "dist/assets",
-      "--target",
-      "browser",
-      "--format",
-      "esm",
-      "--splitting",
-      "--chunk-naming",
-      "[name].[ext]",
-      "--minify",
-      "--no-module-preload",
-    ],
-    ["bun", "build", "src/style.css", "--outdir", "dist", "--minify"],
-  ]) {
-    const task = Bun.spawn(args, {
-      cwd: root,
-      stdout: "inherit",
-      stderr: "inherit",
-      env: { ...process.env, NO_COLOR: "1" },
-    });
-
-    if ((await task.exited) !== 0) {
-      throw new Error(`Build failed: ${args[0]}`);
-    }
-  }
+  return result;
 }
 
 if (import.meta.main) {

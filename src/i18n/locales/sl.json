@@ -25,7 +25,7 @@
   "custom": "Po meri…",
   "uiFamily": "Pisava vmesnika",
   "monoFamily": "Enoširinska pisava",
-  "fontHelp": "Pisava vmesnika se uporablja za besedilo in kontrolnike, enoširinska pa za uro. Pisave po meri morajo biti nameščene v tej napravi.",
+  "fontHelp": "Pisava vmesnika se uporablja za besedilo, kontrolnike in uro, enoširinska pa za bližnjice na tipkovnici. Pisave po meri morajo biti nameščene v tej napravi.",
   "overrides": "Pisave posameznih elementov",
   "clock": "Ura",
   "date": "Datum",
@@ -37,14 +37,14 @@
   "searchFamily": "Pisava iskanja",
   "fontExample": "npr. {font}",
   "overrideHelp": "Privzeto uporablja splošno pisavo. Manjkajoče pisave se nadomestijo s privzeto.",
-  "privacy": "Shranjeno le v tej napravi. Brez sledenja in računov.",
+  "privacy": "Shranjeno v profilu brskalnika. Brez sledenja in računov.",
   "storageError": "Shramba ni na voljo. Spremembe veljajo do zaprtja tega zavihka.",
   "searchError": "Iskanje ni na voljo. Uporabite naslovno vrstico brskalnika.",
   "settingsError": "Prilagajanja ni bilo mogoče naložiti. Znova naložite zavihek in poskusite ponovno.",
   "languageError": "Prevoda ni bilo mogoče naložiti. Za zdaj se uporablja angleščina.",
   "backgroundBlend": "Usklajeno",
   "backgroundHelium": "Helium",
-  "style": "Slog",
+  "darkBackground": "Temno ozadje",
   "showServiceIcons": "Prikaži ikone storitev",
-  "serviceIconsHelp": "Med vnašanjem ukaza bang nalaga ikone iz Googla. Pošlje naslov spletnega mesta brez iskalnih izrazov ali piškotkov."
+  "serviceIconsHelp": "Uporablja ikone spletnih mest, ki so že shranjene v brskalniku. Nič se ne prenese. Ob vklopu se zahteva dovoljenje za njihovo branje."
 }

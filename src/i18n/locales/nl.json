@@ -25,7 +25,7 @@
   "custom": "Aangepast…",
   "uiFamily": "Lettertype voor interface",
   "monoFamily": "Monospace-lettertype",
-  "fontHelp": "De interface gebruikt dit lettertype voor tekst en bediening; de klok gebruikt monospace. Aangepaste lettertypen moeten op dit apparaat zijn geïnstalleerd.",
+  "fontHelp": "De interface gebruikt dit lettertype voor tekst, bediening en de klok; sneltoetsen gebruiken monospace. Aangepaste lettertypen moeten op dit apparaat zijn geïnstalleerd.",
   "overrides": "Lettertypen per onderdeel",
   "clock": "Klok",
   "date": "Datum",
@@ -37,14 +37,14 @@
   "searchFamily": "Lettertype voor zoeken",
   "fontExample": "bijv. {font}",
   "overrideHelp": "Standaard gebruikt het algemene lettertype. Ontbrekende lettertypen worden door het standaardlettertype vervangen.",
-  "privacy": "Alleen op dit apparaat opgeslagen. Geen tracking of accounts.",
+  "privacy": "Opgeslagen in je browserprofiel. Geen tracking of accounts.",
   "storageError": "Opslag is niet beschikbaar. Wijzigingen blijven geldig totdat dit tabblad sluit.",
   "searchError": "Zoeken is niet beschikbaar. Gebruik de adresbalk van de browser.",
   "settingsError": "Aanpassen kon niet worden geladen. Laad het tabblad opnieuw om het nogmaals te proberen.",
   "languageError": "Deze vertaling kon niet worden geladen. Voorlopig wordt Engels gebruikt.",
   "backgroundBlend": "Afgestemd",
   "backgroundHelium": "Helium",
-  "style": "Stijl",
+  "darkBackground": "Donkere achtergrond",
   "showServiceIcons": "Dienstpictogrammen tonen",
-  "serviceIconsHelp": "Haalt pictogrammen op bij Google terwijl je een bang typt. Verstuurt het adres van de website, zonder zoektermen of cookies."
+  "serviceIconsHelp": "Gebruikt websitepictogrammen die al in je browser zijn opgeslagen. Er wordt niets gedownload. Bij inschakelen wordt toestemming gevraagd om ze te lezen."
 }

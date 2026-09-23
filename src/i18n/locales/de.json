@@ -25,7 +25,7 @@
   "custom": "Benutzerdefiniert…",
   "uiFamily": "Schriftart der Oberfläche",
   "monoFamily": "Monospace-Schriftart",
-  "fontHelp": "Die Oberflächenschrift wird für Texte und Bedienelemente verwendet, die Monospace-Schrift für die Uhr. Eigene Schriftarten müssen auf diesem Gerät installiert sein.",
+  "fontHelp": "Die Oberflächenschrift wird für Texte, Bedienelemente und die Uhr verwendet, die Monospace-Schrift für Tastenkürzel. Eigene Schriftarten müssen auf diesem Gerät installiert sein.",
   "overrides": "Schriftarten pro Element",
   "clock": "Uhr",
   "date": "Datum",
@@ -37,14 +37,14 @@
   "searchFamily": "Schriftart der Suche",
   "fontExample": "z. B. {font}",
   "overrideHelp": "Standard verwendet die globale Schriftart. Fehlende Schriftarten werden durch die Standardschrift ersetzt.",
-  "privacy": "Nur auf diesem Gerät gespeichert. Ohne Tracking oder Konten.",
+  "privacy": "Im Browserprofil gespeichert. Ohne Tracking oder Konten.",
   "storageError": "Der Speicher ist nicht verfügbar. Änderungen gelten bis zum Schließen dieses Tabs.",
   "searchError": "Die Suche ist nicht verfügbar. Verwende die Adressleiste des Browsers.",
   "settingsError": "Die Anpassung konnte nicht geladen werden. Lade den Tab erneut, um es noch einmal zu versuchen.",
   "languageError": "Diese Übersetzung konnte nicht geladen werden. Vorerst wird Englisch verwendet.",
   "backgroundBlend": "Abgestimmt",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Dunkler Hintergrund",
   "showServiceIcons": "Dienstsymbole anzeigen",
-  "serviceIconsHelp": "Lädt beim Eingeben eines Bangs Symbole von Google. Sendet die Website-Adresse ohne Suchbegriffe oder Cookies."
+  "serviceIconsHelp": "Verwendet bereits im Browser gespeicherte Website-Symbole. Es wird nichts heruntergeladen. Beim Einschalten wird um die Berechtigung gebeten, sie zu lesen."
 }

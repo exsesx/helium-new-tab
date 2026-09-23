@@ -25,7 +25,7 @@
   "custom": "Brugerdefineret…",
   "uiFamily": "Skrifttype til grænseflade",
   "monoFamily": "Skrifttype med fast bredde",
-  "fontHelp": "Grænsefladens skrifttype bruges til tekst og kontrolelementer. Uret bruger fast bredde. Egne skrifttyper skal være installeret på enheden.",
+  "fontHelp": "Grænsefladens skrifttype bruges til tekst, kontrolelementer og uret. Tastaturgenveje bruger fast bredde. Egne skrifttyper skal være installeret på enheden.",
   "overrides": "Skrifttyper pr. element",
   "clock": "Ur",
   "date": "Dato",
@@ -37,14 +37,14 @@
   "searchFamily": "Søgefeltets skrifttype",
   "fontExample": "f.eks. {font}",
   "overrideHelp": "Standard bruger den globale skrifttype. Manglende skrifttyper erstattes med standardskrifttypen.",
-  "privacy": "Gemmes kun på denne enhed. Ingen sporing eller konti.",
+  "privacy": "Gemmes i browserprofilen. Ingen sporing eller konti.",
   "storageError": "Lagring er ikke tilgængelig. Ændringer gælder, indtil fanen lukkes.",
   "searchError": "Søgning er ikke tilgængelig. Brug browserens adresselinje.",
   "settingsError": "Tilpasning kunne ikke indlæses. Genindlæs fanen for at prøve igen.",
   "languageError": "Oversættelsen kunne ikke indlæses. Engelsk bruges indtil videre.",
   "backgroundBlend": "Tilpasset",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Mørk baggrund",
   "showServiceIcons": "Vis tjenesteikoner",
-  "serviceIconsHelp": "Henter ikoner fra Google, mens du skriver et bang. Sender webstedets adresse uden søgeord eller cookies."
+  "serviceIconsHelp": "Bruger webstedsikoner, der allerede er gemt i browseren. Intet hentes. Når du slår det til, bliver du bedt om tilladelse til at læse dem."
 }

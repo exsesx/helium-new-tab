@@ -1,6 +1,6 @@
 # Roadmap
 
-## 1.2
+## 1.3
 
 - Move bang-catalog downloads and cache writes into an extension service worker so
   searches and closed new tabs cannot interrupt updates.
@@ -11,5 +11,5 @@
 - Verify quick navigation, interrupted downloads, offline use, corrupt caches, and
   concurrent tabs in the installed extension before enabling automatic updates.
 
-Until then, the extension uses only its bundled catalog. Run `bun run bangs:refresh` before
-each release and commit the updated snapshot using the [release instructions](docs/releasing.md).
+Until then, the extension uses only its bundled catalog. A weekly workflow opens a pull request
+with catalog updates; see the [release instructions](docs/releasing.md).

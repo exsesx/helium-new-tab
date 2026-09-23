@@ -45,7 +45,6 @@ test("service changes clear stale icons, late loads cannot win, and failed icons
     images[0].onload();
 
     expect(hidden.has("is-hidden")).toBe(true);
-    expect(images[0].referrerPolicy).toBe("no-referrer");
 
     showIcon("https://example.com/github.png");
 
@@ -88,7 +87,7 @@ test("service changes clear stale icons, late loads cannot win, and failed icons
   }
 });
 
-test("extension images omit credentials without adding permissions", () => {
-  expect(manifest.cross_origin_embedder_policy.value).toBe("credentialless");
-  expect(manifest.permissions).toEqual(["search"]);
+test("service icons need only an optional favicon permission", () => {
+  expect(manifest.permissions).toEqual(["search", "storage"]);
+  expect(manifest.optional_permissions).toEqual(["favicon"]);
 });

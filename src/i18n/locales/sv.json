@@ -25,7 +25,7 @@
   "custom": "Eget…",
   "uiFamily": "Gränssnittets teckensnitt",
   "monoFamily": "Teckensnitt med fast bredd",
-  "fontHelp": "Gränssnittets teckensnitt används för text och kontroller. Klockan använder fast bredd. Egna teckensnitt måste vara installerade på enheten.",
+  "fontHelp": "Gränssnittets teckensnitt används för text, kontroller och klockan. Kortkommandon använder fast bredd. Egna teckensnitt måste vara installerade på enheten.",
   "overrides": "Teckensnitt per del",
   "clock": "Klocka",
   "date": "Datum",
@@ -37,14 +37,14 @@
   "searchFamily": "Sökfältets teckensnitt",
   "fontExample": "t.ex. {font}",
   "overrideHelp": "Standard följer det globala teckensnittet. Saknade teckensnitt ersätts med standardteckensnittet.",
-  "privacy": "Sparas bara på den här enheten. Ingen spårning, inga konton.",
+  "privacy": "Sparas i webbläsarprofilen. Ingen spårning, inga konton.",
   "storageError": "Lagring är inte tillgänglig. Ändringarna gäller tills fliken stängs.",
   "searchError": "Sökning är inte tillgänglig. Använd webbläsarens adressfält.",
   "settingsError": "Anpassning kunde inte laddas. Ladda om fliken för att försöka igen.",
   "languageError": "Översättningen kunde inte laddas. Engelska används tills vidare.",
   "backgroundBlend": "Anpassad",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Mörk bakgrund",
   "showServiceIcons": "Visa tjänsteikoner",
-  "serviceIconsHelp": "Hämtar ikoner från Google medan du skriver en bang. Skickar webbplatsens adress utan sökord eller kakor."
+  "serviceIconsHelp": "Använder webbplatsikoner som redan finns sparade i webbläsaren. Inget laddas ned. När du slår på det ombeds du ge behörighet att läsa dem."
 }

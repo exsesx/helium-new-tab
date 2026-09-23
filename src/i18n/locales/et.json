@@ -25,7 +25,7 @@
   "custom": "Kohandatud…",
   "uiFamily": "Liidese font",
   "monoFamily": "Püsisammfont",
-  "fontHelp": "Liidese fonti kasutatakse tekstis ja juhtelementides, püsisammfonti kellas. Kohandatud fondid peavad olema sellesse seadmesse installitud.",
+  "fontHelp": "Liidese fonti kasutatakse tekstis, juhtelementides ja kellas, püsisammfonti kiirklahvides. Kohandatud fondid peavad olema sellesse seadmesse installitud.",
   "overrides": "Elementide fondid",
   "clock": "Kell",
   "date": "Kuupäev",
@@ -37,14 +37,14 @@
   "searchFamily": "Otsingu font",
   "fontExample": "nt {font}",
   "overrideHelp": "Vaikimisi kasutatakse üldist fonti. Puuduvad fondid asendatakse vaikefondiga.",
-  "privacy": "Salvestatakse ainult sellesse seadmesse. Jälgimise ja kontodeta.",
+  "privacy": "Salvestatakse brauseri profiili. Jälgimise ja kontodeta.",
   "storageError": "Salvestusruum pole saadaval. Muudatused kehtivad vahekaardi sulgemiseni.",
   "searchError": "Otsing pole saadaval. Kasuta brauseri aadressiriba.",
   "settingsError": "Kohandamist ei saanud laadida. Proovi vahekaarti uuesti laadida.",
   "languageError": "Tõlget ei saanud laadida. Praegu kasutatakse inglise keelt.",
   "backgroundBlend": "Sobitatud",
   "backgroundHelium": "Helium",
-  "style": "Stiil",
+  "darkBackground": "Tume taust",
   "showServiceIcons": "Näita teenuste ikoone",
-  "serviceIconsHelp": "Laadib bangu sisestamisel ikoone Google’ist. Saadab veebisaidi aadressi ilma otsingusõnade ja küpsisteta."
+  "serviceIconsHelp": "Kasutab brauserisse juba salvestatud saitide ikoone. Midagi ei laadita alla. Sisselülitamisel küsitakse nende lugemiseks luba."
 }

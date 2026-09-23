@@ -25,7 +25,7 @@
   "custom": "Saincheaptha…",
   "uiFamily": "Cló an chomhéadain",
   "monoFamily": "Cló aonleithid",
-  "fontHelp": "Úsáidtear cló an chomhéadain don téacs agus do na rialtáin, agus cló aonleithid don chlog. Ní mór clónna saincheaptha a bheith suiteáilte ar an ngléas seo.",
+  "fontHelp": "Úsáidtear cló an chomhéadain don téacs, do na rialtáin agus don chlog, agus cló aonleithid d’aicearraí méarchláir. Ní mór clónna saincheaptha a bheith suiteáilte ar an ngléas seo.",
   "overrides": "Clónna de réir eiliminte",
   "clock": "Clog",
   "date": "Dáta",
@@ -37,14 +37,14 @@
   "searchFamily": "Cló an chuardaigh",
   "fontExample": "m.sh. {font}",
   "overrideHelp": "Úsáideann an rogha réamhshocraithe an cló ginearálta. Úsáidtear an cló réamhshocraithe má tá cló ar iarraidh.",
-  "privacy": "Sábháilte ar an ngléas seo amháin. Gan rianú ná cuntais.",
+  "privacy": "Sábháilte i bpróifíl an bhrabhsálaí. Gan rianú ná cuntais.",
   "storageError": "Níl stóráil ar fáil. Mairfidh na hathruithe go dtí go ndúnfar an cluaisín seo.",
   "searchError": "Níl cuardach ar fáil. Úsáid barra seoltaí an bhrabhsálaí.",
   "settingsError": "Níorbh fhéidir na socruithe a lódáil. Athlódáil an cluaisín chun triail eile a bhaint as.",
   "languageError": "Níorbh fhéidir an t-aistriúchán a lódáil. Úsáidfear Béarla go fóill.",
   "backgroundBlend": "Comhtháite",
   "backgroundHelium": "Helium",
-  "style": "Stíl",
+  "darkBackground": "Cúlra dorcha",
   "showServiceIcons": "Taispeáin deilbhíní seirbhísí",
-  "serviceIconsHelp": "Faigheann sé deilbhíní ó Google agus bang á chlóscríobh agat. Seolann sé seoladh an tsuímh, gan téarmaí cuardaigh ná fianáin."
+  "serviceIconsHelp": "Úsáideann sé deilbhíní suíomhanna atá sábháilte sa bhrabhsálaí cheana. Ní íoslódáiltear aon rud. Nuair a chasann tú air é, iarrtar cead iad a léamh."
 }

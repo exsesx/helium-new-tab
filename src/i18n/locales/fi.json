@@ -25,7 +25,7 @@
   "custom": "Oma…",
   "uiFamily": "Käyttöliittymän fontti",
   "monoFamily": "Tasalevyinen fontti",
-  "fontHelp": "Käyttöliittymän fonttia käytetään teksteissä ja säätimissä. Kello käyttää tasalevyistä fonttia. Omien fonttien on oltava asennettuina laitteeseen.",
+  "fontHelp": "Käyttöliittymän fonttia käytetään teksteissä, säätimissä ja kellossa. Pikanäppäimet käyttävät tasalevyistä fonttia. Omien fonttien on oltava asennettuina laitteeseen.",
   "overrides": "Elementtien omat fontit",
   "clock": "Kello",
   "date": "Päivämäärä",
@@ -37,14 +37,14 @@
   "searchFamily": "Hakukentän fontti",
   "fontExample": "esim. {font}",
   "overrideHelp": "Oletus käyttää yleistä fonttia. Puuttuvat fontit korvataan oletusfontilla.",
-  "privacy": "Tallennetaan vain tälle laitteelle. Ei seurantaa eikä tilejä.",
+  "privacy": "Tallennetaan selaimen profiiliin. Ei seurantaa eikä tilejä.",
   "storageError": "Tallennustila ei ole käytettävissä. Muutokset säilyvät välilehden sulkemiseen asti.",
   "searchError": "Haku ei ole käytettävissä. Käytä selaimen osoitepalkkia.",
   "settingsError": "Mukautusta ei voitu ladata. Yritä uudelleen lataamalla välilehti uudelleen.",
   "languageError": "Käännöstä ei voitu ladata. Toistaiseksi käytetään englantia.",
   "backgroundBlend": "Yhtenäinen",
   "backgroundHelium": "Helium",
-  "style": "Tyyli",
+  "darkBackground": "Tumma tausta",
   "showServiceIcons": "Näytä palveluiden kuvakkeet",
-  "serviceIconsHelp": "Lataa kuvakkeet Googlelta, kun kirjoitat bang-komentoa. Lähettää sivuston osoitteen ilman hakusanoja tai evästeitä."
+  "serviceIconsHelp": "Käyttää selaimeen jo tallennettuja sivustojen kuvakkeita. Mitään ei ladata. Käyttöön otettaessa pyydetään lupa lukea ne."
 }

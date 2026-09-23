@@ -25,7 +25,7 @@
   "custom": "Personalitzat…",
   "uiFamily": "Tipus de lletra de la interfície",
   "monoFamily": "Tipus de lletra monoespai",
-  "fontHelp": "El tipus de lletra de la interfície s’utilitza per als textos i controls; el monoespai, per al rellotge. Els tipus de lletra personalitzats han d’estar instal·lats en aquest dispositiu.",
+  "fontHelp": "El tipus de lletra de la interfície s’utilitza per als textos, els controls i el rellotge; el monoespai, per a les dreceres de teclat. Els tipus de lletra personalitzats han d’estar instal·lats en aquest dispositiu.",
   "overrides": "Tipus de lletra per element",
   "clock": "Rellotge",
   "date": "Data",
@@ -37,14 +37,14 @@
   "searchFamily": "Tipus de lletra de la cerca",
   "fontExample": "p. ex., {font}",
   "overrideHelp": "Per defecte utilitza el tipus de lletra global. Els tipus de lletra absents se substitueixen pel predeterminat.",
-  "privacy": "Desat només en aquest dispositiu. Sense seguiment ni comptes.",
+  "privacy": "Desat al perfil del navegador. Sense seguiment ni comptes.",
   "storageError": "L’emmagatzematge no està disponible. Els canvis duraran fins que es tanqui aquesta pestanya.",
   "searchError": "La cerca no està disponible. Fes servir la barra d’adreces del navegador.",
   "settingsError": "No s’ha pogut carregar la personalització. Torna a carregar la pestanya per provar-ho de nou.",
   "languageError": "No s’ha pogut carregar la traducció. De moment es farà servir l’anglès.",
   "backgroundBlend": "Integrat",
   "backgroundHelium": "Helium",
-  "style": "Estil",
+  "darkBackground": "Fons fosc",
   "showServiceIcons": "Mostra les icones dels serveis",
-  "serviceIconsHelp": "Carrega icones de Google mentre escrius un bang. Envia l'adreça del lloc, sense termes de cerca ni galetes."
+  "serviceIconsHelp": "Fa servir les icones dels llocs ja desades al navegador. No es baixa res. En activar-ho, es demana permís per llegir-les."
 }

@@ -25,7 +25,7 @@
   "custom": "Prilagođeno…",
   "uiFamily": "Font sučelja",
   "monoFamily": "Font fiksne širine",
-  "fontHelp": "Font sučelja koristi se za tekst i kontrole, a font fiksne širine za sat. Prilagođeni fontovi moraju biti instalirani na ovom uređaju.",
+  "fontHelp": "Font sučelja koristi se za tekst, kontrole i sat, a font fiksne širine za tipkovničke prečace. Prilagođeni fontovi moraju biti instalirani na ovom uređaju.",
   "overrides": "Fontovi pojedinih elemenata",
   "clock": "Sat",
   "date": "Datum",
@@ -37,14 +37,14 @@
   "searchFamily": "Font pretraživanja",
   "fontExample": "npr. {font}",
   "overrideHelp": "Zadano koristi opći font. Nedostupni fontovi zamjenjuju se zadanim.",
-  "privacy": "Sprema se samo na ovaj uređaj. Bez praćenja i računa.",
+  "privacy": "Sprema se u profil preglednika. Bez praćenja i računa.",
   "storageError": "Pohrana nije dostupna. Promjene vrijede do zatvaranja ove kartice.",
   "searchError": "Pretraživanje nije dostupno. Upotrijebite adresnu traku preglednika.",
   "settingsError": "Prilagodba se ne može učitati. Ponovno učitajte karticu i pokušajte opet.",
   "languageError": "Prijevod se ne može učitati. Zasad se koristi engleski.",
   "backgroundBlend": "Usklađena",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Tamna pozadina",
   "showServiceIcons": "Prikaži ikone servisa",
-  "serviceIconsHelp": "Dohvaća ikone s Googlea dok upisujete bang. Šalje adresu stranice bez pojmova za pretraživanje ili kolačića."
+  "serviceIconsHelp": "Koristi ikone web-mjesta već spremljene u pregledniku. Ništa se ne preuzima. Uključivanje traži dopuštenje za njihovo čitanje."
 }

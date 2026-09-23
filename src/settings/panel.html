@@ -41,7 +41,7 @@
   </div>
 
   <div class="setting">
-    <label for="background" data-i18n="style">Style</label>
+    <label for="background" data-i18n="darkBackground">Dark background</label>
     <span class="select-control">
       <select id="background">
         <option value="blend" data-i18n="backgroundBlend">Blended</option>
@@ -76,20 +76,22 @@
     <input id="show-date" type="checkbox" role="switch" />
   </div>
 
-  <div class="setting">
-    <label for="show-service-icons" data-i18n="showServiceIcons">Show service icons</label>
-    <input
-      id="show-service-icons"
-      type="checkbox"
-      role="switch"
-      aria-describedby="service-icons-help"
-    />
-  </div>
+  <div id="service-icons-setting">
+    <div class="setting">
+      <label for="show-service-icons" data-i18n="showServiceIcons">Show service icons</label>
+      <input
+        id="show-service-icons"
+        type="checkbox"
+        role="switch"
+        aria-describedby="service-icons-help"
+      />
+    </div>
 
-  <p id="service-icons-help" class="privacy-note" data-i18n="serviceIconsHelp">
-    Gets icons from Google while you type a bang. Sends the site's address, without search terms or
-    cookies.
-  </p>
+    <p id="service-icons-help" class="setting-help" data-i18n="serviceIconsHelp">
+      Uses site icons already saved in your browser. Nothing is downloaded. Turning this on asks for
+      permission to read them.
+    </p>
+  </div>
 
   <fieldset class="font-settings">
     <legend data-i18n="globalFonts">Global fonts</legend>
@@ -146,8 +148,8 @@
   </fieldset>
 
   <p id="font-help" class="font-note" data-i18n="fontHelp">
-    UI is used for text and controls. Mono is used for the clock. Custom fonts must be installed on
-    this device.
+    UI is used for text, controls, and the clock. Mono is used for keyboard shortcuts. Custom fonts
+    must be installed on this device.
   </p>
 
   <details class="font-overrides">
@@ -240,6 +242,6 @@
   </details>
 
   <p class="privacy-note" data-i18n="privacy">
-    Saved only on this device. No tracking, no accounts.
+    Saved in your browser profile. No tracking, no accounts.
   </p>
 </dialog>

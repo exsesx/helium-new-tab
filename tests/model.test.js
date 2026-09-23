@@ -1,42 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import {
-  readPreferences,
-  searchDestination,
-  websiteUrl,
-  fontFamily,
-  fonts,
-  resolvedFonts,
-} from "../src/lib/model.js";
-
-describe("shortcut URLs", () => {
-  test("normalizes ordinary sites and preserves explicit local HTTP", () => {
-    expect(websiteUrl(" example.com/docs ")).toBe("https://example.com/docs");
-    expect(websiteUrl("http://localhost:3000")).toBe("http://localhost:3000/");
-    expect(websiteUrl("localhost:3000")).toBe("https://localhost:3000/");
-  });
-
-  test("rejects executable URLs and embedded credentials", () => {
-    for (const input of [
-      "javascript:alert(1)",
-      "data:text/html,test",
-      "file:///tmp/test",
-      "https://user:pass@example.com",
-      "hello world",
-      "",
-    ]) {
-      expect(() => websiteUrl(input)).toThrow();
-    }
-  });
-});
-
-test("searches phrases and navigates URLs", () => {
-  expect(searchDestination("a quiet afternoon")).toEqual({ query: "a quiet afternoon" });
-  expect(searchDestination("example.com/docs")).toEqual({ url: "https://example.com/docs" });
-  expect(searchDestination("localhost:3000")).toEqual({ url: "https://localhost:3000/" });
-  expect(searchDestination("what is example.com")).toEqual({ query: "what is example.com" });
-  expect(searchDestination("javascript:alert(1)")).toEqual({ query: "javascript:alert(1)" });
-  expect(searchDestination("   ")).toEqual({ query: "" });
-});
+import { expect, test } from "bun:test";
+import { readPreferences, fontFamily, fonts, resolvedFonts } from "../src/lib/model.js";
 
 test("validates display and font preferences, ignoring legacy shortcuts", () => {
   const value = readPreferences({
@@ -56,7 +19,7 @@ test("validates display and font preferences, ignoring legacy shortcuts", () => 
   expect(value.showSeconds).toBe(true);
   expect(value.showDate).toBe(false);
   expect(value.showServiceIcons).toBe(false);
-  expect(readPreferences({ showServiceIcons: "false" }).showServiceIcons).toBe(true);
+  expect(readPreferences({ showServiceIcons: "true" }).showServiceIcons).toBe(false);
 
   expect(value.clockFont).toBe("mono");
   expect(value.dateFont).toBe("custom");
@@ -97,7 +60,7 @@ test("global fonts cascade unless a component overrides them", () => {
 
   const resolved = resolvedFonts(preferences);
 
-  expect(resolved.clock).toBe(resolved.mono);
+  expect(resolved.clock).toBe(resolved.interface);
   expect(resolved.date).toBe(resolved.interface);
   expect(resolved.search).toBe(resolved.interface);
 
@@ -112,6 +75,7 @@ test("global fonts cascade unless a component overrides them", () => {
 
   expect(resolvedFonts(preferences).date).toBe(resolvedFonts(preferences).interface);
 
+  preferences.clockFont = "mono";
   preferences.monoCustomFont = "";
 
   expect(resolvedFonts(preferences).clock).toBe(fonts.mono);

@@ -25,7 +25,7 @@
   "custom": "Personalizzata…",
   "uiFamily": "Font tal-interfaċċa",
   "monoFamily": "Font b’wisa’ fissa",
-  "fontHelp": "Il-font tal-interfaċċa tintuża għat-test u l-kontrolli, u dik b’wisa’ fissa għall-arloġġ. Fonts personalizzati jridu jkunu installati fuq dan it-tagħmir.",
+  "fontHelp": "Il-font tal-interfaċċa tintuża għat-test, il-kontrolli u l-arloġġ, u dik b’wisa’ fissa għall-shortcuts tat-tastiera. Fonts personalizzati jridu jkunu installati fuq dan it-tagħmir.",
   "overrides": "Fonts għal kull element",
   "clock": "Arloġġ",
   "date": "Data",
@@ -37,14 +37,14 @@
   "searchFamily": "Font tat-tfittxija",
   "fontExample": "eż. {font}",
   "overrideHelp": "Default tuża l-font ġenerali. Fonts neqsin jiġu sostitwiti bil-font default.",
-  "privacy": "Issejvjat biss fuq dan it-tagħmir. Mingħajr traċċar jew kontijiet.",
+  "privacy": "Issejvjat fil-profil tal-browser. Mingħajr traċċar jew kontijiet.",
   "storageError": "Il-ħażna mhix disponibbli. Il-bidliet jibqgħu sakemm tagħlaq din it-tab.",
   "searchError": "It-tfittxija mhix disponibbli. Uża l-bar tal-indirizz tal-browser.",
   "settingsError": "Ma setgħux jitgħabbew is-settings. Erġa’ tella’ t-tab biex terġa’ tipprova.",
   "languageError": "Ma setgħetx titgħabba t-traduzzjoni. Għalissa jintuża l-Ingliż.",
   "backgroundBlend": "Integrat",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Sfond skur",
   "showServiceIcons": "Uri l-ikoni tas-servizzi",
-  "serviceIconsHelp": "Iġib l-ikoni minn Google waqt li tittajpja bang. Jibgħat l-indirizz tas-sit, mingħajr kliem tat-tfittxija jew cookies."
+  "serviceIconsHelp": "Juża l-ikoni tas-siti diġà ssejvjati fil-browser. Xejn ma jitniżżel. Meta tixgħelha, tintalab permess biex jinqraw."
 }

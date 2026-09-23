@@ -25,7 +25,7 @@
   "custom": "Pasirinktinis…",
   "uiFamily": "Sąsajos šriftas",
   "monoFamily": "Vienodo pločio šriftas",
-  "fontHelp": "Sąsajos šriftas naudojamas tekstui ir valdikliams, vienodo pločio šriftas — laikrodžiui. Pasirinktiniai šriftai turi būti įdiegti šiame įrenginyje.",
+  "fontHelp": "Sąsajos šriftas naudojamas tekstui, valdikliams ir laikrodžiui, vienodo pločio šriftas — spartiesiems klavišams. Pasirinktiniai šriftai turi būti įdiegti šiame įrenginyje.",
   "overrides": "Atskirų elementų šriftai",
   "clock": "Laikrodis",
   "date": "Data",
@@ -37,14 +37,14 @@
   "searchFamily": "Paieškos šriftas",
   "fontExample": "pvz., {font}",
   "overrideHelp": "Numatytasis naudoja bendrąjį šriftą. Trūkstami šriftai pakeičiami numatytuoju.",
-  "privacy": "Įrašoma tik šiame įrenginyje. Be sekimo ir paskyrų.",
+  "privacy": "Įrašoma naršyklės profilyje. Be sekimo ir paskyrų.",
   "storageError": "Saugykla nepasiekiama. Pakeitimai galios iki šio skirtuko užvėrimo.",
   "searchError": "Paieška nepasiekiama. Naudokite naršyklės adreso juostą.",
   "settingsError": "Nepavyko įkelti tinkinimo. Bandykite iš naujo įkelti skirtuką.",
   "languageError": "Nepavyko įkelti vertimo. Kol kas naudojama anglų kalba.",
   "backgroundBlend": "Suderintas",
   "backgroundHelium": "Helium",
-  "style": "Stilius",
+  "darkBackground": "Tamsus fonas",
   "showServiceIcons": "Rodyti paslaugų piktogramas",
-  "serviceIconsHelp": "Rašant bang komandą, įkelia piktogramas iš „Google“. Siunčia svetainės adresą be paieškos žodžių ar slapukų."
+  "serviceIconsHelp": "Naudoja naršyklėje jau išsaugotas svetainių piktogramas. Niekas neatsisiunčiama. Įjungus prašoma leidimo jas skaityti."
 }

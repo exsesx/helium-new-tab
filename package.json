@@ -1,6 +1,6 @@
 {
   "name": "helium-new-tab",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -14,13 +14,24 @@
     "format:check": "oxfmt --check .",
     "check": "bun run lint && bun run format:check && bun test && bun run build",
     "test": "bun test",
+    "test:e2e": "playwright test",
     "prepare": "husky",
     "package": "bun run build && bun scripts/package.js"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "husky": "9.1.7",
-    "oxfmt": "^0.70.0",
-    "oxlint": "^1.85.0"
+    "lint-staged": "17.5.1",
+    "oxfmt": "0.70.0",
+    "oxlint": "1.85.0",
+    "tlds": "1.261.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "oxlint --deny-warnings",
+      "oxfmt"
+    ],
+    "*.{json,md,yml,yaml,css,html,toml}": "oxfmt"
   },
   "packageManager": "bun@1.4.2"
 }

@@ -25,7 +25,7 @@
   "custom": "Custom…",
   "uiFamily": "UI font family",
   "monoFamily": "Mono font family",
-  "fontHelp": "UI is used for text and controls. Mono is used for the clock. Custom fonts must be installed on this device.",
+  "fontHelp": "UI is used for text, controls, and the clock. Mono is used for keyboard shortcuts. Custom fonts must be installed on this device.",
   "overrides": "Component overrides",
   "clock": "Clock",
   "date": "Date",
@@ -37,14 +37,14 @@
   "searchFamily": "Search font family",
   "fontExample": "e.g. {font}",
   "overrideHelp": "Default follows your global font. Missing fonts use the default.",
-  "privacy": "Saved only on this device. No tracking, no accounts.",
+  "privacy": "Saved in your browser profile. No tracking, no accounts.",
   "storageError": "Storage is unavailable. Changes will last until this tab closes.",
   "searchError": "Search is unavailable. Try your browser’s address bar.",
   "settingsError": "Customize could not load. Reload this tab to try again.",
   "languageError": "This translation could not load. Using English for now.",
   "backgroundBlend": "Blended",
   "backgroundHelium": "Helium",
-  "style": "Style",
+  "darkBackground": "Dark background",
   "showServiceIcons": "Show service icons",
-  "serviceIconsHelp": "Gets icons from Google while you type a bang. Sends the site's address, without search terms or cookies."
+  "serviceIconsHelp": "Uses site icons already saved in your browser. Nothing is downloaded. Turning this on asks for permission to read them."
 }

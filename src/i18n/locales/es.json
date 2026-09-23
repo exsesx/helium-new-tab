@@ -25,7 +25,7 @@
   "custom": "Personalizada…",
   "uiFamily": "Fuente de la interfaz",
   "monoFamily": "Fuente monoespaciada",
-  "fontHelp": "La fuente de interfaz se usa en textos y controles. La monoespaciada se usa en el reloj. Las fuentes personalizadas deben estar instaladas en este dispositivo.",
+  "fontHelp": "La fuente de interfaz se usa en textos, controles y el reloj. La monoespaciada se usa en los atajos de teclado. Las fuentes personalizadas deben estar instaladas en este dispositivo.",
   "overrides": "Fuentes por componente",
   "clock": "Reloj",
   "date": "Fecha",
@@ -37,14 +37,14 @@
   "searchFamily": "Fuente de búsqueda",
   "fontExample": "p. ej., {font}",
   "overrideHelp": "La opción predeterminada usa la fuente global. Las fuentes no disponibles usan la predeterminada.",
-  "privacy": "Se guarda solo en este dispositivo. Sin seguimiento ni cuentas.",
+  "privacy": "Se guarda en el perfil del navegador. Sin seguimiento ni cuentas.",
   "storageError": "El almacenamiento no está disponible. Los cambios durarán hasta cerrar esta pestaña.",
   "searchError": "La búsqueda no está disponible. Usa la barra de direcciones del navegador.",
   "settingsError": "No se pudo cargar la personalización. Recarga la pestaña para intentarlo de nuevo.",
   "languageError": "No se pudo cargar esta traducción. Se usará inglés por ahora.",
   "backgroundBlend": "Integrado",
   "backgroundHelium": "Helium",
-  "style": "Estilo",
+  "darkBackground": "Fondo oscuro",
   "showServiceIcons": "Mostrar iconos de servicios",
-  "serviceIconsHelp": "Obtiene iconos de Google mientras escribes un bang. Envía la dirección del sitio, sin términos de búsqueda ni cookies."
+  "serviceIconsHelp": "Usa los iconos de sitios ya guardados en el navegador. No se descarga nada. Al activarlo, se pide permiso para leerlos."
 }

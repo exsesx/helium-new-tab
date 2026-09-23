@@ -46,7 +46,7 @@
       media="(prefers-color-scheme: dark)"
     />
 
-    <script src="theme.js" blocking="render"></script>
+    <script src="bootstrap.js"></script>
     <link rel="stylesheet" href="style.css" />
     <script type="module" src="assets/app.js"></script>
   </head>
@@ -70,15 +70,18 @@
               <path d="m16 16 4.5 4.5" />
             </svg>
           </span>
+          <span id="search-service" class="search-service" hidden></span>
           <input
             id="search"
             type="text"
             aria-label="Search or type a URL"
+            aria-describedby="search-service"
             data-i18n-label="searchPlaceholder"
             placeholder="Search or type a URL"
             data-i18n-placeholder="searchPlaceholder"
             spellcheck="false"
             autocapitalize="off"
+            enterkeyhint="search"
           />
           <button class="search-submit" type="submit" aria-label="Search" data-i18n-label="search">
             <svg
@@ -95,12 +98,8 @@
 
         <div class="clock-block" id="clock-block">
           <h1>
-            <time
-              id="clock"
-              aria-label="Current time"
-              data-i18n-label="currentTime"
-              dir="auto"
-            ></time>
+            <span class="visually-hidden" data-i18n="currentTime">Current time</span>
+            <time id="clock" dir="auto"></time>
           </h1>
           <p id="date" dir="auto"></p>
         </div>

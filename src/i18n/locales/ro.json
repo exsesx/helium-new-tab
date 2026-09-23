@@ -25,7 +25,7 @@
   "custom": "Personalizat…",
   "uiFamily": "Fontul interfeței",
   "monoFamily": "Font monospațiat",
-  "fontHelp": "Fontul interfeței este folosit pentru texte și comenzi, iar cel monospațiat pentru ceas. Fonturile personalizate trebuie să fie instalate pe acest dispozitiv.",
+  "fontHelp": "Fontul interfeței este folosit pentru texte, comenzi și ceas, iar cel monospațiat pentru comenzile rapide de la tastatură. Fonturile personalizate trebuie să fie instalate pe acest dispozitiv.",
   "overrides": "Fonturi pentru fiecare element",
   "clock": "Ceas",
   "date": "Dată",
@@ -37,14 +37,14 @@
   "searchFamily": "Fontul căutării",
   "fontExample": "de ex. {font}",
   "overrideHelp": "Implicit folosește fontul global. Fonturile lipsă sunt înlocuite cu cel implicit.",
-  "privacy": "Salvat doar pe acest dispozitiv. Fără urmărire sau conturi.",
+  "privacy": "Salvat în profilul browserului. Fără urmărire sau conturi.",
   "storageError": "Stocarea nu este disponibilă. Modificările se păstrează până la închiderea acestei file.",
   "searchError": "Căutarea nu este disponibilă. Folosește bara de adrese a browserului.",
   "settingsError": "Personalizarea nu s-a putut încărca. Reîncarcă fila pentru a încerca din nou.",
   "languageError": "Traducerea nu s-a putut încărca. Pentru moment se folosește engleza.",
   "backgroundBlend": "Asortat",
   "backgroundHelium": "Helium",
-  "style": "Stil",
+  "darkBackground": "Fundal întunecat",
   "showServiceIcons": "Afișează pictogramele serviciilor",
-  "serviceIconsHelp": "Încarcă pictograme de la Google în timp ce scrii un bang. Trimite adresa site-ului, fără termeni de căutare sau cookie-uri."
+  "serviceIconsHelp": "Folosește pictogramele site-urilor deja salvate în browser. Nu se descarcă nimic. La activare, se cere permisiunea de a le citi."
 }

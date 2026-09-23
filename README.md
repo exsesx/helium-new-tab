@@ -4,6 +4,8 @@ A minimal, unofficial new-tab extension inspired by [Helium's brand kit](https:/
 
 ## Install in Helium
 
+Requires Helium or another Chromium browser, version 117 or later.
+
 Download the ZIP from [Releases](https://github.com/exsesx/helium-new-tab/releases/latest),
 extract it, and load the extracted folder through **Load unpacked**. No Bun installation
 is needed for a release ZIP.
@@ -20,16 +22,20 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
 
 ## Features
 
-- Automatic light and dark appearance, with manual overrides and Blended or Helium styles.
+- Automatic light and dark appearance, with manual overrides and a Blended or Helium dark background.
 - Optional clock and date, with 12-hour or 24-hour time and optional seconds.
 - 37 interface languages, with localized dates and times.
 - Custom installed fonts for the interface, clock, date, and search field.
 - Search through the browser's default provider or navigate directly to a website.
-  Press `/` to focus search while the page has focus.
+  Bare names open only with a known top-level domain, so `example.com` opens a site while
+  `next.js` searches. Local names such as `localhost:3000`, `printer.local`, and IP
+  addresses open over HTTP. Press `/` to focus search while the page has focus.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
-- Preferences saved locally in the extension's browser profile.
-- No analytics, remote fonts, or external network requests on page load.
-  The only extension permission is `search`.
+- Preferences saved in the extension's browser profile and synced across devices when the
+  browser syncs extension data. Service icons stay a per-device choice.
+- No analytics, remote fonts, or external network requests.
+  Required permissions are `search` and `storage`, neither of which shows an install warning.
+  Service icons ask for the optional `favicon` permission when you turn them on.
 
 The favicon follows the browser's light or dark appearance. The page appearance can
 be overridden separately. Custom browser theme palettes are not detected automatically.
@@ -41,32 +47,33 @@ Aliases are case-insensitive. The catalog's format flags control query encoding 
 a bare bang opens the site's home page or its search URL. Bangs that require a hostname,
 such as `!rtfd`, fall back to ordinary search when no valid name is supplied.
 The first bang token is used; an unknown bang stays in the query sent to your default provider.
+A recognized bang shows the service's name before the query, like Helium's address bar keyword mode.
 Website addresses still open directly.
 
 The bundled catalog loads only when the input contains a bang. The extension does not download
-or cache catalog updates. Maintainers run `bun run bangs:refresh` before each release;
+or cache catalog updates. A weekly workflow opens a pull request with catalog updates;
 see [release instructions](docs/releasing.md). Service-worker updates are planned for
-[version 1.2](ROADMAP.md).
-Recognized bangs replace the search icon with the destination's favicon while you type.
-The image has a circular radius and fades in and out; reduced-motion settings disable the fade.
-The icon requests a 64-pixel image from Google's favicon service. Only the service origin
-is included, without search terms, cookies, or a referrer. Chromium's credentialless image
-policy removes cookies; no additional extension permission is needed.
-Turn off **Customize → Show service icons** to stop icon requests.
-Unknown bangs keep the search icon.
+[version 1.3](ROADMAP.md).
+Turn on **Customize → Show service icons** to replace the search icon with the destination's
+favicon while you type a recognized bang. Icons come from the browser's own favicon cache
+through the optional `favicon` permission, which the browser asks you to grant when you turn
+the setting on. Nothing is downloaded, and sites you have never visited keep the search icon.
+Removing the permission on the extensions page turns the setting off again.
+The image has rounded corners and fades in and out; reduced-motion settings disable the fade.
+Unknown bangs keep the search icon. The localhost preview cannot show service icons.
 Custom address-bar shortcuts are not included.
 The localhost preview supports the same local bangs and uses DuckDuckGo for ordinary searches.
 
 ## Development
 
-Use Bun 1.4.2 and Node 26 for development tooling. Run `bun install --frozen-lockfile`, then `bun run dev` and open http://127.0.0.1:4173. Installation also sets up the Husky pre-commit hook automatically. The dev command builds the extension and watches all of `src/` with one serialized rebuild pipeline. Refresh the preview after edits. Restart the dev command after editing build scripts.
+Use Bun 1.4.2 and Node 26 for development tooling. Run `bun install --frozen-lockfile`, then `bun run dev` and open http://127.0.0.1:4173. Installation also sets up the Husky pre-commit and pre-push hooks automatically. The dev command builds the extension and watches all of `src/` with one serialized rebuild pipeline. Refresh the preview after edits. Restart the dev command after editing build scripts.
 
 ```text
 src/                       # Everything that ships: edit here
   index.html               # New-tab page shell
   manifest.json            # Extension metadata and permissions
   app.js                   # Search, clock, preferences, language switching
-  theme.js                 # Synchronous appearance/font bootstrap
+  bootstrap.js             # Synchronous title, appearance and font startup
   style.css                # Page and settings styles
   assets/                  # Tab favicons, extension SVG and raster icon sizes
   lib/                     # Preferences, font, search and date/time logic
@@ -74,7 +81,8 @@ src/                       # Everything that ships: edit here
   i18n/                    # Language matching and translation loader
     locales/               # Editable JSON dictionaries
 scripts/                   # Bun build and preview/watch server
-tests/                     # Unit tests
+tests/                     # Unit and build tests
+e2e/                       # Playwright tests against the preview
 dist/                      # Entirely generated; do not edit
 ```
 
@@ -95,6 +103,10 @@ done
 - `bun run format` / `bun run format:check`: format source with Oxfmt or check it.
 - `bun test`: check routing, preferences, date/time, language resolution, translation coverage, loading failures, and language-switch races.
 - `bun run check`: lint, formatting, tests, and production build.
+- `bun run test:e2e`: drive the preview in Chromium with Playwright: theme painting,
+  settings persistence, language switching, keyboard focus, and search destinations.
+  Run `bun x playwright install chromium` once first, or point
+  `PLAYWRIGHT_CHROMIUM_EXECUTABLE` at an installed Chromium.
 
 ### Manual checks in Helium
 
@@ -116,11 +128,11 @@ The localhost preview uses DuckDuckGo and cannot verify native browser integrati
 languages and falls back to English. A manual choice updates the interface, tab title,
 and date and time formatting, and is saved on this device.
 
-Available languages: Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English,
-Estonian, Finnish, French, German, Greek, Hungarian, Irish, Italian, Latvian, Lithuanian,
-Maltese, Polish, Portuguese, Romanian, Slovak, Slovenian, Spanish, Swedish, Albanian,
-Bosnian, Icelandic, Macedonian, Norwegian Bokmål, Serbian (Latin), Turkish, Ukrainian,
-Simplified Chinese, Traditional Chinese, Japanese, and Korean.
+Available languages: Albanian, Bosnian, Bulgarian, Catalan, Croatian, Czech, Danish,
+Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Icelandic, Irish,
+Italian, Japanese, Korean, Latvian, Lithuanian, Macedonian, Maltese, Norwegian Bokmål,
+Polish, Portuguese, Romanian, Serbian (Latin), Simplified Chinese, Slovak, Slovenian,
+Spanish, Swedish, Traditional Chinese, Turkish, and Ukrainian.
 
 **Russian is intentionally excluded and must not be added.**
 
@@ -129,8 +141,8 @@ on the browser's built-in locale support and may fall back to another locale.
 
 ## Releases and contributing
 
-Use Conventional Commits. The local pre-commit hook runs lint, formatting, tests, and
-the build. GitHub Actions repeats these checks on pull requests and `main` pushes.
+Use Conventional Commits. The local pre-commit hook lints and formats staged files, and the
+pre-push hook runs lint, formatting, tests, and the build. GitHub Actions repeats these checks on pull requests and `main` pushes.
 Version tags create release ZIPs with checksums. Chrome Web Store upload and optional
 review submission use a separate manual workflow after account setup.
 See [release instructions](docs/releasing.md).

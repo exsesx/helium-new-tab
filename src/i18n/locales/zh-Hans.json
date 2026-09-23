@@ -25,7 +25,7 @@
   "custom": "自定义…",
   "uiFamily": "界面字体",
   "monoFamily": "等宽字体",
-  "fontHelp": "界面字体用于文字和控件，等宽字体用于时钟。自定义字体必须已安装在此设备上。",
+  "fontHelp": "界面字体用于文字、控件和时钟，等宽字体用于键盘快捷键。自定义字体必须已安装在此设备上。",
   "overrides": "单独设置组件字体",
   "clock": "时钟",
   "date": "日期",
@@ -37,14 +37,14 @@
   "searchFamily": "搜索框字体",
   "fontExample": "例如 {font}",
   "overrideHelp": "默认选项使用全局字体。缺失的字体会替换为默认字体。",
-  "privacy": "仅保存在此设备上。无跟踪，无账号。",
+  "privacy": "保存在浏览器配置文件中。无跟踪，无账号。",
   "storageError": "存储不可用。更改仅在关闭此标签页之前有效。",
   "searchError": "搜索不可用。请使用浏览器地址栏。",
   "settingsError": "无法加载自定义设置。请重新加载标签页后重试。",
   "languageError": "无法加载此翻译。暂时使用英语。",
   "backgroundBlend": "与浏览器融合",
   "backgroundHelium": "Helium",
-  "style": "样式",
+  "darkBackground": "深色背景",
   "showServiceIcons": "显示服务图标",
-  "serviceIconsHelp": "输入 bang 时从 Google 加载图标。仅发送网站地址，不发送搜索词或 Cookie。"
+  "serviceIconsHelp": "使用浏览器中已保存的网站图标，不会下载任何内容。开启时会请求读取这些图标的权限。"
 }

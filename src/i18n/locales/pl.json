@@ -25,7 +25,7 @@
   "custom": "Własna…",
   "uiFamily": "Czcionka interfejsu",
   "monoFamily": "Czcionka o stałej szerokości",
-  "fontHelp": "Czcionka interfejsu jest używana do tekstu i elementów sterujących, a czcionka o stałej szerokości — do zegara. Własne czcionki muszą być zainstalowane na tym urządzeniu.",
+  "fontHelp": "Czcionka interfejsu jest używana do tekstu, elementów sterujących i zegara, a czcionka o stałej szerokości — do skrótów klawiszowych. Własne czcionki muszą być zainstalowane na tym urządzeniu.",
   "overrides": "Czcionki poszczególnych elementów",
   "clock": "Zegar",
   "date": "Data",
@@ -37,14 +37,14 @@
   "searchFamily": "Czcionka wyszukiwarki",
   "fontExample": "np. {font}",
   "overrideHelp": "Domyślna używa czcionki ogólnej. Niedostępne czcionki są zastępowane domyślną.",
-  "privacy": "Zapis tylko na tym urządzeniu. Bez śledzenia i kont.",
+  "privacy": "Zapis w profilu przeglądarki. Bez śledzenia i kont.",
   "storageError": "Zapis jest niedostępny. Zmiany będą działać do zamknięcia tej karty.",
   "searchError": "Wyszukiwanie jest niedostępne. Użyj paska adresu przeglądarki.",
   "settingsError": "Nie udało się wczytać ustawień. Odśwież kartę, aby spróbować ponownie.",
   "languageError": "Nie udało się wczytać tłumaczenia. Tymczasowo używany jest angielski.",
   "backgroundBlend": "Dopasowane",
   "backgroundHelium": "Helium",
-  "style": "Styl",
+  "darkBackground": "Ciemne tło",
   "showServiceIcons": "Pokazuj ikony serwisów",
-  "serviceIconsHelp": "Pobiera ikony z Google podczas wpisywania banga. Wysyła adres witryny bez wyszukiwanych słów i plików cookie."
+  "serviceIconsHelp": "Używa ikon witryn zapisanych już w przeglądarce. Nic nie jest pobierane. Włączenie wymaga zgody na ich odczyt."
 }
