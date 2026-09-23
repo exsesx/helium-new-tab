@@ -25,7 +25,7 @@
   "custom": "Po meri…",
   "uiFamily": "Pisava vmesnika",
   "monoFamily": "Enoširinska pisava",
-  "fontHelp": "Pisava vmesnika se uporablja za besedilo in kontrolnike, enoširinska pa za uro. Pisave po meri morajo biti nameščene v tej napravi.",
+  "fontHelp": "Pisava vmesnika se uporablja za besedilo, kontrolnike in uro, enoširinska pa za bližnjice na tipkovnici. Pisave po meri morajo biti nameščene v tej napravi.",
   "overrides": "Pisave posameznih elementov",
   "clock": "Ura",
   "date": "Datum",

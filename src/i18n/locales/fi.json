@@ -25,7 +25,7 @@
   "custom": "Oma…",
   "uiFamily": "Käyttöliittymän fontti",
   "monoFamily": "Tasalevyinen fontti",
-  "fontHelp": "Käyttöliittymän fonttia käytetään teksteissä ja säätimissä. Kello käyttää tasalevyistä fonttia. Omien fonttien on oltava asennettuina laitteeseen.",
+  "fontHelp": "Käyttöliittymän fonttia käytetään teksteissä, säätimissä ja kellossa. Pikanäppäimet käyttävät tasalevyistä fonttia. Omien fonttien on oltava asennettuina laitteeseen.",
   "overrides": "Elementtien omat fontit",
   "clock": "Kello",
   "date": "Päivämäärä",

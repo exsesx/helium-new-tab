@@ -25,7 +25,7 @@
   "custom": "Eget…",
   "uiFamily": "Gränssnittets teckensnitt",
   "monoFamily": "Teckensnitt med fast bredd",
-  "fontHelp": "Gränssnittets teckensnitt används för text och kontroller. Klockan använder fast bredd. Egna teckensnitt måste vara installerade på enheten.",
+  "fontHelp": "Gränssnittets teckensnitt används för text, kontroller och klockan. Kortkommandon använder fast bredd. Egna teckensnitt måste vara installerade på enheten.",
   "overrides": "Teckensnitt per del",
   "clock": "Klocka",
   "date": "Datum",

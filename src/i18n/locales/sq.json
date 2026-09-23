@@ -25,7 +25,7 @@
   "custom": "Të personalizuara…",
   "uiFamily": "Shkronjat e ndërfaqes",
   "monoFamily": "Shkronjat me gjerësi fikse",
-  "fontHelp": "Shkronjat e ndërfaqes përdoren për tekstin dhe kontrollet; ato me gjerësi fikse për orën. Shkronjat e personalizuara duhet të jenë të instaluara në këtë pajisje.",
+  "fontHelp": "Shkronjat e ndërfaqes përdoren për tekstin, kontrollet dhe orën; ato me gjerësi fikse për shkurtoret e tastierës. Shkronjat e personalizuara duhet të jenë të instaluara në këtë pajisje.",
   "overrides": "Shkronjat sipas elementit",
   "clock": "Ora",
   "date": "Data",

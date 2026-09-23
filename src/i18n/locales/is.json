@@ -25,7 +25,7 @@
   "custom": "Sérsniðið…",
   "uiFamily": "Letur viðmóts",
   "monoFamily": "Jafnbreitt letur",
-  "fontHelp": "Viðmótsletur er notað fyrir texta og stýringar, en jafnbreitt letur fyrir klukkuna. Sérsniðin letur þurfa að vera uppsett á þessu tæki.",
+  "fontHelp": "Viðmótsletur er notað fyrir texta, stýringar og klukkuna, en jafnbreitt letur fyrir flýtilykla. Sérsniðin letur þurfa að vera uppsett á þessu tæki.",
   "overrides": "Letur einstakra hluta",
   "clock": "Klukka",
   "date": "Dagsetning",

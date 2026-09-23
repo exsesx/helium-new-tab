@@ -25,7 +25,7 @@
   "custom": "Benutzerdefiniert…",
   "uiFamily": "Schriftart der Oberfläche",
   "monoFamily": "Monospace-Schriftart",
-  "fontHelp": "Die Oberflächenschrift wird für Texte und Bedienelemente verwendet, die Monospace-Schrift für die Uhr. Eigene Schriftarten müssen auf diesem Gerät installiert sein.",
+  "fontHelp": "Die Oberflächenschrift wird für Texte, Bedienelemente und die Uhr verwendet, die Monospace-Schrift für Tastenkürzel. Eigene Schriftarten müssen auf diesem Gerät installiert sein.",
   "overrides": "Schriftarten pro Element",
   "clock": "Uhr",
   "date": "Datum",

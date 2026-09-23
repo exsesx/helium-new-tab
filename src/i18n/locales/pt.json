@@ -25,7 +25,7 @@
   "custom": "Personalizado…",
   "uiFamily": "Tipo de letra da interface",
   "monoFamily": "Tipo de letra monoespaçado",
-  "fontHelp": "A interface usa este tipo de letra para texto e controlos; o relógio usa o monoespaçado. Os tipos de letra personalizados devem estar instalados neste dispositivo.",
+  "fontHelp": "A interface usa este tipo de letra para texto, controlos e relógio; os atalhos de teclado usam o monoespaçado. Os tipos de letra personalizados devem estar instalados neste dispositivo.",
   "overrides": "Tipos de letra por elemento",
   "clock": "Relógio",
   "date": "Data",

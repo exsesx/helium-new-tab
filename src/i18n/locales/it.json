@@ -25,7 +25,7 @@
   "custom": "Personalizzato…",
   "uiFamily": "Carattere dell’interfaccia",
   "monoFamily": "Carattere monospazio",
-  "fontHelp": "Il carattere dell’interfaccia viene usato per testi e controlli. Quello monospazio viene usato per l’orologio. I caratteri personalizzati devono essere installati su questo dispositivo.",
+  "fontHelp": "Il carattere dell’interfaccia viene usato per testi, controlli e orologio. Quello monospazio viene usato per le scorciatoie da tastiera. I caratteri personalizzati devono essere installati su questo dispositivo.",
   "overrides": "Caratteri per componente",
   "clock": "Orologio",
   "date": "Data",

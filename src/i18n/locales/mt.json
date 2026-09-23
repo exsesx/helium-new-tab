@@ -25,7 +25,7 @@
   "custom": "Personalizzata…",
   "uiFamily": "Font tal-interfaċċa",
   "monoFamily": "Font b’wisa’ fissa",
-  "fontHelp": "Il-font tal-interfaċċa tintuża għat-test u l-kontrolli, u dik b’wisa’ fissa għall-arloġġ. Fonts personalizzati jridu jkunu installati fuq dan it-tagħmir.",
+  "fontHelp": "Il-font tal-interfaċċa tintuża għat-test, il-kontrolli u l-arloġġ, u dik b’wisa’ fissa għall-shortcuts tat-tastiera. Fonts personalizzati jridu jkunu installati fuq dan it-tagħmir.",
   "overrides": "Fonts għal kull element",
   "clock": "Arloġġ",
   "date": "Data",

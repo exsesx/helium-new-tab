@@ -25,7 +25,7 @@
   "custom": "Egendefinert…",
   "uiFamily": "Skrifttype for grensesnitt",
   "monoFamily": "Skrifttype med fast bredde",
-  "fontHelp": "Grensesnittets skrifttype brukes til tekst og kontroller. Klokken bruker fast bredde. Egne skrifttyper må være installert på enheten.",
+  "fontHelp": "Grensesnittets skrifttype brukes til tekst, kontroller og klokken. Hurtigtaster bruker fast bredde. Egne skrifttyper må være installert på enheten.",
   "overrides": "Skrifttyper per element",
   "clock": "Klokke",
   "date": "Dato",

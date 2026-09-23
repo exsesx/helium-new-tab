@@ -25,7 +25,7 @@
   "custom": "Personalizat…",
   "uiFamily": "Fontul interfeței",
   "monoFamily": "Font monospațiat",
-  "fontHelp": "Fontul interfeței este folosit pentru texte și comenzi, iar cel monospațiat pentru ceas. Fonturile personalizate trebuie să fie instalate pe acest dispozitiv.",
+  "fontHelp": "Fontul interfeței este folosit pentru texte, comenzi și ceas, iar cel monospațiat pentru comenzile rapide de la tastatură. Fonturile personalizate trebuie să fie instalate pe acest dispozitiv.",
   "overrides": "Fonturi pentru fiecare element",
   "clock": "Ceas",
   "date": "Dată",

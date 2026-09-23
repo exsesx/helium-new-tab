@@ -25,7 +25,7 @@
   "custom": "Pielāgots…",
   "uiFamily": "Saskarnes fonts",
   "monoFamily": "Vienplatuma fonts",
-  "fontHelp": "Saskarnes fonts tiek izmantots tekstam un vadīklām, vienplatuma fonts — pulkstenim. Pielāgotajiem fontiem jābūt instalētiem šajā ierīcē.",
+  "fontHelp": "Saskarnes fonts tiek izmantots tekstam, vadīklām un pulkstenim, vienplatuma fonts — īsinājumtaustiņiem. Pielāgotajiem fontiem jābūt instalētiem šajā ierīcē.",
   "overrides": "Atsevišķu elementu fonti",
   "clock": "Pulkstenis",
   "date": "Datums",

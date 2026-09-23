@@ -25,7 +25,7 @@
   "custom": "Özel…",
   "uiFamily": "Arayüz yazı tipi",
   "monoFamily": "Eş aralıklı yazı tipi",
-  "fontHelp": "Arayüz yazı tipi metin ve denetimlerde, eş aralıklı yazı tipi ise saatte kullanılır. Özel yazı tiplerinin bu cihazda yüklü olması gerekir.",
+  "fontHelp": "Arayüz yazı tipi metin, denetimler ve saatte, eş aralıklı yazı tipi ise klavye kısayollarında kullanılır. Özel yazı tiplerinin bu cihazda yüklü olması gerekir.",
   "overrides": "Öğelere özel yazı tipleri",
   "clock": "Saat",
   "date": "Tarih",

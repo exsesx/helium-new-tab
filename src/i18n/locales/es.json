@@ -25,7 +25,7 @@
   "custom": "Personalizada…",
   "uiFamily": "Fuente de la interfaz",
   "monoFamily": "Fuente monoespaciada",
-  "fontHelp": "La fuente de interfaz se usa en textos y controles. La monoespaciada se usa en el reloj. Las fuentes personalizadas deben estar instaladas en este dispositivo.",
+  "fontHelp": "La fuente de interfaz se usa en textos, controles y el reloj. La monoespaciada se usa en los atajos de teclado. Las fuentes personalizadas deben estar instaladas en este dispositivo.",
   "overrides": "Fuentes por componente",
   "clock": "Reloj",
   "date": "Fecha",

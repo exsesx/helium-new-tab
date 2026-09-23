@@ -25,7 +25,7 @@
   "custom": "Personalitzat…",
   "uiFamily": "Tipus de lletra de la interfície",
   "monoFamily": "Tipus de lletra monoespai",
-  "fontHelp": "El tipus de lletra de la interfície s’utilitza per als textos i controls; el monoespai, per al rellotge. Els tipus de lletra personalitzats han d’estar instal·lats en aquest dispositiu.",
+  "fontHelp": "El tipus de lletra de la interfície s’utilitza per als textos, els controls i el rellotge; el monoespai, per a les dreceres de teclat. Els tipus de lletra personalitzats han d’estar instal·lats en aquest dispositiu.",
   "overrides": "Tipus de lletra per element",
   "clock": "Rellotge",
   "date": "Data",

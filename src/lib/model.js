@@ -148,17 +148,13 @@ export function resolvedFonts(preferences) {
       : fonts.mono;
   const result = { interface: ui, mono };
 
+  // Components default to the UI font. The clock's tabular numbers keep it steady without Mono.
   for (const key of ["clock", "date", "search"]) {
-    const fallback = key === "clock" ? mono : ui;
     const choice = preferences[`${key}Font`];
 
     switch (choice) {
       case "custom":
-        result[key] = fontFamily(preferences[`${key}CustomFont`], fallback);
-        break;
-
-      case "ui":
-        result[key] = ui;
+        result[key] = fontFamily(preferences[`${key}CustomFont`], ui);
         break;
 
       case "mono":
@@ -166,7 +162,7 @@ export function resolvedFonts(preferences) {
         break;
 
       default:
-        result[key] = fallback;
+        result[key] = ui;
     }
   }
 

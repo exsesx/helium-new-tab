@@ -25,7 +25,7 @@
   "custom": "Brugerdefineret…",
   "uiFamily": "Skrifttype til grænseflade",
   "monoFamily": "Skrifttype med fast bredde",
-  "fontHelp": "Grænsefladens skrifttype bruges til tekst og kontrolelementer. Uret bruger fast bredde. Egne skrifttyper skal være installeret på enheden.",
+  "fontHelp": "Grænsefladens skrifttype bruges til tekst, kontrolelementer og uret. Tastaturgenveje bruger fast bredde. Egne skrifttyper skal være installeret på enheden.",
   "overrides": "Skrifttyper pr. element",
   "clock": "Ur",
   "date": "Dato",

@@ -25,7 +25,7 @@
   "custom": "Własna…",
   "uiFamily": "Czcionka interfejsu",
   "monoFamily": "Czcionka o stałej szerokości",
-  "fontHelp": "Czcionka interfejsu jest używana do tekstu i elementów sterujących, a czcionka o stałej szerokości — do zegara. Własne czcionki muszą być zainstalowane na tym urządzeniu.",
+  "fontHelp": "Czcionka interfejsu jest używana do tekstu, elementów sterujących i zegara, a czcionka o stałej szerokości — do skrótów klawiszowych. Własne czcionki muszą być zainstalowane na tym urządzeniu.",
   "overrides": "Czcionki poszczególnych elementów",
   "clock": "Zegar",
   "date": "Data",

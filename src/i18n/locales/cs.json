@@ -25,7 +25,7 @@
   "custom": "Vlastní…",
   "uiFamily": "Písmo rozhraní",
   "monoFamily": "Neproporcionální písmo",
-  "fontHelp": "Písmo rozhraní se používá pro text a ovládací prvky, neproporcionální písmo pro hodiny. Vlastní písma musí být nainstalovaná v tomto zařízení.",
+  "fontHelp": "Písmo rozhraní se používá pro text, ovládací prvky a hodiny, neproporcionální písmo pro klávesové zkratky. Vlastní písma musí být nainstalovaná v tomto zařízení.",
   "overrides": "Písma jednotlivých prvků",
   "clock": "Hodiny",
   "date": "Datum",

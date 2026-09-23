@@ -60,7 +60,7 @@ test("global fonts cascade unless a component overrides them", () => {
 
   const resolved = resolvedFonts(preferences);
 
-  expect(resolved.clock).toBe(resolved.mono);
+  expect(resolved.clock).toBe(resolved.interface);
   expect(resolved.date).toBe(resolved.interface);
   expect(resolved.search).toBe(resolved.interface);
 
@@ -75,6 +75,7 @@ test("global fonts cascade unless a component overrides them", () => {
 
   expect(resolvedFonts(preferences).date).toBe(resolvedFonts(preferences).interface);
 
+  preferences.clockFont = "mono";
   preferences.monoCustomFont = "";
 
   expect(resolvedFonts(preferences).clock).toBe(fonts.mono);

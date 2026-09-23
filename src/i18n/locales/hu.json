@@ -25,7 +25,7 @@
   "custom": "Egyéni…",
   "uiFamily": "Felület betűtípusa",
   "monoFamily": "Fix szélességű betűtípus",
-  "fontHelp": "A felület betűtípusa a szövegekhez és vezérlőkhöz, a fix szélességű az órához használatos. Az egyéni betűtípusokat telepíteni kell erre az eszközre.",
+  "fontHelp": "A felület betűtípusa a szövegekhez, vezérlőkhöz és az órához, a fix szélességű a billentyűparancsokhoz használatos. Az egyéni betűtípusokat telepíteni kell erre az eszközre.",
   "overrides": "Elemenkénti betűtípusok",
   "clock": "Óra",
   "date": "Dátum",

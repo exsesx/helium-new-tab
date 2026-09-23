@@ -25,7 +25,7 @@
   "custom": "Prilagođeno…",
   "uiFamily": "Font interfejsa",
   "monoFamily": "Font fiksne širine",
-  "fontHelp": "Font interfejsa koristi se za tekst i kontrole, a font fiksne širine za sat. Prilagođeni fontovi moraju biti instalirani na ovom uređaju.",
+  "fontHelp": "Font interfejsa koristi se za tekst, kontrole i sat, a font fiksne širine za prečice na tastaturi. Prilagođeni fontovi moraju biti instalirani na ovom uređaju.",
   "overrides": "Fontovi pojedinačnih elemenata",
   "clock": "Sat",
   "date": "Datum",

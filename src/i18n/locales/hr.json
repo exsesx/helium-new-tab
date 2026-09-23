@@ -25,7 +25,7 @@
   "custom": "Prilagođeno…",
   "uiFamily": "Font sučelja",
   "monoFamily": "Font fiksne širine",
-  "fontHelp": "Font sučelja koristi se za tekst i kontrole, a font fiksne širine za sat. Prilagođeni fontovi moraju biti instalirani na ovom uređaju.",
+  "fontHelp": "Font sučelja koristi se za tekst, kontrole i sat, a font fiksne širine za tipkovničke prečace. Prilagođeni fontovi moraju biti instalirani na ovom uređaju.",
   "overrides": "Fontovi pojedinih elemenata",
   "clock": "Sat",
   "date": "Datum",

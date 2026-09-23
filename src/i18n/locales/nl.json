@@ -25,7 +25,7 @@
   "custom": "Aangepast…",
   "uiFamily": "Lettertype voor interface",
   "monoFamily": "Monospace-lettertype",
-  "fontHelp": "De interface gebruikt dit lettertype voor tekst en bediening; de klok gebruikt monospace. Aangepaste lettertypen moeten op dit apparaat zijn geïnstalleerd.",
+  "fontHelp": "De interface gebruikt dit lettertype voor tekst, bediening en de klok; sneltoetsen gebruiken monospace. Aangepaste lettertypen moeten op dit apparaat zijn geïnstalleerd.",
   "overrides": "Lettertypen per onderdeel",
   "clock": "Klok",
   "date": "Datum",

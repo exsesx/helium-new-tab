@@ -25,7 +25,7 @@
   "custom": "Custom…",
   "uiFamily": "UI font family",
   "monoFamily": "Mono font family",
-  "fontHelp": "UI is used for text and controls. Mono is used for the clock. Custom fonts must be installed on this device.",
+  "fontHelp": "UI is used for text, controls, and the clock. Mono is used for keyboard shortcuts. Custom fonts must be installed on this device.",
   "overrides": "Component overrides",
   "clock": "Clock",
   "date": "Date",

@@ -25,7 +25,7 @@
   "custom": "Personnalisée…",
   "uiFamily": "Police de l’interface",
   "monoFamily": "Police à chasse fixe",
-  "fontHelp": "La police d’interface est utilisée pour les textes et les commandes. La police à chasse fixe est utilisée pour l’horloge. Les polices personnalisées doivent être installées sur cet appareil.",
+  "fontHelp": "La police d’interface est utilisée pour les textes, les commandes et l’horloge. La police à chasse fixe est utilisée pour les raccourcis clavier. Les polices personnalisées doivent être installées sur cet appareil.",
   "overrides": "Polices par élément",
   "clock": "Horloge",
   "date": "Date",
