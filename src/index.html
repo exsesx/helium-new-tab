@@ -74,6 +74,7 @@
             data-i18n-placeholder="searchPlaceholder"
             spellcheck="false"
             autocapitalize="off"
+            enterkeyhint="search"
           />
           <button class="search-submit" type="submit" aria-label="Search" data-i18n-label="search">
             <svg
@@ -90,12 +91,8 @@
 
         <div class="clock-block" id="clock-block">
           <h1>
-            <time
-              id="clock"
-              aria-label="Current time"
-              data-i18n-label="currentTime"
-              dir="auto"
-            ></time>
+            <span class="visually-hidden" data-i18n="currentTime">Current time</span>
+            <time id="clock" dir="auto"></time>
           </h1>
           <p id="date" dir="auto"></p>
         </div>
