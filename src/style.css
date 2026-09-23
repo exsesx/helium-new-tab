@@ -546,6 +546,11 @@ input[type="checkbox"]:checked:before {
 }
 
 @media (pointer: coarse) {
+  /* Touch screens usually have no keyboard for the "/" shortcut; keep the footer layout. */
+  .keyboard-hint {
+    visibility: hidden;
+  }
+
   .settings-button,
   .close-button {
     min-height: 44px;
