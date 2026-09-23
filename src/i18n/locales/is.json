@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stíll",
   "showServiceIcons": "Sýna tákn þjónusta",
-  "serviceIconsHelp": "Sækir tákn frá Google á meðan þú skrifar bang. Sendir veffang síðunnar án leitarorða eða vafrakaka."
+  "serviceIconsHelp": "Notar tákn vefsvæða sem þegar eru vistuð í vafranum. Engu er hlaðið niður. Þegar kveikt er á þessu er beðið um heimild til að lesa þau."
 }

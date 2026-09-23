@@ -5,20 +5,13 @@ import { compactCatalog, createBangResolver } from "../src/lib/bangs.js";
 
 const resolveBang = createBangResolver(catalog);
 
-test("favicon previews use only a recognized service origin, never query terms", () => {
-  const youtube = new URL(resolveBang("!yt private query").favicon);
-  expect(youtube.origin).toBe("https://www.google.com");
-  expect([...youtube.searchParams]).toEqual([
-    ["domain_url", "https://www.youtube.com"],
-    ["sz", "64"],
-  ]);
-  expect(resolveBang("private query !YouTube").favicon).toBe(youtube.href);
-  expect(new URL(resolveBang("!gh private query").favicon).searchParams.get("domain_url")).toBe(
-    "https://github.com",
-  );
+test("service icons use only a recognized site origin, never query terms", () => {
+  expect(resolveBang("!yt private query").siteOrigin).toBe("https://www.youtube.com");
+  expect(resolveBang("private query !YouTube").siteOrigin).toBe("https://www.youtube.com");
+  expect(resolveBang("!gh private query").siteOrigin).toBe("https://github.com");
   expect(resolveBang("!unknown-bang-8294 query")).toBeNull();
   expect(resolveBang("plain query")).toBeNull();
-  expect(resolveBang("!rtfd private-query").favicon).toBe("");
+  expect(resolveBang("!rtfd private-query").siteOrigin).toBe("");
 });
 
 test("resolves YouTube bangs locally at the start, middle, or end", async () => {
@@ -87,7 +80,7 @@ test("unknown bangs, punctuation and ordinary searches keep the default provider
 test("hostname bangs navigate valid names and fall back for invalid names", async () => {
   expect(await resolveSearchDestination("!rtfd example")).toMatchObject({
     url: "https://example.rtfd.io/",
-    favicon: "",
+    siteOrigin: "",
   });
 
   for (const query of ["!rtfd", "!rtfd two words", "!rtfd .", "!dauser", "!wpblog", "!hypestat"]) {

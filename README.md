@@ -32,8 +32,9 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   addresses open over HTTP. Press `/` to focus search while the page has focus.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
 - Preferences saved locally in the extension's browser profile.
-- No analytics, remote fonts, or external network requests on page load.
-  The only extension permission is `search`.
+- No analytics, remote fonts, or external network requests.
+  The only required extension permission is `search`; service icons ask for the optional
+  `favicon` permission when you turn them on.
 
 The favicon follows the browser's light or dark appearance. The page appearance can
 be overridden separately. Custom browser theme palettes are not detected automatically.
@@ -51,13 +52,13 @@ The bundled catalog loads only when the input contains a bang. The extension doe
 or cache catalog updates. Maintainers run `bun run bangs:refresh` before each release;
 see [release instructions](docs/releasing.md). Service-worker updates are planned for
 [version 1.2](ROADMAP.md).
-Recognized bangs replace the search icon with the destination's favicon while you type.
+Turn on **Customize → Show service icons** to replace the search icon with the destination's
+favicon while you type a recognized bang. Icons come from the browser's own favicon cache
+through the optional `favicon` permission, which the browser asks you to grant when you turn
+the setting on. Nothing is downloaded, and sites you have never visited show a generic icon.
+Removing the permission on the extensions page turns the setting off again.
 The image has a circular radius and fades in and out; reduced-motion settings disable the fade.
-The icon requests a 64-pixel image from Google's favicon service. Only the service origin
-is included, without search terms, cookies, or a referrer. Chromium's credentialless image
-policy removes cookies; no additional extension permission is needed.
-Turn off **Customize → Show service icons** to stop icon requests.
-Unknown bangs keep the search icon.
+Unknown bangs keep the search icon. The localhost preview cannot show service icons.
 Custom address-bar shortcuts are not included.
 The localhost preview supports the same local bangs and uses DuckDuckGo for ordinary searches.
 

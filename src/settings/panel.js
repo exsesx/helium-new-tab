@@ -1,4 +1,5 @@
 import markup from "./panel.html" with { type: "text" };
+import { serviceIconsSupported } from "../lib/service-icons.js";
 
 export function createSettings({ getPreferences, onChange, translator, languages }) {
   const template = document.createElement("template");
@@ -6,6 +7,11 @@ export function createSettings({ getPreferences, onChange, translator, languages
 
   const dialog = template.content.querySelector("dialog");
   const find = (id) => dialog.querySelector(`#${id}`);
+
+  // The preview has no favicon permission, so it cannot show service icons.
+  if (!serviceIconsSupported()) {
+    find("service-icons-setting").hidden = true;
+  }
 
   for (const [code, name] of Object.entries(languages)) {
     find("language").add(new Option(name, code));
@@ -45,11 +51,12 @@ export function createSettings({ getPreferences, onChange, translator, languages
   }
 
   for (const [id, key] of fields) {
-    find(id).addEventListener("change", (event) => {
+    find(id).addEventListener("change", async (event) => {
       const field = event.target;
       const value = field.type === "checkbox" ? field.checked : field.value;
 
-      onChange(key, value);
+      // Some changes wait for a permission prompt and may be declined.
+      await onChange(key, value);
       sync();
     });
   }

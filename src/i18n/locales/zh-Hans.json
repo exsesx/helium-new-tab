@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "样式",
   "showServiceIcons": "显示服务图标",
-  "serviceIconsHelp": "输入 bang 时从 Google 加载图标。仅发送网站地址，不发送搜索词或 Cookie。"
+  "serviceIconsHelp": "使用浏览器中已保存的网站图标，不会下载任何内容。开启时会请求读取这些图标的权限。"
 }

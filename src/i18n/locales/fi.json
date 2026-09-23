@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Tyyli",
   "showServiceIcons": "Näytä palveluiden kuvakkeet",
-  "serviceIconsHelp": "Lataa kuvakkeet Googlelta, kun kirjoitat bang-komentoa. Lähettää sivuston osoitteen ilman hakusanoja tai evästeitä."
+  "serviceIconsHelp": "Käyttää selaimeen jo tallennettuja sivustojen kuvakkeita. Mitään ei ladata. Käyttöön otettaessa pyydetään lupa lukea ne."
 }

@@ -4,16 +4,14 @@ Helium New Tab stores appearance, language, clock, font, and service-icon prefer
 storage within your browser profile. It has no account, analytics, advertising,
 telemetry, or backend. It does not collect or transmit browsing history.
 
-Opening a new tab makes no external network requests. Translations, images, scripts,
+The extension makes no external network requests. Translations, images, scripts,
 and styles ship in the extension; custom fonts must already be installed on your device.
 
-Typing a recognized bang requests a 64-pixel icon from Google's favicon service.
-This sends the destination's origin, such as `https://www.youtube.com`, to Google
-before you submit the search. It sends no search terms, cookies, or referrer.
-The extension uses Chromium's credentialless image policy to omit cookies.
-Google still receives ordinary connection information such as your IP address.
-Turn off **Customize → Show service icons** to stop these requests. Bangs with
-query-dependent hostnames do not request an icon.
+**Customize → Show service icons** is off by default. Turning it on asks for the optional
+`favicon` permission, which lets the extension read site icons your browser has already
+saved. While you type a recognized bang, the extension looks up the destination's icon in
+that local cache. No icon service or website receives a request. Bangs with query-dependent
+hostnames show no icon.
 
 The bang catalog ships with the extension. Maintainers update this snapshot manually
 with extension releases. The extension does not download or cache bang catalogs.

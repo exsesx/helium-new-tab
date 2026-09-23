@@ -68,10 +68,8 @@ export function createBangResolver(catalog) {
 
       return {
         url: url.href,
-        // Never send query-derived hostnames while the user is still typing.
-        favicon: dynamicHost
-          ? ""
-          : `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(template.origin)}&sz=64`,
+        // Query-derived hostnames never get an icon while the user is still typing.
+        siteOrigin: dynamicHost ? "" : template.origin,
       };
     } catch {
       // Some bangs put the query in a hostname, where spaces are invalid.

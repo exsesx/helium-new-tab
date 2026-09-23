@@ -19,7 +19,7 @@ test("validates display and font preferences, ignoring legacy shortcuts", () => 
   expect(value.showSeconds).toBe(true);
   expect(value.showDate).toBe(false);
   expect(value.showServiceIcons).toBe(false);
-  expect(readPreferences({ showServiceIcons: "false" }).showServiceIcons).toBe(true);
+  expect(readPreferences({ showServiceIcons: "true" }).showServiceIcons).toBe(false);
 
   expect(value.clockFont).toBe("mono");
   expect(value.dateFont).toBe("custom");

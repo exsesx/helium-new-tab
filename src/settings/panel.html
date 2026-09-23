@@ -76,20 +76,22 @@
     <input id="show-date" type="checkbox" role="switch" />
   </div>
 
-  <div class="setting">
-    <label for="show-service-icons" data-i18n="showServiceIcons">Show service icons</label>
-    <input
-      id="show-service-icons"
-      type="checkbox"
-      role="switch"
-      aria-describedby="service-icons-help"
-    />
-  </div>
+  <div id="service-icons-setting">
+    <div class="setting">
+      <label for="show-service-icons" data-i18n="showServiceIcons">Show service icons</label>
+      <input
+        id="show-service-icons"
+        type="checkbox"
+        role="switch"
+        aria-describedby="service-icons-help"
+      />
+    </div>
 
-  <p id="service-icons-help" class="privacy-note" data-i18n="serviceIconsHelp">
-    Gets icons from Google while you type a bang. Sends the site's address, without search terms or
-    cookies.
-  </p>
+    <p id="service-icons-help" class="privacy-note" data-i18n="serviceIconsHelp">
+      Uses site icons already saved in your browser. Nothing is downloaded. Turning this on asks for
+      permission to read them.
+    </p>
+  </div>
 
   <fieldset class="font-settings">
     <legend data-i18n="globalFonts">Global fonts</legend>

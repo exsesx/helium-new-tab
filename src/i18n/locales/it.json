@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stile",
   "showServiceIcons": "Mostra le icone dei servizi",
-  "serviceIconsHelp": "Carica le icone da Google mentre digiti un bang. Invia l’indirizzo del sito, senza termini di ricerca o cookie."
+  "serviceIconsHelp": "Usa le icone dei siti già salvate nel browser. Non viene scaricato nulla. Attivandola viene chiesto il permesso di leggerle."
 }

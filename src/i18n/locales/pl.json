@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Styl",
   "showServiceIcons": "Pokazuj ikony serwisów",
-  "serviceIconsHelp": "Pobiera ikony z Google podczas wpisywania banga. Wysyła adres witryny bez wyszukiwanych słów i plików cookie."
+  "serviceIconsHelp": "Używa ikon witryn zapisanych już w przeglądarce. Nic nie jest pobierane. Włączenie wymaga zgody na ich odczyt."
 }

@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Štýl",
   "showServiceIcons": "Zobrazovať ikony služieb",
-  "serviceIconsHelp": "Pri písaní bangu načítava ikony z Googlu. Odosiela adresu webu bez hľadaných výrazov alebo súborov cookie."
+  "serviceIconsHelp": "Používa ikony webov už uložené v prehliadači. Nič sa nesťahuje. Po zapnutí sa zobrazí žiadosť o povolenie ich čítať."
 }

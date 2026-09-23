@@ -1,5 +1,6 @@
 import { resolveSearchDestination } from "./search.js";
 import { createSearchIcon } from "./search-icon.js";
+import { serviceIconUrl, serviceIconsSupported } from "./service-icons.js";
 
 export function createSearchForm({ form, input, icon, getPreferences, onError }) {
   const nativeSearch = typeof chrome !== "undefined" && typeof chrome.search?.query === "function";
@@ -8,7 +9,7 @@ export function createSearchForm({ form, input, icon, getPreferences, onError })
 
   async function updatePreview() {
     const request = ++revision;
-    const { showServiceIcons } = getPreferences();
+    const showServiceIcons = getPreferences().showServiceIcons && serviceIconsSupported();
     let destination;
 
     if (!showServiceIcons) {
@@ -25,7 +26,9 @@ export function createSearchForm({ form, input, icon, getPreferences, onError })
       return;
     }
 
-    showSearchIcon(showServiceIcons ? destination?.favicon : "");
+    const origin = showServiceIcons ? destination?.siteOrigin : "";
+
+    showSearchIcon(origin ? serviceIconUrl(origin) : "");
   }
 
   input.addEventListener("input", updatePreview);

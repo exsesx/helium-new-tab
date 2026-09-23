@@ -44,8 +44,6 @@ export function createSearchIcon(container) {
       const nextImage = new Image();
       image = nextImage;
       nextImage.alt = "";
-      // The manifest and preview server enforce COEP: credentialless for images.
-      nextImage.referrerPolicy = "no-referrer";
       nextImage.onload = () => {
         if (image === nextImage) {
           visibleImage = nextImage;

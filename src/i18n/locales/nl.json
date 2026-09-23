@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stijl",
   "showServiceIcons": "Dienstpictogrammen tonen",
-  "serviceIconsHelp": "Haalt pictogrammen op bij Google terwijl je een bang typt. Verstuurt het adres van de website, zonder zoektermen of cookies."
+  "serviceIconsHelp": "Gebruikt websitepictogrammen die al in je browser zijn opgeslagen. Er wordt niets gedownload. Bij inschakelen wordt toestemming gevraagd om ze te lezen."
 }

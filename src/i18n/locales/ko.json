@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "스타일",
   "showServiceIcons": "서비스 아이콘 표시",
-  "serviceIconsHelp": "bang을 입력하는 동안 Google에서 아이콘을 가져옵니다. 검색어나 쿠키 없이 사이트 주소를 전송합니다."
+  "serviceIconsHelp": "브라우저에 이미 저장된 사이트 아이콘을 사용합니다. 아무것도 다운로드하지 않습니다. 켜면 아이콘을 읽을 권한을 요청합니다."
 }

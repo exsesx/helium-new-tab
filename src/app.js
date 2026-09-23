@@ -2,6 +2,11 @@ import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
 import { createClock } from "./lib/clock.js";
 import { readPreferences } from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
+import {
+  hasServiceIcons,
+  onServiceIconsRevoked,
+  requestServiceIcons,
+} from "./lib/service-icons.js";
 import { PREFERENCES_KEY } from "./lib/storage.js";
 import { loadPreferences, applyAppearance } from "./lib/preferences.js";
 
@@ -69,17 +74,11 @@ $("open-settings").addEventListener("click", async () => {
         translator,
         languages,
         onChange(key, value) {
-          preferences[key] = value;
-
-          if (key === "language") {
-            void updateLanguage();
-          } else if (key.endsWith("Font")) {
-            applyAppearance(preferences);
-          } else {
-            applyPreferences();
+          if (key === "showServiceIcons" && value) {
+            return requestServiceIcons().then((granted) => updatePreference(key, granted));
           }
 
-          save();
+          updatePreference(key, value);
         },
       });
     }
@@ -92,6 +91,37 @@ $("open-settings").addEventListener("click", async () => {
     $("open-settings").removeAttribute("aria-busy");
   }
 });
+
+function updatePreference(key, value) {
+  preferences[key] = value;
+
+  if (key === "language") {
+    void updateLanguage();
+  } else if (key.endsWith("Font")) {
+    applyAppearance(preferences);
+  } else {
+    applyPreferences();
+  }
+
+  save();
+}
+
+// Turn icons off when the permission was removed, such as from the extensions page.
+function disableServiceIcons() {
+  if (preferences.showServiceIcons) {
+    updatePreference("showServiceIcons", false);
+  }
+}
+
+onServiceIconsRevoked(disableServiceIcons);
+
+if (preferences.showServiceIcons) {
+  void hasServiceIcons().then((granted) => {
+    if (!granted) {
+      disableServiceIcons();
+    }
+  });
+}
 
 window.addEventListener("storage", (event) => {
   if (event.key !== PREFERENCES_KEY && event.key !== null) {

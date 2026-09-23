@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Slog",
   "showServiceIcons": "Prikaži ikone storitev",
-  "serviceIconsHelp": "Med vnašanjem ukaza bang nalaga ikone iz Googla. Pošlje naslov spletnega mesta brez iskalnih izrazov ali piškotkov."
+  "serviceIconsHelp": "Uporablja ikone spletnih mest, ki so že shranjene v brskalniku. Nič se ne prenese. Ob vklopu se zahteva dovoljenje za njihovo branje."
 }

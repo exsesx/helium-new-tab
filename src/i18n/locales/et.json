@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stiil",
   "showServiceIcons": "Näita teenuste ikoone",
-  "serviceIconsHelp": "Laadib bangu sisestamisel ikoone Google’ist. Saadab veebisaidi aadressi ilma otsingusõnade ja küpsisteta."
+  "serviceIconsHelp": "Kasutab brauserisse juba salvestatud saitide ikoone. Midagi ei laadita alla. Sisselülitamisel küsitakse nende lugemiseks luba."
 }

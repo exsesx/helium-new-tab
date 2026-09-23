@@ -14,7 +14,7 @@ export const defaults = {
   timeFormat: "auto",
   showSeconds: false,
   showDate: true,
-  showServiceIcons: true,
+  showServiceIcons: false,
   uiFont: "system",
   monoFont: "system",
   uiCustomFont: "",

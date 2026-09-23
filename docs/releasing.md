@@ -108,4 +108,6 @@ reach Google.
 
 Store listing text must describe this as an unofficial extension. The `search` permission
 is used only to submit a user's query through the browser's configured search provider.
+The optional `favicon` permission is requested only when the user turns on service icons
+and is used only to show locally cached icons for recognized bangs.
 No remote code, tracking, or external startup requests are used.

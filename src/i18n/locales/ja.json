@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "スタイル",
   "showServiceIcons": "サービスのアイコンを表示",
-  "serviceIconsHelp": "bangの入力中にGoogleからアイコンを取得します。サイトのアドレスを送信しますが、検索語句やCookieは送信しません。"
+  "serviceIconsHelp": "ブラウザーに保存済みのサイトアイコンを使用します。何もダウンロードしません。オンにすると、アイコンを読み取る権限を求められます。"
 }

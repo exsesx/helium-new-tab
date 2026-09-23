@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stílus",
   "showServiceIcons": "Szolgáltatásikonok megjelenítése",
-  "serviceIconsHelp": "A bang beírása közben ikonokat tölt le a Google-tól. A webhely címét küldi el, keresőkifejezések és sütik nélkül."
+  "serviceIconsHelp": "A böngészőben már tárolt webhelyikonokat használja. Semmi sem töltődik le. Bekapcsoláskor engedélyt kér az olvasásukhoz."
 }

@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "showServiceIcons": "Hizmet simgelerini göster",
-  "serviceIconsHelp": "Bir bang yazarken Google’dan simgeleri alır. Arama terimleri veya çerezler olmadan sitenin adresini gönderir."
+  "serviceIconsHelp": "Tarayıcıda zaten kayıtlı site simgelerini kullanır. Hiçbir şey indirilmez. Açıldığında bunları okumak için izin istenir."
 }

@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "showServiceIcons": "Prikaži ikone servisa",
-  "serviceIconsHelp": "Preuzima ikone sa Google-a dok unosite bang. Šalje adresu sajta bez termina pretrage ili kolačića."
+  "serviceIconsHelp": "Koristi ikone sajtova već sačuvane u pregledaču. Ništa se ne preuzima. Uključivanje traži dozvolu za njihovo čitanje."
 }

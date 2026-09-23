@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stils",
   "showServiceIcons": "Rādīt pakalpojumu ikonas",
-  "serviceIconsHelp": "Ielādē ikonas no Google, kamēr rakstāt bang komandu. Nosūta vietnes adresi bez meklēšanas vārdiem vai sīkfailiem."
+  "serviceIconsHelp": "Izmanto pārlūkā jau saglabātās vietņu ikonas. Nekas netiek lejupielādēts. Ieslēdzot tiek prasīta atļauja tās lasīt."
 }

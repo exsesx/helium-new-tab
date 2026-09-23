@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stilius",
   "showServiceIcons": "Rodyti paslaugų piktogramas",
-  "serviceIconsHelp": "Rašant bang komandą, įkelia piktogramas iš „Google“. Siunčia svetainės adresą be paieškos žodžių ar slapukų."
+  "serviceIconsHelp": "Naudoja naršyklėje jau išsaugotas svetainių piktogramas. Niekas neatsisiunčiama. Įjungus prašoma leidimo jas skaityti."
 }

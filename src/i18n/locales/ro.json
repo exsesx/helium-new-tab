@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "showServiceIcons": "Afișează pictogramele serviciilor",
-  "serviceIconsHelp": "Încarcă pictograme de la Google în timp ce scrii un bang. Trimite adresa site-ului, fără termeni de căutare sau cookie-uri."
+  "serviceIconsHelp": "Folosește pictogramele site-urilor deja salvate în browser. Nu se descarcă nimic. La activare, se cere permisiunea de a le citi."
 }

@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "showServiceIcons": "Dienstsymbole anzeigen",
-  "serviceIconsHelp": "Lädt beim Eingeben eines Bangs Symbole von Google. Sendet die Website-Adresse ohne Suchbegriffe oder Cookies."
+  "serviceIconsHelp": "Verwendet bereits im Browser gespeicherte Website-Symbole. Es wird nichts heruntergeladen. Beim Einschalten wird um die Berechtigung gebeten, sie zu lesen."
 }

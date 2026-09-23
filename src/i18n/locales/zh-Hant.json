@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "樣式",
   "showServiceIcons": "顯示服務圖示",
-  "serviceIconsHelp": "輸入 bang 時從 Google 載入圖示。只傳送網站位址，不傳送搜尋字詞或 Cookie。"
+  "serviceIconsHelp": "使用瀏覽器中已儲存的網站圖示，不會下載任何內容。開啟時會要求讀取這些圖示的權限。"
 }

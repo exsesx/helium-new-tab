@@ -46,5 +46,5 @@
   "backgroundHelium": "Helium",
   "style": "Stil",
   "showServiceIcons": "Visa tjänsteikoner",
-  "serviceIconsHelp": "Hämtar ikoner från Google medan du skriver en bang. Skickar webbplatsens adress utan sökord eller kakor."
+  "serviceIconsHelp": "Använder webbplatsikoner som redan finns sparade i webbläsaren. Inget laddas ned. När du slår på det ombeds du ge behörighet att läsa dem."
 }
