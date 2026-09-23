@@ -1,11 +1,13 @@
+// Sorted by language code. The settings list sorts by native name.
 export const languages = {
-  en: "English",
   bg: "Български",
+  bs: "Bosanski",
   ca: "Català",
   cs: "Čeština",
   da: "Dansk",
   de: "Deutsch",
   el: "Ελληνικά",
+  en: "English",
   es: "Español",
   et: "Eesti",
   fi: "Suomi",
@@ -15,8 +17,11 @@ export const languages = {
   hu: "Magyar",
   is: "Íslenska",
   it: "Italiano",
+  ja: "日本語",
+  ko: "한국어",
   lt: "Lietuvių",
   lv: "Latviešu",
+  mk: "Македонски",
   mt: "Malti",
   nb: "Norsk bokmål",
   nl: "Nederlands",
@@ -28,14 +33,10 @@ export const languages = {
   sq: "Shqip",
   "sr-Latn": "Srpski",
   sv: "Svenska",
-  bs: "Bosanski",
-  mk: "Македонски",
   tr: "Türkçe",
   uk: "Українська",
   "zh-Hans": "简体中文",
   "zh-Hant": "繁體中文",
-  ja: "日本語",
-  ko: "한국어",
 };
 
 export function resolveLanguage(choice, preferred = []) {

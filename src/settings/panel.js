@@ -14,7 +14,9 @@ export function createSettings({ getPreferences, onChange, translator, languages
     find("service-icons-setting").hidden = true;
   }
 
-  for (const [code, name] of Object.entries(languages)) {
+  const byName = Object.entries(languages).sort(([, a], [, b]) => a.localeCompare(b, "en"));
+
+  for (const [code, name] of byName) {
     find("language").add(new Option(name, code));
   }
 

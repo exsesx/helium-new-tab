@@ -122,11 +122,11 @@ The localhost preview uses DuckDuckGo and cannot verify native browser integrati
 languages and falls back to English. A manual choice updates the interface, tab title,
 and date and time formatting, and is saved on this device.
 
-Available languages: Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English,
-Estonian, Finnish, French, German, Greek, Hungarian, Irish, Italian, Latvian, Lithuanian,
-Maltese, Polish, Portuguese, Romanian, Slovak, Slovenian, Spanish, Swedish, Albanian,
-Bosnian, Icelandic, Macedonian, Norwegian Bokmål, Serbian (Latin), Turkish, Ukrainian,
-Simplified Chinese, Traditional Chinese, Japanese, and Korean.
+Available languages: Albanian, Bosnian, Bulgarian, Catalan, Croatian, Czech, Danish,
+Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Icelandic, Irish,
+Italian, Japanese, Korean, Latvian, Lithuanian, Macedonian, Maltese, Norwegian Bokmål,
+Polish, Portuguese, Romanian, Serbian (Latin), Simplified Chinese, Slovak, Slovenian,
+Spanish, Swedish, Traditional Chinese, Turkish, and Ukrainian.
 
 **Russian is intentionally excluded and must not be added.**
 
