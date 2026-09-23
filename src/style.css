@@ -453,6 +453,17 @@ input[type="checkbox"]:before {
   left: 3px;
 }
 
+.setting:has(:disabled) > label,
+.custom-font:has(:disabled) {
+  opacity: 0.5;
+}
+
+select:disabled,
+input:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
 input[type="checkbox"]:checked {
   background: var(--accent);
   box-shadow: none;

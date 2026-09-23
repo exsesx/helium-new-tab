@@ -29,6 +29,16 @@ export function createSettings({ getPreferences, onChange, translator, languages
     ...["ui", "mono", "clock", "date", "search"].map((key) => [`${key}-font`, `${key}Font`]),
   ];
 
+  // These settings change nothing while the clock or date is hidden.
+  const dependencies = [
+    ["time-format", "showClock"],
+    ["show-seconds", "showClock"],
+    ["clock-font", "showClock"],
+    ["clock-custom-font", "showClock"],
+    ["date-font", "showDate"],
+    ["date-custom-font", "showDate"],
+  ];
+
   function sync() {
     translator.apply(dialog);
 
@@ -42,6 +52,10 @@ export function createSettings({ getPreferences, onChange, translator, languages
       } else {
         field.value = preferences[key];
       }
+    }
+
+    for (const [id, key] of dependencies) {
+      find(id).disabled = !preferences[key];
     }
 
     for (const key of ["ui", "mono", "clock", "date", "search"]) {
