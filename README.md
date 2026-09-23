@@ -80,7 +80,8 @@ src/                       # Everything that ships: edit here
   i18n/                    # Language matching and translation loader
     locales/               # Editable JSON dictionaries
 scripts/                   # Bun build and preview/watch server
-tests/                     # Unit tests
+tests/                     # Unit and build tests
+e2e/                       # Playwright tests against the preview
 dist/                      # Entirely generated; do not edit
 ```
 
@@ -101,6 +102,10 @@ done
 - `bun run format` / `bun run format:check`: format source with Oxfmt or check it.
 - `bun test`: check routing, preferences, date/time, language resolution, translation coverage, loading failures, and language-switch races.
 - `bun run check`: lint, formatting, tests, and production build.
+- `bun run test:e2e`: drive the preview in Chromium with Playwright: theme painting,
+  settings persistence, language switching, keyboard focus, and search destinations.
+  Run `bun x playwright install chromium` once first, or point
+  `PLAYWRIGHT_CHROMIUM_EXECUTABLE` at an installed Chromium.
 
 ### Manual checks in Helium
 
