@@ -122,7 +122,7 @@ main {
 }
 
 .start {
-  width: min(100%, 560px);
+  width: min(100%, 640px);
   text-align: center;
 }
 
@@ -225,6 +225,45 @@ h1 {
   .search-favicon.is-visible {
     opacity: 0;
   }
+}
+
+/* Like Helium's omnibox keyword mode: the service name, then a divider before the query. */
+.search-service {
+  flex-shrink: 0;
+  max-width: 30%;
+  overflow: hidden;
+  color: var(--accent);
+  font-size: 16px;
+  line-height: 24px;
+  font-family: var(--search-font, var(--interface-font, system-ui));
+  white-space: nowrap;
+  transition: opacity 160ms ease;
+  /* A scroll timeline is active only while the name overflows, so only cut-off names fade. */
+  animation: fade-cut-off-name linear both;
+  animation-timeline: scroll(self inline);
+}
+
+@keyframes fade-cut-off-name {
+  from,
+  to {
+    mask-image: linear-gradient(to right, #000 calc(100% - 2em), transparent);
+  }
+}
+
+@starting-style {
+  .search-service {
+    opacity: 0;
+  }
+}
+
+#search-form:has(.search-service:not([hidden])) .search-icon {
+  color: var(--accent);
+}
+
+/* The divider sits on the input so the name's fade never reaches it. */
+#search-form:has(.search-service:not([hidden])) #search {
+  padding-inline-start: 10px;
+  border-inline-start: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
 }
 
 #search {

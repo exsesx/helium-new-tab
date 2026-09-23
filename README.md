@@ -47,6 +47,7 @@ Aliases are case-insensitive. The catalog's format flags control query encoding 
 a bare bang opens the site's home page or its search URL. Bangs that require a hostname,
 such as `!rtfd`, fall back to ordinary search when no valid name is supplied.
 The first bang token is used; an unknown bang stays in the query sent to your default provider.
+A recognized bang shows the service's name before the query, like Helium's address bar keyword mode.
 Website addresses still open directly.
 
 The bundled catalog loads only when the input contains a bang. The extension does not download

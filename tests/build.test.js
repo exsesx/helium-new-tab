@@ -28,7 +28,8 @@ test("packages the compact bang catalog next to the page scripts", async () => {
   const app = await dist("assets/app.js").text();
 
   expect(catalog.length).toBeGreaterThan(1000);
-  expect(catalog.every((entry) => !Object.hasOwn(entry, "s"))).toBe(true);
+  expect(catalog.every(({ s }) => typeof s === "string" && s.trim() !== "")).toBe(true);
+  expect(catalog.every((entry) => !Object.hasOwn(entry, "sc"))).toBe(true);
   expect(app).toContain("../data/bangs.json");
 });
 

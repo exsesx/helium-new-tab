@@ -2,7 +2,7 @@ import { resolveSearchDestination } from "./search.js";
 import { createSearchIcon } from "./search-icon.js";
 import { serviceIconUrl, serviceIconsSupported } from "./service-icons.js";
 
-export function createSearchForm({ form, input, icon, getPreferences, onError }) {
+export function createSearchForm({ form, input, icon, service, getPreferences, onError }) {
   const nativeSearch = typeof chrome !== "undefined" && typeof chrome.search?.query === "function";
   const showSearchIcon = createSearchIcon(icon);
   let revision = 0;
@@ -19,11 +19,20 @@ export function createSearchForm({ form, input, icon, getPreferences, onError })
     try {
       destination = await resolveSearchDestination(input.value);
     } catch {
-      // A missing catalog leaves the default search icon visible.
+      // A missing catalog leaves the default search icon visible and no service name.
     }
 
     if (request !== revision) {
       return;
+    }
+
+    const name = destination?.service ?? "";
+
+    // Service names need no permission, so they show whether or not icons are enabled.
+    if (service.textContent !== name) {
+      service.textContent = name;
+      service.title = name;
+      service.hidden = !name;
     }
 
     const origin = showServiceIcons ? destination?.siteOrigin : "";

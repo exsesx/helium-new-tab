@@ -91,6 +91,23 @@ test("slash focuses search and Escape leaves it", async ({ page }) => {
   await expect(page.locator("#search")).not.toBeFocused();
 });
 
+test("names the recognized bang service before the query", async ({ page }) => {
+  await page.goto("/");
+  const search = page.locator("#search");
+  const service = page.locator("#search-service");
+
+  await search.fill("!yt quiet music");
+
+  await expect(service).toBeVisible();
+  await expect(service).toHaveText("YouTube");
+  await expect(search).toHaveAccessibleDescription("YouTube");
+
+  await search.fill("quiet music");
+
+  await expect(service).toBeHidden();
+  await expect(search).toHaveAccessibleDescription("");
+});
+
 for (const [input, destination] of [
   ["example.com", "https://example.com/"],
   ["localhost:9", "http://localhost:9/"],

@@ -1,9 +1,9 @@
 const flags = { openBasePath: 1, encodeQuery: 4, spaceToPlus: 8 };
 const defaultFormat = flags.openBasePath | flags.encodeQuery | flags.spaceToPlus;
 
-// Keep only the fields the resolver reads: aliases, URL template and format flags.
+// Keep only the fields the resolver reads: service name, aliases, URL template and format flags.
 export function compactCatalog(entries) {
-  return entries.map(({ ts, u, f }) => (f === undefined ? { ts, u } : { ts, u, f }));
+  return entries.map(({ s, ts, u, f }) => (f === undefined ? { s, ts, u } : { s, ts, u, f }));
 }
 
 export function createBangResolver(catalog) {
@@ -68,6 +68,7 @@ export function createBangResolver(catalog) {
 
       return {
         url: url.href,
+        service: entry.s,
         // Query-derived hostnames never get an icon while the user is still typing.
         siteOrigin: dynamicHost ? "" : template.origin,
       };

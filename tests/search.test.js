@@ -23,6 +23,7 @@ test("resolves YouTube bangs locally at the start, middle, or end", async () => 
   ]) {
     expect(await resolveSearchDestination(input)).toMatchObject({
       url: "https://www.youtube.com/results?search_query=quiet+music",
+      service: "YouTube",
     });
   }
 });
@@ -80,6 +81,7 @@ test("unknown bangs, punctuation and ordinary searches keep the default provider
 test("hostname bangs navigate valid names and fall back for invalid names", async () => {
   expect(await resolveSearchDestination("!rtfd example")).toMatchObject({
     url: "https://example.rtfd.io/",
+    service: "Read the Docs",
     siteOrigin: "",
   });
 
@@ -108,6 +110,7 @@ test("bundled entries retain valid names, aliases, formats and safe destinations
     }
 
     const destination = resolveBang(`!${ts[0]} example`);
+    expect(destination?.service).toBe(s);
 
     const url = new URL(destination.url);
     expect(["https:", "http:"]).toContain(url.protocol);
@@ -121,7 +124,9 @@ test("the compact catalog keeps every field the resolver reads", () => {
   const resolveCompact = createBangResolver(compact);
 
   expect(
-    compact.every((entry) => Object.keys(entry).every((key) => ["ts", "u", "f"].includes(key))),
+    compact.every((entry) =>
+      Object.keys(entry).every((key) => ["s", "ts", "u", "f"].includes(key)),
+    ),
   ).toBe(true);
 
   for (const { ts } of catalog) {

@@ -23,6 +23,7 @@ const searchForm = createSearchForm({
   form: $("search-form"),
   input: $("search"),
   icon: $("search-icon"),
+  service: $("search-service"),
   getPreferences: () => preferences,
   onError: () => notify(translator.text("searchError")),
 });
