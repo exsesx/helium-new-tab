@@ -70,7 +70,7 @@ src/                       # Everything that ships: edit here
   index.html               # New-tab page shell
   manifest.json            # Extension metadata and permissions
   app.js                   # Search, clock, preferences, language switching
-  theme.js                 # Synchronous appearance/font bootstrap
+  bootstrap.js             # Synchronous title, appearance and font startup
   style.css                # Page and settings styles
   assets/                  # Tab favicons, extension SVG and raster icon sizes
   lib/                     # Preferences, font, search and date/time logic

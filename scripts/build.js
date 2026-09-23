@@ -75,7 +75,7 @@ export async function build() {
   await Bun.write(`${root}dist/data/bangs.json`, JSON.stringify(compactCatalog(bangs)));
 
   const startup = await bundle({
-    entrypoints: [`${root}src/theme.js`],
+    entrypoints: [`${root}src/bootstrap.js`],
     target: "browser",
     format: "iife",
     minify: true,
@@ -86,7 +86,7 @@ export async function build() {
     },
   });
 
-  await Bun.write(`${root}dist/theme.js`, startup.outputs[0]);
+  await Bun.write(`${root}dist/bootstrap.js`, startup.outputs[0]);
 
   await bundle({
     entrypoints: [`${root}src/app.js`],
