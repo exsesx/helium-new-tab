@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "bun:test";
-import { cachedServiceIconUrl, serviceIconUrl } from "../src/lib/service-icons.js";
+import { blendsInto, cachedServiceIconUrl, serviceIconUrl } from "../src/lib/service-icons.js";
 
 const originalFetch = globalThis.fetch;
 
@@ -53,4 +53,28 @@ test("keeps the search icon when the favicon cache cannot be read", async () => 
   };
 
   expect(await cachedServiceIconUrl("https://github.com", 1)).toBe("");
+});
+
+function pixels(...colors) {
+  return new Uint8ClampedArray(colors.flatMap(([color, count]) => Array(count).fill(color).flat()));
+}
+
+test("finds icons that vanish on a light or a dark search field", () => {
+  const light = [255, 255, 255];
+  const dark = [59, 60, 60];
+  const whiteLogo = pixels([[255, 255, 255, 255], 90], [[0, 0, 0, 0], 10]);
+  const blackLogo = pixels([[31, 35, 40, 255], 90], [[255, 255, 255, 0], 10]);
+  const redPlayButton = pixels([[255, 0, 0, 255], 80], [[255, 255, 255, 255], 20]);
+  const lightTileWithMark = pixels([[255, 255, 255, 255], 85], [[0, 0, 0, 255], 15]);
+  const transparent = pixels([[255, 255, 255, 0], 100]);
+
+  expect(blendsInto(whiteLogo, light)).toBe(true);
+  expect(blendsInto(whiteLogo, dark)).toBe(false);
+  expect(blendsInto(blackLogo, dark)).toBe(true);
+  expect(blendsInto(blackLogo, light)).toBe(false);
+
+  for (const icon of [redPlayButton, lightTileWithMark, transparent]) {
+    expect(blendsInto(icon, light)).toBe(false);
+    expect(blendsInto(icon, dark)).toBe(false);
+  }
 });

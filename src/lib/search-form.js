@@ -1,10 +1,10 @@
 import { resolveSearchDestination } from "./search.js";
 import { createSearchIcon } from "./search-icon.js";
-import { cachedServiceIconUrl, serviceIconsSupported } from "./service-icons.js";
+import { cachedServiceIconUrl, markIconTone, serviceIconsSupported } from "./service-icons.js";
 
 export function createSearchForm({ form, input, icon, service, getPreferences, onError }) {
   const nativeSearch = typeof chrome !== "undefined" && typeof chrome.search?.query === "function";
-  const showSearchIcon = createSearchIcon(icon);
+  const showSearchIcon = createSearchIcon(icon, markIconTone);
   let revision = 0;
 
   async function updatePreview() {

@@ -1,4 +1,4 @@
-export function createSearchIcon(container) {
+export function createSearchIcon(container, prepareImage = () => {}) {
   const fallback = container.firstElementChild;
   let timer;
   let source = "";
@@ -48,6 +48,7 @@ export function createSearchIcon(container) {
         if (image === nextImage) {
           visibleImage = nextImage;
           nextImage.className = "search-favicon is-visible";
+          prepareImage(nextImage);
           container.append(nextImage);
           fallback.classList.add("is-hidden");
         }

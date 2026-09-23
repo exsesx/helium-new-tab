@@ -13,6 +13,9 @@
   --toggle-off: #767979;
   --tint: #e6e7e7;
   --border: #d8dada;
+  /* Flip favicons cached in the other theme's color; see markIconTone. */
+  --light-icon-filter: invert(1) hue-rotate(180deg);
+  --dark-icon-filter: none;
   font-family: var(--interface-font, system-ui, sans-serif);
   font-synthesis: none;
 }
@@ -32,6 +35,8 @@
     --toggle-off: #8a8e8e;
     --tint: #303232;
     --border: #454848;
+    --light-icon-filter: none;
+    --dark-icon-filter: invert(1) hue-rotate(180deg);
   }
 }
 
@@ -49,6 +54,8 @@
   --toggle-off: #8a8e8e;
   --tint: #303232;
   --border: #454848;
+  --light-icon-filter: none;
+  --dark-icon-filter: invert(1) hue-rotate(180deg);
 }
 
 * {
@@ -225,6 +232,14 @@ h1 {
   .search-favicon.is-visible {
     opacity: 0;
   }
+}
+
+.search-favicon.is-light {
+  filter: var(--light-icon-filter);
+}
+
+.search-favicon.is-dark {
+  filter: var(--dark-icon-filter);
 }
 
 /* Like Helium's omnibox keyword mode: the service name, then a divider before the query. */
