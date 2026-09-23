@@ -4,6 +4,8 @@ A minimal, unofficial new-tab extension inspired by [Helium's brand kit](https:/
 
 ## Install in Helium
 
+Requires Helium or another Chromium browser, version 123 or later.
+
 Download the ZIP from [Releases](https://github.com/exsesx/helium-new-tab/releases/latest),
 extract it, and load the extracted folder through **Load unpacked**. No Bun installation
 is needed for a release ZIP.

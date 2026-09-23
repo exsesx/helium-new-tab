@@ -1,50 +1,19 @@
+/* Each token lists its light value, then its dark value; index.html sets color-scheme. */
 :root {
-  --text: #292b2b;
-  --secondary: #555858;
-  --muted: #666969;
-  --accent: #3d4fc4;
-  --surface: #fff;
-  --panel: #f3f3f3;
-  --search-bg: #ebebeb;
-  --search-focus-bg: #fff;
-  --search-focus-ring: #4157d2;
-  --toggle-thumb: #fff;
-  --tint: #e6e7e7;
-  --border: #d8dada;
+  --text: light-dark(#292b2b, #e3e5e5);
+  --secondary: light-dark(#555858, #c3c6c6);
+  --muted: light-dark(#666969, #acb0b0);
+  --accent: light-dark(#3d4fc4, #bdc4ff);
+  --surface: light-dark(#fff, #353737);
+  --panel: light-dark(#f3f3f3, #242626);
+  --search-bg: light-dark(#ebebeb, #353737);
+  --search-focus-bg: light-dark(#fff, #3b3c3c);
+  --search-focus-ring: light-dark(#4157d2, #7a95f8);
+  --toggle-thumb: light-dark(#fff, #1e2020);
+  --tint: light-dark(#e6e7e7, #303232);
+  --border: light-dark(#d8dada, #454848);
   font-family: var(--interface-font, system-ui, sans-serif);
   font-synthesis: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --text: #e3e5e5;
-    --secondary: #c3c6c6;
-    --muted: #acb0b0;
-    --accent: #bdc4ff;
-    --surface: #353737;
-    --panel: #242626;
-    --search-bg: #353737;
-    --search-focus-bg: #3b3c3c;
-    --search-focus-ring: #7a95f8;
-    --toggle-thumb: #1e2020;
-    --tint: #303232;
-    --border: #454848;
-  }
-}
-
-:root[data-theme="dark"] {
-  --text: #e3e5e5;
-  --secondary: #c3c6c6;
-  --muted: #acb0b0;
-  --accent: #bdc4ff;
-  --surface: #353737;
-  --panel: #242626;
-  --search-bg: #353737;
-  --search-focus-bg: #3b3c3c;
-  --search-focus-ring: #7a95f8;
-  --toggle-thumb: #1e2020;
-  --tint: #303232;
-  --border: #454848;
 }
 
 * {
@@ -72,19 +41,21 @@ a,
 input,
 select {
   -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 button {
+  color: inherit;
+  border: 0;
   cursor: pointer;
 }
 
 button,
 a {
   touch-action: manipulation;
-}
-
-button {
-  color: inherit;
 }
 
 button:focus-visible,
@@ -96,24 +67,10 @@ summary:focus-visible {
   outline-offset: 2px;
 }
 
-button {
-  border: 0;
-}
-
 svg {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-}
-
-button,
-a,
-input,
-select {
-  transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    box-shadow 0.15s;
 }
 
 a {
@@ -158,6 +115,7 @@ h1 {
   letter-spacing: -0.035em;
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
+  min-height: 1.15em;
 }
 
 .day-period {
@@ -173,6 +131,7 @@ h1 {
   font-size: 15px;
   letter-spacing: 0.01em;
   color: var(--secondary);
+  min-height: 1.3em;
 }
 
 #search-form {
@@ -288,7 +247,7 @@ footer {
 
 kbd {
   flex-shrink: 0;
-  font-family: inherit;
+  font-family: var(--mono-font, monospace);
   border: 1px solid var(--border);
   border-radius: 5px;
   width: 21px;
@@ -412,8 +371,11 @@ h2 {
 }
 
 .privacy-note {
+  margin-bottom: 0;
+  padding-top: 19px;
+  border-top: 1px solid var(--border);
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.6;
 }
 
@@ -497,13 +459,6 @@ input[type="checkbox"]:checked:before {
   left: 16px;
 }
 
-.privacy-note {
-  border-top: 1px solid var(--border);
-  padding-top: 19px;
-  margin-bottom: 0;
-  font-size: 11px;
-}
-
 .toast {
   position: fixed;
   bottom: 70px;
@@ -577,10 +532,16 @@ input[type="checkbox"]:checked:before {
   select {
     min-height: 44px;
   }
+
+  .custom-font input {
+    font-size: 16px;
+    min-height: 44px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  ::backdrop {
     transition: none !important;
   }
 }
@@ -626,13 +587,6 @@ input[type="checkbox"]:checked:before {
   background: var(--surface);
 }
 
-@media (pointer: coarse) {
-  .custom-font input {
-    font-size: 16px;
-    min-height: 44px;
-  }
-}
-
 .font-overrides {
   margin-top: 24px;
 }
@@ -642,11 +596,6 @@ input[type="checkbox"]:checked:before {
   font-size: 13px;
   color: var(--secondary);
   padding-block: 12px;
-}
-
-kbd {
-  flex-shrink: 0;
-  font-family: var(--mono-font, monospace);
 }
 
 @media (max-width: 520px) {
@@ -671,26 +620,9 @@ kbd {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  dialog,
-  dialog::backdrop,
-  .search-icon > svg,
-  .search-favicon {
-    transition: none !important;
-  }
-}
-
 /* Reserve the clock's space until its real text is ready; never paint a placeholder. */
 .clock-block:not([data-ready]) {
   visibility: hidden;
-}
-
-h1 {
-  min-height: 1.15em;
-}
-
-#date {
-  min-height: 1.3em;
 }
 
 :root[data-show-clock="false"] h1,

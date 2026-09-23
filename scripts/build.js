@@ -27,7 +27,9 @@ export async function build() {
   await mkdir(`${root}dist/locales`, { recursive: true });
   await mkdir(`${root}dist/data`, { recursive: true });
 
-  for (const name of ["index.html", "assets"]) {
+  // Bun's CSS bundler lowers light-dark() into variables that need color-scheme in the same
+  // file, while index.html sets the scheme. The stylesheet has no imports, so copy it as is.
+  for (const name of ["index.html", "style.css", "assets"]) {
     await cp(`${root}src/${name}`, `${root}dist/${name}`, { recursive: true });
   }
 
@@ -96,12 +98,6 @@ export async function build() {
     modulePreload: false,
     // Entry names are referenced from index.html; chunk hashes keep split names unique.
     naming: { entry: "[name].[ext]", chunk: "[name]-[hash].[ext]" },
-  });
-
-  await bundle({
-    entrypoints: [`${root}src/style.css`],
-    outdir: `${root}dist`,
-    minify: true,
   });
 }
 
