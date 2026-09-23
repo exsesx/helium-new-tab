@@ -2,7 +2,15 @@ import { resolveSearchDestination } from "./search.js";
 import { createSearchIcon } from "./search-icon.js";
 import { cachedServiceIconUrl, markIconTone, serviceIconsSupported } from "./service-icons.js";
 
+// The values chrome.search.query accepts for where results open.
+const DISPOSITIONS = {
+  currentTab: "CURRENT_TAB",
+  newTab: "NEW_TAB",
+  newWindow: "NEW_WINDOW",
+};
+
 export function createSearchForm({ form, input, icon, service, getPreferences, onError }) {
+  const submitButton = form.querySelector('[type="submit"]');
   const nativeSearch = typeof chrome !== "undefined" && typeof chrome.search?.query === "function";
   const showSearchIcon = createSearchIcon(icon, markIconTone);
   let revision = 0;
@@ -46,16 +54,53 @@ export function createSearchForm({ form, input, icon, service, getPreferences, o
     showSearchIcon(iconUrl);
   }
 
-  input.addEventListener("input", updatePreview);
+  // Follows link-click conventions: Shift opens a window, Ctrl, Cmd, or Alt opens a tab.
+  function dispositionFor(event) {
+    if (event.shiftKey) {
+      return DISPOSITIONS.newWindow;
+    }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
+    if (event.ctrlKey || event.metaKey || event.altKey) {
+      return DISPOSITIONS.newTab;
+    }
 
+    return DISPOSITIONS.currentTab;
+  }
+
+  // Extension pages may create tabs and windows without the tabs permission.
+  async function open(url, disposition) {
+    const extension = typeof chrome !== "undefined";
+
+    switch (disposition) {
+      case DISPOSITIONS.newTab:
+        if (extension && chrome.tabs?.create) {
+          await chrome.tabs.create({ url });
+        } else {
+          window.open(url, "_blank", "noopener");
+        }
+
+        break;
+
+      case DISPOSITIONS.newWindow:
+        if (extension && chrome.windows?.create) {
+          await chrome.windows.create({ url });
+        } else {
+          window.open(url, "_blank", "noopener,popup");
+        }
+
+        break;
+
+      default:
+        location.assign(url);
+    }
+  }
+
+  async function submit(disposition) {
     try {
       const destination = await resolveSearchDestination(input.value);
 
       if (destination.url) {
-        location.assign(destination.url);
+        await open(destination.url, disposition);
 
         return;
       }
@@ -67,13 +112,46 @@ export function createSearchForm({ form, input, icon, service, getPreferences, o
       }
 
       if (nativeSearch) {
-        await chrome.search.query({ text: destination.query, disposition: "CURRENT_TAB" });
+        await chrome.search.query({ text: destination.query, disposition });
       } else {
-        location.assign(`https://duckduckgo.com/?q=${encodeURIComponent(destination.query)}`);
+        await open(
+          `https://duckduckgo.com/?q=${encodeURIComponent(destination.query)}`,
+          disposition,
+        );
       }
     } catch {
       onError();
     }
+  }
+
+  input.addEventListener("input", updatePreview);
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    void submit(DISPOSITIONS.currentTab);
+  });
+
+  // Plain Enter and clicks submit the form; modified ones open elsewhere instead.
+  input.addEventListener("keydown", (event) => {
+    const disposition = dispositionFor(event);
+
+    if (event.key !== "Enter" || event.isComposing || disposition === DISPOSITIONS.currentTab) {
+      return;
+    }
+
+    event.preventDefault();
+    void submit(disposition);
+  });
+
+  submitButton.addEventListener("click", (event) => {
+    const disposition = dispositionFor(event);
+
+    if (disposition === DISPOSITIONS.currentTab) {
+      return;
+    }
+
+    event.preventDefault();
+    void submit(disposition);
   });
 
   document.addEventListener("keydown", (event) => {
