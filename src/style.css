@@ -503,7 +503,9 @@ h2 {
   line-height: 1.5;
 }
 
+/* Fast clicks on a row toggle it; they should not also select its text. */
 .setting > label {
+  user-select: none;
   min-width: 0;
   overflow-wrap: anywhere;
   padding-block: 8px;
