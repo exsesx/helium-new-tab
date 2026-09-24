@@ -27,9 +27,11 @@ export async function build() {
   await mkdir(`${root}dist/locales`, { recursive: true });
   await mkdir(`${root}dist/data`, { recursive: true });
 
-  for (const name of ["index.html", "assets"]) {
-    await cp(`${root}src/${name}`, `${root}dist/${name}`, { recursive: true });
-  }
+  // index.html is written below with both tab favicons embedded, so they need no copies.
+  await cp(`${root}src/assets`, `${root}dist/assets`, {
+    recursive: true,
+    filter: (source) => !/\/favicon-[^/]+$/.test(source),
+  });
 
   for (const name of ["LICENSE", "THIRD_PARTY_NOTICES.md", "PRIVACY.md", "licenses"]) {
     await cp(`${root}${name}`, `${root}dist/${name}`, { recursive: true });
