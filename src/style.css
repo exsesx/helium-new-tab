@@ -547,6 +547,9 @@ input[type="checkbox"]:before {
   background: var(--toggle-off);
   top: 3px;
   left: 3px;
+  transition:
+    transform 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 0.15s;
 }
 
 .setting:has(:disabled) > label,
@@ -567,7 +570,7 @@ input[type="checkbox"]:checked {
 
 input[type="checkbox"]:checked:before {
   background: var(--toggle-thumb);
-  left: 16px;
+  transform: translateX(13px);
 }
 
 .toast {
@@ -667,7 +670,14 @@ input[type="checkbox"]:checked:before {
 
 @media (prefers-reduced-motion: reduce) {
   *,
+  ::before,
+  ::after,
   ::backdrop {
+    transition: none !important;
+  }
+
+  /* Separate, so browsers without ::details-content keep the rule above. */
+  ::details-content {
     transition: none !important;
   }
 }
@@ -715,13 +725,55 @@ input[type="checkbox"]:checked:before {
 
 .font-overrides {
   margin-top: 24px;
+  interpolate-size: allow-keywords;
 }
 
 .font-overrides summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
   cursor: pointer;
   font-size: 13px;
   color: var(--secondary);
   padding-block: 12px;
+}
+
+.font-overrides summary::-webkit-details-marker {
+  display: none;
+}
+
+/* The select arrow's chevron, pointing right when closed and down when open. */
+.font-overrides summary::before {
+  content: "";
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(0) rotate(-45deg);
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Lift the rotated corner back to the text's center, as the select arrows do. */
+.font-overrides[open] summary::before {
+  transform: translateY(-25%) rotate(45deg);
+}
+
+/* Older browsers without ::details-content open the section at once. */
+.font-overrides::details-content {
+  block-size: 0;
+  overflow: clip;
+  /* Leave room for the focus rings of full-width fields. */
+  margin-inline: -4px;
+  padding-inline: 4px;
+  transition:
+    block-size 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    content-visibility 200ms allow-discrete;
+}
+
+.font-overrides[open]::details-content {
+  block-size: auto;
 }
 
 @media (max-width: 520px) {
