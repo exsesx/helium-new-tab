@@ -44,9 +44,9 @@ test("writes are debounced and omit device-only keys", async () => {
   const preferences = { theme: "light", showServiceIcons: true };
   const { write } = createSyncWriter(() => preferences);
 
-  write("theme");
+  write();
   preferences.theme = "dark";
-  write("theme");
+  write();
   expect(data["helium-tab"]).toBeUndefined();
 
   await Bun.sleep(1100);
@@ -59,7 +59,7 @@ test("flush writes a pending change at once and cancels the delayed write", asyn
   const { data } = fakeStorage();
   const { write, flush } = createSyncWriter(() => ({ theme: "dark", showServiceIcons: true }));
 
-  write("theme");
+  write();
   flush();
   await Bun.sleep(0);
 
@@ -78,23 +78,6 @@ test("flush without a pending change writes nothing", async () => {
   await Bun.sleep(0);
 
   expect(data).toEqual({});
-});
-
-test("changes stay unsent with their current values until a flush", () => {
-  fakeStorage();
-  const preferences = { theme: "dark", uiCustomFont: "Int", showDate: true };
-  const { write, flush, unsent } = createSyncWriter(() => preferences);
-
-  expect(unsent()).toEqual({});
-
-  write("uiCustomFont");
-  preferences.uiCustomFont = "Inter";
-
-  expect(unsent()).toEqual({ uiCustomFont: "Inter" });
-
-  flush();
-
-  expect(unsent()).toEqual({});
 });
 
 test("late copies of this device's earlier changes are not current", () => {
@@ -151,10 +134,9 @@ test("reports only sync changes to the preferences key", () => {
 
 test("does nothing without extension storage", async () => {
   expect(await readSynced()).toBeUndefined();
-  const { write, flush, unsent } = createSyncWriter(() => ({ theme: "dark" }));
+  const { write, flush } = createSyncWriter(() => ({ theme: "dark" }));
 
-  expect(() => write("theme")).not.toThrow();
+  expect(() => write()).not.toThrow();
   expect(() => flush()).not.toThrow();
-  expect(unsent()).toEqual({});
   expect(() => onSyncedChange(() => {})).not.toThrow();
 });

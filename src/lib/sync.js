@@ -54,18 +54,18 @@ export async function readSynced() {
 // closing the tab cannot drop it.
 export function createSyncWriter(getPreferences) {
   let timer;
-  const changedKeys = new Set();
+  let changed = false;
 
   function flush() {
     const area = syncArea();
 
     clearTimeout(timer);
 
-    if (!changedKeys.size) {
+    if (!changed) {
       return;
     }
 
-    changedKeys.clear();
+    changed = false;
 
     if (!area) {
       return;
@@ -76,24 +76,14 @@ export function createSyncWriter(getPreferences) {
     });
   }
 
-  function write(...keys) {
-    for (const key of keys) {
-      changedKeys.add(key);
-    }
+  function write() {
+    changed = true;
 
     clearTimeout(timer);
     timer = setTimeout(flush, WRITE_DELAY);
   }
 
-  // Changes made here that have not been sent yet, such as a font name being typed. A copy
-  // from another device predates them, so they must survive when it is applied.
-  function unsent() {
-    const preferences = getPreferences();
-
-    return Object.fromEntries([...changedKeys].map((key) => [key, preferences[key]]));
-  }
-
-  return { write, flush, unsent };
+  return { write, flush };
 }
 
 export function deviceId() {

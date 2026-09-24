@@ -59,7 +59,7 @@ function saveLocal() {
 // Typed font names wait for a pause; other changes sync at once so a quick close keeps them.
 function save(key) {
   saveLocal();
-  syncWriter.write(key);
+  syncWriter.write();
 
   if (!key.endsWith("CustomFont")) {
     syncWriter.flush();
@@ -147,14 +147,13 @@ if (preferences.showServiceIcons) {
   });
 }
 
-// Apply preferences changed by another tab or device, keeping changes made here that have not
-// been sent yet, such as a font name being typed. Returns whether anything changed.
+// Apply preferences changed by another tab or device. Returns whether anything changed.
 function applyExternal(value) {
   if (!changeOrder.isCurrent(value)) {
     return false;
   }
 
-  const next = readPreferences({ ...value, ...syncWriter.unsent() });
+  const next = readPreferences(value);
 
   if (JSON.stringify(next) === JSON.stringify(preferences)) {
     return false;
@@ -192,7 +191,7 @@ void readSynced().then((value) => {
   const merged = mergeSynced(value, preferences);
 
   if (!merged) {
-    syncWriter.write(...Object.keys(preferences));
+    syncWriter.write();
     syncWriter.flush();
   } else if (applyExternal(merged)) {
     saveLocal();
