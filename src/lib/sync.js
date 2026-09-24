@@ -4,6 +4,9 @@ import { PREFERENCES_KEY } from "./storage.js";
 const DEVICE_KEYS = ["showServiceIcons"];
 // Stay well below chrome.storage.sync's write quota while someone types a font name.
 const WRITE_DELAY = 1000;
+// How long a sent change stays protected after its write settles. Change events for earlier
+// writes, and other tabs passing them on through local storage, arrive within this window.
+const SETTLE_DELAY = 500;
 
 function syncArea() {
   return typeof chrome !== "undefined" ? chrome.storage?.sync : undefined;
@@ -53,6 +56,20 @@ export async function readSynced() {
 export function createSyncWriter(getPreferences) {
   let timer;
   const changedKeys = new Set();
+  // Sent keys and how many of their writes are still settling.
+  const sendingKeys = new Map();
+
+  function release(keys) {
+    for (const key of keys) {
+      const count = sendingKeys.get(key) - 1;
+
+      if (count) {
+        sendingKeys.set(key, count);
+      } else {
+        sendingKeys.delete(key);
+      }
+    }
+  }
 
   function flush() {
     const area = syncArea();
@@ -63,15 +80,23 @@ export function createSyncWriter(getPreferences) {
       return;
     }
 
+    const keys = [...changedKeys];
     changedKeys.clear();
 
     if (!area) {
       return;
     }
 
-    area.set({ [PREFERENCES_KEY]: shared(getPreferences()) }).catch(() => {
-      // Local storage still has the change; sync retries on the next save.
-    });
+    for (const key of keys) {
+      sendingKeys.set(key, (sendingKeys.get(key) ?? 0) + 1);
+    }
+
+    area
+      .set({ [PREFERENCES_KEY]: shared(getPreferences()) })
+      .catch(() => {
+        // Local storage still has the change; sync retries on the next save.
+      })
+      .finally(() => setTimeout(release, SETTLE_DELAY, keys));
   }
 
   function write(...keys) {
@@ -83,15 +108,17 @@ export function createSyncWriter(getPreferences) {
     timer = setTimeout(flush, WRITE_DELAY);
   }
 
-  // Changes made here that have not been sent yet, such as a font name being typed. A copy
-  // from another tab or device predates them, so they must survive when it is applied.
-  function unsent() {
+  // Changes made here that are unsent, such as a font name being typed, or still settling. A
+  // copy from another tab or device, or the change event of an earlier write, predates them,
+  // so they must survive when it is applied.
+  function pending() {
     const preferences = getPreferences();
+    const keys = new Set([...changedKeys, ...sendingKeys.keys()]);
 
-    return Object.fromEntries([...changedKeys].map((key) => [key, preferences[key]]));
+    return Object.fromEntries([...keys].map((key) => [key, preferences[key]]));
   }
 
-  return { write, flush, unsent };
+  return { write, flush, pending };
 }
 
 export function onSyncedChange(listener) {

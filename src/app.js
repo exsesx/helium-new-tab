@@ -138,10 +138,10 @@ if (preferences.showServiceIcons) {
   });
 }
 
-// Apply preferences changed by another tab or device, keeping changes made here that have not
-// been sent yet, such as a font name being typed. Returns whether anything changed.
+// Apply preferences changed by another tab or device, keeping changes made here that are not
+// saved everywhere yet, such as a font name being typed. Returns whether anything changed.
 function applyExternal(value) {
-  const next = readPreferences({ ...value, ...syncWriter.unsent() });
+  const next = readPreferences({ ...value, ...syncWriter.pending() });
 
   if (JSON.stringify(next) === JSON.stringify(preferences)) {
     return false;

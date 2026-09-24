@@ -74,21 +74,26 @@ test("flush without a pending change writes nothing", async () => {
   expect(data).toEqual({});
 });
 
-test("changes stay unsent with their current values until a flush", () => {
+test("changes stay pending until their write has settled", async () => {
   fakeStorage();
   const preferences = { theme: "dark", uiCustomFont: "Int", showDate: true };
-  const { write, flush, unsent } = createSyncWriter(() => preferences);
+  const { write, flush, pending } = createSyncWriter(() => preferences);
 
-  expect(unsent()).toEqual({});
+  expect(pending()).toEqual({});
 
   write("uiCustomFont");
   preferences.uiCustomFont = "Inter";
 
-  expect(unsent()).toEqual({ uiCustomFont: "Inter" });
+  expect(pending()).toEqual({ uiCustomFont: "Inter" });
 
+  // Change events for earlier writes can still arrive while this one settles.
   flush();
 
-  expect(unsent()).toEqual({});
+  expect(pending()).toEqual({ uiCustomFont: "Inter" });
+
+  await Bun.sleep(600);
+
+  expect(pending()).toEqual({});
 });
 
 test("reports only sync changes to the preferences key", () => {
@@ -106,10 +111,10 @@ test("reports only sync changes to the preferences key", () => {
 
 test("does nothing without extension storage", async () => {
   expect(await readSynced()).toBeUndefined();
-  const { write, flush, unsent } = createSyncWriter(() => ({ theme: "dark" }));
+  const { write, flush, pending } = createSyncWriter(() => ({ theme: "dark" }));
 
   expect(() => write("theme")).not.toThrow();
   expect(() => flush()).not.toThrow();
-  expect(unsent()).toEqual({});
+  expect(pending()).toEqual({});
   expect(() => onSyncedChange(() => {})).not.toThrow();
 });
