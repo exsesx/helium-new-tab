@@ -8,7 +8,14 @@ import {
   requestServiceIcons,
 } from "./lib/service-icons.js";
 import { PREFERENCES_KEY } from "./lib/storage.js";
-import { createSyncWriter, mergeSynced, onSyncedChange, readSynced } from "./lib/sync.js";
+import {
+  createChangeOrder,
+  createSyncWriter,
+  deviceId,
+  mergeSynced,
+  onSyncedChange,
+  readSynced,
+} from "./lib/sync.js";
 import { applyAppearance } from "./lib/preferences.js";
 
 const $ = (id) => document.getElementById(id);
@@ -28,6 +35,7 @@ const searchForm = createSearchForm({
   onError: () => notify(translator.text("searchError")),
 });
 const syncWriter = createSyncWriter(() => preferences);
+const changeOrder = createChangeOrder(deviceId(), preferences);
 let activeLocale;
 let toastTimer;
 
@@ -109,6 +117,7 @@ $("open-settings").addEventListener("click", async () => {
 
 function updatePreference(key, value) {
   preferences[key] = value;
+  changeOrder.stamp(preferences);
 
   if (key === "language") {
     void updateLanguage();
@@ -138,10 +147,14 @@ if (preferences.showServiceIcons) {
   });
 }
 
-// Apply preferences changed by another tab or device, keeping changes made here that are not
-// saved everywhere yet, such as a font name being typed. Returns whether anything changed.
+// Apply preferences changed by another tab or device, keeping changes made here that have not
+// been sent yet, such as a font name being typed. Returns whether anything changed.
 function applyExternal(value) {
-  const next = readPreferences({ ...value, ...syncWriter.pending() });
+  if (!changeOrder.isCurrent(value)) {
+    return false;
+  }
+
+  const next = readPreferences({ ...value, ...syncWriter.unsent() });
 
   if (JSON.stringify(next) === JSON.stringify(preferences)) {
     return false;

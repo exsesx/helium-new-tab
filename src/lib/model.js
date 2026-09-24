@@ -71,6 +71,15 @@ export function readPreferences(value) {
     }
   }
 
+  // When and on which device these preferences last changed; see createChangeOrder.
+  if (Number.isFinite(value.changedAt)) {
+    result.changedAt = value.changedAt;
+  }
+
+  if (typeof value.changedBy === "string") {
+    result.changedBy = value.changedBy.slice(0, 64);
+  }
+
   for (const key of [
     "uiCustomFont",
     "monoCustomFont",

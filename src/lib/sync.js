@@ -4,9 +4,8 @@ import { PREFERENCES_KEY } from "./storage.js";
 const DEVICE_KEYS = ["showServiceIcons"];
 // Stay well below chrome.storage.sync's write quota while someone types a font name.
 const WRITE_DELAY = 1000;
-// How long a sent change stays protected after its write settles. Change events for earlier
-// writes, and other tabs passing them on through local storage, arrive within this window.
-const SETTLE_DELAY = 500;
+// Names this device in its changes. Local storage is per device, so it is never synced.
+const DEVICE_ID_KEY = `${PREFERENCES_KEY}-device`;
 
 function syncArea() {
   return typeof chrome !== "undefined" ? chrome.storage?.sync : undefined;
@@ -56,20 +55,6 @@ export async function readSynced() {
 export function createSyncWriter(getPreferences) {
   let timer;
   const changedKeys = new Set();
-  // Sent keys and how many of their writes are still settling.
-  const sendingKeys = new Map();
-
-  function release(keys) {
-    for (const key of keys) {
-      const count = sendingKeys.get(key) - 1;
-
-      if (count) {
-        sendingKeys.set(key, count);
-      } else {
-        sendingKeys.delete(key);
-      }
-    }
-  }
 
   function flush() {
     const area = syncArea();
@@ -80,23 +65,15 @@ export function createSyncWriter(getPreferences) {
       return;
     }
 
-    const keys = [...changedKeys];
     changedKeys.clear();
 
     if (!area) {
       return;
     }
 
-    for (const key of keys) {
-      sendingKeys.set(key, (sendingKeys.get(key) ?? 0) + 1);
-    }
-
-    area
-      .set({ [PREFERENCES_KEY]: shared(getPreferences()) })
-      .catch(() => {
-        // Local storage still has the change; sync retries on the next save.
-      })
-      .finally(() => setTimeout(release, SETTLE_DELAY, keys));
+    area.set({ [PREFERENCES_KEY]: shared(getPreferences()) }).catch(() => {
+      // Local storage still has the change; sync retries on the next save.
+    });
   }
 
   function write(...keys) {
@@ -108,17 +85,61 @@ export function createSyncWriter(getPreferences) {
     timer = setTimeout(flush, WRITE_DELAY);
   }
 
-  // Changes made here that are unsent, such as a font name being typed, or still settling. A
-  // copy from another tab or device, or the change event of an earlier write, predates them,
-  // so they must survive when it is applied.
-  function pending() {
+  // Changes made here that have not been sent yet, such as a font name being typed. A copy
+  // from another device predates them, so they must survive when it is applied.
+  function unsent() {
     const preferences = getPreferences();
-    const keys = new Set([...changedKeys, ...sendingKeys.keys()]);
 
-    return Object.fromEntries([...keys].map((key) => [key, preferences[key]]));
+    return Object.fromEntries([...changedKeys].map((key) => [key, preferences[key]]));
   }
 
-  return { write, flush, pending };
+  return { write, flush, unsent };
+}
+
+export function deviceId() {
+  try {
+    let id = localStorage.getItem(DEVICE_ID_KEY);
+
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(DEVICE_ID_KEY, id);
+    }
+
+    return id;
+  } catch {
+    // Without storage, each tab orders only its own changes.
+    return crypto.randomUUID();
+  }
+}
+
+// Keeps this device's changes in order. Each change gets a later stamp than the last, and a
+// copy of an earlier one that arrives late, such as the sync event of a previous write or
+// another tab passing it on, is not current. Copies from other devices, or from versions
+// without stamps, always are.
+export function createChangeOrder(device, initial) {
+  let latest = initial?.changedBy === device ? initial.changedAt : 0;
+
+  return {
+    stamp(preferences) {
+      latest = Math.max(Date.now(), latest + 1);
+      preferences.changedAt = latest;
+      preferences.changedBy = device;
+    },
+
+    isCurrent(value) {
+      if (value?.changedBy !== device || !Number.isFinite(value.changedAt)) {
+        return true;
+      }
+
+      if (value.changedAt < latest) {
+        return false;
+      }
+
+      latest = value.changedAt;
+
+      return true;
+    },
+  };
 }
 
 export function onSyncedChange(listener) {
