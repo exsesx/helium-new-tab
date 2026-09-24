@@ -86,7 +86,9 @@ select {
   transition:
     background-color 0.15s,
     border-color 0.15s,
-    box-shadow 0.15s;
+    box-shadow 0.15s,
+    color 0.15s,
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 button {
@@ -315,6 +317,13 @@ h1 {
   background: var(--border);
 }
 
+/* A slight press confirms the click without moving anything around it. */
+.search-submit:active,
+.settings-button:active,
+.close-button:active {
+  transform: scale(0.97);
+}
+
 footer {
   display: flex;
   align-items: center;
@@ -389,29 +398,35 @@ dialog {
   box-shadow: -12px 0 60px #0002;
   transform: translateX(100%);
   opacity: 0;
+  /* Closing gets out of the way quickly. */
   transition:
-    transform 180ms ease-out,
-    opacity 180ms ease-out,
+    transform 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
     display 180ms allow-discrete,
     overlay 180ms allow-discrete;
 }
 
+/* Opening settles in like a sheet, a little slower than it leaves. */
 dialog[open] {
   transform: translateX(0);
   opacity: 1;
+  transition:
+    transform 240ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 240ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 dialog::backdrop {
   background: #00000030;
   opacity: 0;
   transition:
-    opacity 180ms ease-out,
+    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
     display 180ms allow-discrete,
     overlay 180ms allow-discrete;
 }
 
 dialog[open]::backdrop {
   opacity: 1;
+  transition: opacity 240ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @starting-style {
@@ -668,16 +683,29 @@ input[type="checkbox"]:checked:before {
   }
 }
 
+/* Reduced motion keeps fades and color changes, but nothing slides, scales, or turns. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after,
-  ::backdrop {
+  dialog,
+  dialog[open] {
+    transform: none !important;
+  }
+
+  .search-submit:active,
+  .settings-button:active,
+  .close-button:active {
+    transform: none;
+  }
+
+  input[type="checkbox"]::before {
+    transition: background-color 0.15s !important;
+  }
+
+  .font-overrides summary::before {
     transition: none !important;
   }
 
-  /* Separate, so browsers without ::details-content keep the rule above. */
-  ::details-content {
+  /* Separate, so browsers without ::details-content keep the rules above. */
+  .font-overrides::details-content {
     transition: none !important;
   }
 }

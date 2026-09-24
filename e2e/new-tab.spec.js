@@ -71,6 +71,17 @@ test("settings changes apply at once and persist", async ({ page }) => {
   await expect(page.locator("#date")).toBeVisible();
 });
 
+test("reduced motion fades Customize in place instead of sliding it", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  const dialog = page.getByRole("dialog");
+
+  await expect(dialog).toHaveCSS("opacity", "1");
+  await expect(dialog).toHaveCSS("transform", "none");
+});
+
 test("the dark background setting is disabled in a light appearance", async ({ page }) => {
   await page.goto("/");
 
