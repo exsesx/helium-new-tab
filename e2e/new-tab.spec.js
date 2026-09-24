@@ -241,3 +241,17 @@ test("a modified click on the submit button opens a new tab", async ({ page, con
 
   await expect(page).toHaveURL("/");
 });
+
+test("a middle click on the submit button opens a new tab", async ({ page, context }) => {
+  await routeRemote(context);
+  await page.goto("/");
+
+  await page.locator("#search").fill("example.com");
+  const opened = context.waitForEvent("page");
+  await page.locator(".search-submit").click({ button: "middle" });
+
+  const newPage = await opened;
+  await newPage.waitForURL("https://example.com/");
+
+  await expect(page).toHaveURL("/");
+});

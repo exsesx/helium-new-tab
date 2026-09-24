@@ -154,6 +154,18 @@ export function createSearchForm({ form, input, icon, service, getPreferences, o
     void submit(disposition);
   });
 
+  // A middle click opens a new tab, as it does on links; Shift still opens a window.
+  submitButton.addEventListener("auxclick", (event) => {
+    if (event.button !== 1) {
+      return;
+    }
+
+    const disposition = dispositionFor(event);
+
+    event.preventDefault();
+    void submit(disposition === DISPOSITIONS.newWindow ? disposition : DISPOSITIONS.newTab);
+  });
+
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && event.target === input && !event.isComposing) {
       event.preventDefault();

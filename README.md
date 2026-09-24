@@ -30,8 +30,8 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   Bare names open only with a known top-level domain, so `example.com` opens a site while
   `next.js` searches. Local names such as `localhost:3000`, `printer.local`, and IP
   addresses open over HTTP. Press `/` to focus search while the page has focus.
-  Hold Ctrl, Cmd, or Alt while pressing Enter or clicking the arrow to open the result in a
-  new tab; hold Shift to open it in a new window.
+  Hold Ctrl, Cmd, or Alt while pressing Enter or clicking the arrow, or middle-click the
+  arrow, to open the result in a new tab; hold Shift to open it in a new window.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
 - Preferences saved in the extension's browser profile and synced across devices when the
   browser syncs extension data. Service icons stay a per-device choice.
