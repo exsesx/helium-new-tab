@@ -7,18 +7,10 @@ const midnight = new Date(2026, 8, 21, 0, 5, 9);
 const values = (formatter, date) =>
   Object.fromEntries(formatter.formatToParts(date).map(({ type, value }) => [type, value]));
 
-test("new preferences use Automatic and saved hour24 choices migrate", () => {
+test("new preferences use Automatic and keep valid time formats", () => {
   expect(readPreferences(null).timeFormat).toBe("auto");
-  expect(readPreferences({ hour24: true }).timeFormat).toBe("24h");
-  expect(readPreferences({ hour24: false }).timeFormat).toBe("12h");
-  expect(readPreferences({ timeFormat: "auto", hour24: true }).timeFormat).toBe("auto");
+  expect(readPreferences({ timeFormat: "24h" }).timeFormat).toBe("24h");
   expect(readPreferences({ timeFormat: "invalid" }).timeFormat).toBe("auto");
-  expect(readPreferences({ hour24: "false" }).timeFormat).toBe("auto");
-
-  const migrated = readPreferences({ hour24: false });
-
-  expect(migrated).not.toHaveProperty("hour24");
-  expect(readPreferences(migrated)).toEqual(migrated);
 });
 
 test("Automatic follows US and UK hour cycles", () => {

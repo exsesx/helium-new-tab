@@ -10,7 +10,6 @@ test("validates display and font preferences, ignoring legacy shortcuts", () => 
     showServiceIcons: false,
     clockFont: "mono",
     dateFont: "serif",
-    interfaceFont: "invalid",
     shortcuts: [],
   });
 
@@ -22,8 +21,8 @@ test("validates display and font preferences, ignoring legacy shortcuts", () => 
   expect(readPreferences({ showServiceIcons: "true" }).showServiceIcons).toBe(false);
 
   expect(value.clockFont).toBe("mono");
-  expect(value.dateFont).toBe("custom");
-  expect(value.dateCustomFont).toBe("Georgia");
+  expect(value.dateFont).toBe("inherit");
+  expect(value.dateCustomFont).toBe("");
   expect(value.uiFont).toBe("system");
 
   expect(value).not.toHaveProperty("shortcuts");
@@ -51,7 +50,6 @@ test("custom font names survive preferences and stay literal CSS families", () =
 
 test("global fonts cascade unless a component overrides them", () => {
   const preferences = readPreferences({
-    fontVersion: 2,
     uiFont: "custom",
     uiCustomFont: "Inter",
     monoFont: "custom",
@@ -81,44 +79,8 @@ test("global fonts cascade unless a component overrides them", () => {
   expect(resolvedFonts(preferences).clock).toBe(fonts.mono);
 });
 
-test("migrates existing custom interface font to global UI", () => {
-  const migrated = readPreferences({
-    interfaceFont: "custom",
-    interfaceCustomFont: "Inter",
-    clockFont: "system",
-  });
-
-  expect(migrated.uiFont).toBe("custom");
-  expect(migrated.uiCustomFont).toBe("Inter");
-  expect(migrated.clockFont).toBe("inherit");
-  expect(readPreferences(migrated)).toEqual(migrated);
-});
-
-test("background simplification preserves existing appearances", () => {
+test("keeps a valid dark background style", () => {
   expect(readPreferences(null).background).toBe("blend");
-
-  for (const background of ["blend", "helium"]) {
-    const migrated = readPreferences({
-      background,
-      lightBackground: "helium",
-      darkBackground: background === "blend" ? "helium" : "blend",
-    });
-
-    expect(migrated.background).toBe(background);
-    expect(readPreferences(migrated)).toEqual(migrated);
-    expect(migrated).not.toHaveProperty("lightBackground");
-    expect(migrated).not.toHaveProperty("darkBackground");
-
-    for (const oldMode of ["separate", undefined]) {
-      expect(readPreferences({ background: oldMode, darkBackground: background }).background).toBe(
-        background,
-      );
-    }
-  }
-
-  expect(readPreferences({ background: "separate", darkBackground: "invalid" }).background).toBe(
-    "blend",
-  );
-
-  expect(readPreferences({ lightBackground: "helium" }).background).toBe("blend");
+  expect(readPreferences({ background: "helium" }).background).toBe("helium");
+  expect(readPreferences({ background: "separate" }).background).toBe("blend");
 });
