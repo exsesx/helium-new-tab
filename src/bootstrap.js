@@ -1,6 +1,5 @@
 import { loadPreferences, applyAppearance } from "./lib/preferences.js";
-import { resolveLanguage } from "./i18n/languages.js";
-import { translate } from "./i18n/translate.js";
+import { resolveLanguage, translate } from "./i18n/languages.js";
 
 const preferences = loadPreferences();
 

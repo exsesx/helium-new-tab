@@ -1,5 +1,5 @@
 import english from "./locales/en.json";
-import { translate } from "./translate.js";
+import { translate } from "./languages.js";
 
 export { languages, resolveLanguage } from "./languages.js";
 
