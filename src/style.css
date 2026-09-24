@@ -398,12 +398,13 @@ dialog {
   box-shadow: -12px 0 60px #0002;
   transform: translateX(100%);
   opacity: 0;
-  /* Closing gets out of the way quickly. */
+  /* Closing slides out on the same sheet curve, a little quicker than opening. The fade
+     trails the slide, so the panel is seen leaving instead of vanishing on the spot. */
   transition:
-    transform 180ms cubic-bezier(0.23, 1, 0.32, 1),
-    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
-    display 180ms allow-discrete,
-    overlay 180ms allow-discrete;
+    transform 220ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 220ms ease,
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
 }
 
 /* Opening settles in like a sheet, a little slower than it leaves. */
@@ -419,9 +420,9 @@ dialog::backdrop {
   background: #00000030;
   opacity: 0;
   transition:
-    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
-    display 180ms allow-discrete,
-    overlay 180ms allow-discrete;
+    opacity 220ms ease,
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
 }
 
 dialog[open]::backdrop {
