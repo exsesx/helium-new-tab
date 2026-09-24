@@ -136,5 +136,12 @@ export function createSettings({ getPreferences, onChange, translator, languages
       sync();
       dialog.showModal();
     },
+
+    // Show changes that arrive from another tab or device while the panel is open.
+    refresh() {
+      if (dialog.open) {
+        sync();
+      }
+    },
   };
 }

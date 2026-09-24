@@ -35,10 +35,12 @@ test("device-only keys stay local when merging synced preferences", () => {
 
 test("writes are debounced and omit device-only keys", async () => {
   const { data } = fakeStorage();
-  const { write } = createSyncWriter();
+  const preferences = { theme: "light", showServiceIcons: true };
+  const { write } = createSyncWriter(() => preferences);
 
-  write({ theme: "light", showServiceIcons: true });
-  write({ theme: "dark", showServiceIcons: true });
+  write("theme");
+  preferences.theme = "dark";
+  write("theme");
   expect(data["helium-tab"]).toBeUndefined();
 
   await Bun.sleep(1100);
@@ -49,9 +51,9 @@ test("writes are debounced and omit device-only keys", async () => {
 
 test("flush writes a pending change at once and cancels the delayed write", async () => {
   const { data } = fakeStorage();
-  const { write, flush } = createSyncWriter();
+  const { write, flush } = createSyncWriter(() => ({ theme: "dark", showServiceIcons: true }));
 
-  write({ theme: "dark", showServiceIcons: true });
+  write("theme");
   flush();
   await Bun.sleep(0);
 
@@ -66,10 +68,27 @@ test("flush writes a pending change at once and cancels the delayed write", asyn
 test("flush without a pending change writes nothing", async () => {
   const { data } = fakeStorage();
 
-  createSyncWriter().flush();
+  createSyncWriter(() => ({ theme: "dark" })).flush();
   await Bun.sleep(0);
 
   expect(data).toEqual({});
+});
+
+test("changes stay unsent with their current values until a flush", () => {
+  fakeStorage();
+  const preferences = { theme: "dark", uiCustomFont: "Int", showDate: true };
+  const { write, flush, unsent } = createSyncWriter(() => preferences);
+
+  expect(unsent()).toEqual({});
+
+  write("uiCustomFont");
+  preferences.uiCustomFont = "Inter";
+
+  expect(unsent()).toEqual({ uiCustomFont: "Inter" });
+
+  flush();
+
+  expect(unsent()).toEqual({});
 });
 
 test("reports only sync changes to the preferences key", () => {
@@ -87,9 +106,10 @@ test("reports only sync changes to the preferences key", () => {
 
 test("does nothing without extension storage", async () => {
   expect(await readSynced()).toBeUndefined();
-  const { write, flush } = createSyncWriter();
+  const { write, flush, unsent } = createSyncWriter(() => ({ theme: "dark" }));
 
-  expect(() => write({ theme: "dark" })).not.toThrow();
+  expect(() => write("theme")).not.toThrow();
   expect(() => flush()).not.toThrow();
+  expect(unsent()).toEqual({});
   expect(() => onSyncedChange(() => {})).not.toThrow();
 });

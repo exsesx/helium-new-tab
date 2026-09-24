@@ -48,40 +48,50 @@ export async function readSynced() {
   }
 }
 
-// Debounces writes; flush() sends a pending write at once so closing the tab cannot drop it.
-export function createSyncWriter() {
+// Debounces writes of the current preferences; flush() sends a pending write at once so
+// closing the tab cannot drop it.
+export function createSyncWriter(getPreferences) {
   let timer;
-  let pending;
+  const changedKeys = new Set();
 
   function flush() {
     const area = syncArea();
 
     clearTimeout(timer);
 
-    if (!area || !pending) {
+    if (!changedKeys.size) {
       return;
     }
 
-    const value = shared(pending);
-    pending = undefined;
+    changedKeys.clear();
 
-    area.set({ [PREFERENCES_KEY]: value }).catch(() => {
+    if (!area) {
+      return;
+    }
+
+    area.set({ [PREFERENCES_KEY]: shared(getPreferences()) }).catch(() => {
       // Local storage still has the change; sync retries on the next save.
     });
   }
 
-  function write(preferences) {
-    if (!syncArea()) {
-      return;
+  function write(...keys) {
+    for (const key of keys) {
+      changedKeys.add(key);
     }
-
-    pending = preferences;
 
     clearTimeout(timer);
     timer = setTimeout(flush, WRITE_DELAY);
   }
 
-  return { write, flush };
+  // Changes made here that have not been sent yet, such as a font name being typed. A copy
+  // from another tab or device predates them, so they must survive when it is applied.
+  function unsent() {
+    const preferences = getPreferences();
+
+    return Object.fromEntries([...changedKeys].map((key) => [key, preferences[key]]));
+  }
+
+  return { write, flush, unsent };
 }
 
 export function onSyncedChange(listener) {

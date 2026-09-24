@@ -115,6 +115,33 @@ test("Customize closes on a backdrop click but not after a dragged selection", a
   await expect(dialog).not.toHaveAttribute("open");
 });
 
+test("changes from another tab apply while Customize is open and are not reverted", async ({
+  context,
+}) => {
+  const first = await context.newPage();
+  const second = await context.newPage();
+  await first.goto("/");
+  await second.goto("/");
+
+  await first.getByRole("button", { name: "Customize" }).click();
+  await second.getByRole("button", { name: "Customize" }).click();
+  await second.getByLabel("Appearance").selectOption("dark");
+  await second.keyboard.press("Escape");
+
+  // The open panel shows the other tab's change instead of keeping a stale copy.
+  await expect(first.getByLabel("Appearance")).toHaveValue("dark");
+
+  await first.getByRole("switch", { name: "Display seconds" }).check();
+
+  // The second tab picks up that later change and keeps its own appearance.
+  await expect(second.locator("#clock")).toHaveText(/\d:\d\d:\d\d/);
+  await expect(second.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  const saved = await second.evaluate(() => JSON.parse(localStorage.getItem("helium-tab")));
+
+  expect(saved).toMatchObject({ theme: "dark", showSeconds: true });
+});
+
 test("switches the interface language", async ({ page }) => {
   await page.goto("/");
 

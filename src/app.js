@@ -36,7 +36,7 @@ const searchForm = createSearchForm({
   getPreferences: () => preferences,
   onError: () => notify(translator.text("searchError")),
 });
-const syncWriter = createSyncWriter();
+const syncWriter = createSyncWriter(() => preferences);
 let activeLocale;
 let toastTimer;
 
@@ -60,7 +60,7 @@ function saveLocal() {
 // Typed font names wait for a pause; other changes sync at once so a quick close keeps them.
 function save(key) {
   saveLocal();
-  syncWriter.write(preferences);
+  syncWriter.write(key);
 
   if (!key.endsWith("CustomFont")) {
     syncWriter.flush();
@@ -147,20 +147,18 @@ if (preferences.showServiceIcons) {
   });
 }
 
-// Apply preferences changed by another tab or device. Returns whether anything changed.
+// Apply preferences changed by another tab or device, keeping changes made here that have not
+// been sent yet, such as a font name being typed. Returns whether anything changed.
 function applyExternal(value) {
-  const next = readPreferences(value);
+  const next = readPreferences({ ...value, ...syncWriter.unsent() });
 
-  // Keep an in-progress edit intact; the next new tab loads the latest preferences.
-  if (
-    document.querySelector("dialog[open]") ||
-    JSON.stringify(next) === JSON.stringify(preferences)
-  ) {
+  if (JSON.stringify(next) === JSON.stringify(preferences)) {
     return false;
   }
 
   preferences = next;
   void updateLanguage(true);
+  settings?.refresh();
 
   return true;
 }
@@ -190,7 +188,7 @@ void readSynced().then((value) => {
   const merged = mergeSynced(value, preferences);
 
   if (!merged) {
-    syncWriter.write(preferences);
+    syncWriter.write(...Object.keys(preferences));
     syncWriter.flush();
   } else if (applyExternal(merged)) {
     saveLocal();
