@@ -71,6 +71,37 @@ test("settings changes apply at once and persist", async ({ page }) => {
   await expect(page.locator("#date")).toBeVisible();
 });
 
+test("Customize closes on a backdrop click but not after a dragged selection", async ({ page }) => {
+  await page.goto("/");
+  const dialog = page.getByRole("dialog");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByLabel("UI", { exact: true }).selectOption("custom");
+  const field = page.getByLabel("UI font family");
+  await field.fill("JetBrains Mono");
+
+  // Measure the field only after the panel finishes sliding in.
+  await dialog.evaluate((element) =>
+    Promise.all(element.getAnimations().map((animation) => animation.finished)),
+  );
+
+  const box = await field.boundingBox();
+  const backdrop = { x: 100, y: box.y + box.height / 2 };
+
+  // Select the name by dragging from inside the field and releasing over the backdrop.
+  await page.mouse.move(box.x + box.width - 10, backdrop.y);
+  await page.mouse.down();
+  await page.mouse.move(backdrop.x, backdrop.y, { steps: 8 });
+  await page.mouse.up();
+
+  // A closing panel stays visible while it fades out, so check that it is still open.
+  await expect(dialog).toHaveAttribute("open");
+
+  await page.mouse.click(backdrop.x, backdrop.y);
+
+  await expect(dialog).not.toHaveAttribute("open");
+});
+
 test("switches the interface language", async ({ page }) => {
   await page.goto("/");
 
