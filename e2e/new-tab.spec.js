@@ -71,6 +71,19 @@ test("settings changes apply at once and persist", async ({ page }) => {
   await expect(page.locator("#date")).toBeVisible();
 });
 
+test("the dark background setting is disabled in a light appearance", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByLabel("Appearance").selectOption("light");
+
+  await expect(page.getByLabel("Dark background")).toBeDisabled();
+
+  await page.getByLabel("Appearance").selectOption("system");
+
+  await expect(page.getByLabel("Dark background")).toBeEnabled();
+});
+
 test("Customize closes on a backdrop click but not after a dragged selection", async ({ page }) => {
   await page.goto("/");
   const dialog = page.getByRole("dialog");

@@ -32,14 +32,19 @@ export function createSettings({ getPreferences, onChange, translator, languages
     ...["ui", "mono", "clock", "date", "search"].map((key) => [`${key}-font`, `${key}Font`]),
   ];
 
-  // These settings change nothing while the clock or date is hidden.
+  // These settings change nothing in a light appearance or while the clock or date is hidden.
+  const usesDarkBackground = (preferences) => preferences.theme !== "light";
+  const showsClock = (preferences) => preferences.showClock;
+  const showsDate = (preferences) => preferences.showDate;
+
   const dependencies = [
-    ["time-format", "showClock"],
-    ["show-seconds", "showClock"],
-    ["clock-font", "showClock"],
-    ["clock-custom-font", "showClock"],
-    ["date-font", "showDate"],
-    ["date-custom-font", "showDate"],
+    ["background", usesDarkBackground],
+    ["time-format", showsClock],
+    ["show-seconds", showsClock],
+    ["clock-font", showsClock],
+    ["clock-custom-font", showsClock],
+    ["date-font", showsDate],
+    ["date-custom-font", showsDate],
   ];
 
   // Render each custom name in its own font, so a missing font is visible while typing.
@@ -65,8 +70,8 @@ export function createSettings({ getPreferences, onChange, translator, languages
       }
     }
 
-    for (const [id, key] of dependencies) {
-      find(id).disabled = !preferences[key];
+    for (const [id, isActive] of dependencies) {
+      find(id).disabled = !isActive(preferences);
     }
 
     for (const key of ["ui", "mono", "clock", "date", "search"]) {
