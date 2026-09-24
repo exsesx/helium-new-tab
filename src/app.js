@@ -1,4 +1,4 @@
-import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
+import { createTranslator, languages, loadCatalog, resolveLanguage } from "./i18n/index.js";
 import { createClock } from "./lib/clock.js";
 import { readPreferences } from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
@@ -17,7 +17,16 @@ const bootstrapped = Boolean(window.__heliumTabPreferences);
 let preferences = window.__heliumTabPreferences ?? loadPreferences();
 delete window.__heliumTabPreferences;
 
-const translator = createTranslator();
+// bootstrap.js already requested the startup language; later selections load normally.
+let earlyCatalog = window.__heliumTabCatalog;
+delete window.__heliumTabCatalog;
+
+const translator = createTranslator((language) => {
+  const early = earlyCatalog;
+  earlyCatalog = undefined;
+
+  return early?.language === language ? early.messages : loadCatalog(language);
+});
 const clock = createClock({ clock: $("clock"), date: $("date"), container: $("clock-block") });
 const searchForm = createSearchForm({
   form: $("search-form"),
@@ -204,6 +213,7 @@ async function updateLanguage(updateAppearance = false) {
 
   document.documentElement.lang = result.failed ? "en" : selection.locale;
   translator.apply(document);
+  delete document.documentElement.dataset.translating;
 
   if (result.failed) {
     notify(translator.text("languageError"));

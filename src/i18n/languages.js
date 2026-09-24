@@ -39,6 +39,17 @@ export const languages = {
   "zh-Hant": "繁體中文",
 };
 
+// Resolves against the page, so bootstrap.js and the app bundle request the same file.
+export async function loadCatalog(language) {
+  const response = await fetch(new URL(`locales/${language}.json`, document.baseURI));
+
+  if (!response.ok) {
+    throw new Error("Translation unavailable");
+  }
+
+  return response.json();
+}
+
 export function resolveLanguage(choice, preferred = []) {
   if (Object.hasOwn(languages, choice)) {
     return { language: choice, locale: choice };

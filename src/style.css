@@ -751,6 +751,15 @@ input[type="checkbox"]:checked:before {
   visibility: hidden;
 }
 
+/* Likewise keep English text hidden until the chosen translation applies; see bootstrap.js. */
+:root[data-translating] footer {
+  visibility: hidden;
+}
+
+:root[data-translating] #search::placeholder {
+  color: transparent;
+}
+
 :root[data-show-clock="false"] h1,
 :root[data-show-date="false"] #date,
 :root[data-show-clock="false"][data-show-date="false"] .clock-block {

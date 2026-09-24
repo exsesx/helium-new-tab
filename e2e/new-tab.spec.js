@@ -81,6 +81,37 @@ test("switches the interface language", async ({ page }) => {
   await expect(page.locator("#search")).toHaveAttribute("placeholder", /[Ss]uche/);
 });
 
+test("a saved language never paints English text first", async ({ page }) => {
+  // Record the footer text each frame is about to paint, from the first frame it exists.
+  await page.addInitScript(() => {
+    window.paintedHints = [];
+
+    function record() {
+      const hint = document.querySelector(".keyboard-hint [data-i18n]");
+
+      if (hint) {
+        const hidden = getComputedStyle(hint).visibility === "hidden";
+        window.paintedHints.push(hidden ? "hidden" : hint.textContent);
+      }
+
+      if (window.paintedHints.length < 5) {
+        requestAnimationFrame(record);
+      }
+    }
+
+    requestAnimationFrame(record);
+  });
+
+  await savePreferences(page, { language: "de" });
+  await page.reload();
+  await page.waitForFunction(() => window.paintedHints.length >= 5);
+
+  const frames = await page.evaluate(() => window.paintedHints);
+
+  expect(frames).not.toContain("to search");
+  expect(frames.at(-1)).toBe("zum Suchen");
+});
+
 test("slash focuses search and Escape leaves it", async ({ page }) => {
   await page.goto("/");
 
