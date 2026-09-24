@@ -318,10 +318,12 @@ h1 {
 }
 
 /* A slight press confirms the click without moving anything around it. */
-.search-submit:active,
-.settings-button:active,
-.close-button:active {
-  transform: scale(0.97);
+@media (prefers-reduced-motion: no-preference) {
+  .search-submit:active,
+  .settings-button:active,
+  .close-button:active {
+    transform: scale(0.97);
+  }
 }
 
 footer {
@@ -688,15 +690,8 @@ input[type="checkbox"]:checked:before {
 
 /* Reduced motion keeps fades and color changes, but nothing slides, scales, or turns. */
 @media (prefers-reduced-motion: reduce) {
-  dialog,
-  dialog[open] {
+  dialog {
     transform: none !important;
-  }
-
-  .search-submit:active,
-  .settings-button:active,
-  .close-button:active {
-    transform: none;
   }
 
   input[type="checkbox"]::before {
@@ -763,15 +758,10 @@ input[type="checkbox"]:checked:before {
   display: flex;
   align-items: center;
   gap: 10px;
-  list-style: none;
   cursor: pointer;
   font-size: 13px;
   color: var(--secondary);
   padding-block: 12px;
-}
-
-.font-overrides summary::-webkit-details-marker {
-  display: none;
 }
 
 /* The select arrow's chevron, pointing right when closed and down when open. */
