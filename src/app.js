@@ -9,12 +9,12 @@ import {
 } from "./lib/service-icons.js";
 import { PREFERENCES_KEY } from "./lib/storage.js";
 import { createSyncWriter, mergeSynced, onSyncedChange, readSynced } from "./lib/sync.js";
-import { loadPreferences, applyAppearance } from "./lib/preferences.js";
+import { applyAppearance } from "./lib/preferences.js";
 
 const $ = (id) => document.getElementById(id);
 
-const bootstrapped = Boolean(window.__heliumTabPreferences);
-let preferences = window.__heliumTabPreferences ?? loadPreferences();
+// bootstrap.js runs first and has already validated and applied these.
+let preferences = window.__heliumTabPreferences;
 delete window.__heliumTabPreferences;
 
 // bootstrap.js already requested the startup language; later selections load normally.
@@ -195,7 +195,7 @@ void readSynced().then((value) => {
   }
 });
 
-void updateLanguage(!bootstrapped);
+void updateLanguage();
 
 async function updateLanguage(updateAppearance = false) {
   const selection = resolveLanguage(preferences.language, navigator.languages);
