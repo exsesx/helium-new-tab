@@ -1,24 +1,33 @@
 import { loadPreferences, applyAppearance } from "./lib/preferences.js";
-import { loadCatalog, resolveLanguage } from "./i18n/languages.js";
+import { resolveLanguage } from "./i18n/languages.js";
+import { translate } from "./i18n/translate.js";
 
 const preferences = loadPreferences();
 
-// The build extracts only these short titles from the translation catalogs.
+// The build embeds only the page's own short messages from each translation catalog.
 const selection = resolveLanguage(preferences.language, navigator.languages);
-document.title = __TAB_TITLES__[selection.language];
+const messages = __PAGE_MESSAGES__[selection.language];
+document.title = messages.newTab;
 applyAppearance(preferences);
 
 // Hand off the validated preferences without rereading storage or resolving fonts.
 window.__heliumTabPreferences = preferences;
 
-// Other languages start loading now, and the page's English text stays hidden until app.js
-// applies them, so a new tab never paints the wrong language first.
+// Translate the page while it is parsed, so it never paints English first. Observer callbacks
+// run before the browser can paint parsed content. Customize loads its full catalog later.
 if (selection.language !== "en") {
-  const messages = loadCatalog(selection.language);
+  const translatePage = () => translate(document, (key) => messages[key]);
+  const observer = new MutationObserver(translatePage);
 
-  // app.js reports failures; this only keeps an early one from being logged as unhandled.
-  messages.catch(() => {});
+  document.documentElement.lang = selection.locale;
+  observer.observe(document, { childList: true, subtree: true });
 
-  document.documentElement.dataset.translating = "";
-  window.__heliumTabCatalog = { language: selection.language, messages };
+  document.addEventListener(
+    "readystatechange",
+    () => {
+      observer.disconnect();
+      translatePage();
+    },
+    { once: true },
+  );
 }

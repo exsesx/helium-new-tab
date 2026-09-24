@@ -163,20 +163,20 @@ test("switches the interface language", async ({ page }) => {
   await expect(page.locator("#search")).toHaveAttribute("placeholder", /[Ss]uche/);
 });
 
-test("a saved language never paints English text first", async ({ page }) => {
-  // Record the footer text each frame is about to paint, from the first frame it exists.
+test("a saved language is on the page from its first paint", async ({ page }) => {
+  // Record the text each frame is about to paint, from the first frame the page has any.
   await page.addInitScript(() => {
-    window.paintedHints = [];
+    window.paintedText = [];
 
     function record() {
       const hint = document.querySelector(".keyboard-hint [data-i18n]");
+      const search = document.getElementById("search");
 
-      if (hint) {
-        const hidden = getComputedStyle(hint).visibility === "hidden";
-        window.paintedHints.push(hidden ? "hidden" : hint.textContent);
+      if (hint && search) {
+        window.paintedText.push(`${hint.textContent} | ${search.placeholder}`);
       }
 
-      if (window.paintedHints.length < 5) {
+      if (window.paintedText.length < 5) {
         requestAnimationFrame(record);
       }
     }
@@ -186,12 +186,12 @@ test("a saved language never paints English text first", async ({ page }) => {
 
   await savePreferences(page, { language: "de" });
   await page.reload();
-  await page.waitForFunction(() => window.paintedHints.length >= 5);
+  await page.waitForFunction(() => window.paintedText.length >= 5);
 
-  const frames = await page.evaluate(() => window.paintedHints);
+  const frames = await page.evaluate(() => window.paintedText);
 
-  expect(frames).not.toContain("to search");
-  expect(frames.at(-1)).toBe("zum Suchen");
+  expect(new Set(frames)).toEqual(new Set(["zum Suchen | Suchen oder URL eingeben"]));
+  await expect(page.locator("html")).toHaveAttribute("lang", "de");
 });
 
 test("slash focuses search and Escape leaves it", async ({ page }) => {

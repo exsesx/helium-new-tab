@@ -74,16 +74,24 @@ export async function build() {
   const bangs = await Bun.file(`${root}src/data/bangs.json`).json();
   await Bun.write(`${root}dist/data/bangs.json`, JSON.stringify(compactCatalog(bangs)));
 
+  // bootstrap.js translates the page before its first paint, so it carries the messages that
+  // index.html itself uses, in every language. Customize loads its full catalog later.
+  const pageKeys = new Set(
+    [...html.matchAll(/data-i18n(?:-label|-placeholder)?="([^"]+)"/g)].map(([, key]) => key),
+  );
+  const pageMessages = Object.fromEntries(
+    catalogs.map(([language, messages]) => [
+      language,
+      Object.fromEntries([...pageKeys].map((key) => [key, messages[key]])),
+    ]),
+  );
+
   const startup = await bundle({
     entrypoints: [`${root}src/bootstrap.js`],
     target: "browser",
     format: "iife",
     minify: true,
-    define: {
-      __TAB_TITLES__: JSON.stringify(
-        Object.fromEntries(catalogs.map(([language, messages]) => [language, messages.newTab])),
-      ),
-    },
+    define: { __PAGE_MESSAGES__: JSON.stringify(pageMessages) },
   });
 
   await Bun.write(`${root}dist/bootstrap.js`, startup.outputs[0]);
