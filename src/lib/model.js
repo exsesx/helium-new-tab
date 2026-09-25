@@ -6,7 +6,6 @@ export const fonts = {
 };
 
 export const defaults = {
-  fontVersion: 2,
   theme: "system",
   background: "blend",
   language: "auto",
@@ -34,13 +33,8 @@ export function readPreferences(value) {
     return result;
   }
 
-  // Both light styles are white; preserve the effective dark style from older settings.
-  const background = ["blend", "helium"].includes(value.background)
-    ? value.background
-    : value.darkBackground;
-
-  if (["blend", "helium"].includes(background)) {
-    result.background = background;
+  if (["blend", "helium"].includes(value.background)) {
+    result.background = value.background;
   }
 
   if (Object.hasOwn(languages, value.language)) {
@@ -57,8 +51,6 @@ export function readPreferences(value) {
 
   if (["auto", "12h", "24h"].includes(value.timeFormat)) {
     result.timeFormat = value.timeFormat;
-  } else if (typeof value.hour24 === "boolean") {
-    result.timeFormat = value.hour24 ? "24h" : "12h";
   }
 
   for (const key of ["showSeconds", "showDate", "showServiceIcons"]) {
@@ -79,6 +71,15 @@ export function readPreferences(value) {
     }
   }
 
+  // When and on which device these preferences last changed; see createChangeOrder.
+  if (Number.isFinite(value.changedAt)) {
+    result.changedAt = value.changedAt;
+  }
+
+  if (typeof value.changedBy === "string") {
+    result.changedBy = value.changedBy.slice(0, 64);
+  }
+
   for (const key of [
     "uiCustomFont",
     "monoCustomFont",
@@ -88,37 +89,6 @@ export function readPreferences(value) {
   ]) {
     if (typeof value[key] === "string") {
       result[key] = value[key].slice(0, 120);
-    }
-  }
-
-  // Preserve deliberately chosen fonts from the original per-component settings.
-  if (value.fontVersion !== 2) {
-    const legacyNames = {
-      rounded: "Arial Rounded MT Bold",
-      serif: "Georgia",
-      humanist: "Avenir Next",
-    };
-
-    for (const [oldKey, newKey] of [
-      ["interface", "ui"],
-      ["clock", "clock"],
-      ["date", "date"],
-    ]) {
-      const oldFont = value[`${oldKey}Font`];
-
-      if (oldFont === "custom" && typeof value[`${oldKey}CustomFont`] === "string") {
-        result[`${newKey}Font`] = "custom";
-        result[`${newKey}CustomFont`] = value[`${oldKey}CustomFont`].slice(0, 120);
-      } else if (Object.hasOwn(legacyNames, oldFont)) {
-        result[`${newKey}Font`] = "custom";
-        result[`${newKey}CustomFont`] = legacyNames[oldFont];
-      } else if (oldFont === "mono") {
-        result[`${newKey}Font`] = newKey === "ui" ? "custom" : "mono";
-
-        if (newKey === "ui") {
-          result.uiCustomFont = "Menlo";
-        }
-      }
     }
   }
 

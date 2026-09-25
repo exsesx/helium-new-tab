@@ -8,13 +8,20 @@ import {
   requestServiceIcons,
 } from "./lib/service-icons.js";
 import { PREFERENCES_KEY } from "./lib/storage.js";
-import { createSyncWriter, mergeSynced, onSyncedChange, readSynced } from "./lib/sync.js";
-import { loadPreferences, applyAppearance } from "./lib/preferences.js";
+import {
+  createChangeOrder,
+  createSyncWriter,
+  deviceId,
+  mergeSynced,
+  onSyncedChange,
+  readSynced,
+} from "./lib/sync.js";
+import { applyAppearance } from "./lib/preferences.js";
 
 const $ = (id) => document.getElementById(id);
 
-const bootstrapped = Boolean(window.__heliumTabPreferences);
-let preferences = window.__heliumTabPreferences ?? loadPreferences();
+// bootstrap.js runs first and has already validated and applied these.
+let preferences = window.__heliumTabPreferences;
 delete window.__heliumTabPreferences;
 
 const translator = createTranslator();
@@ -27,7 +34,8 @@ const searchForm = createSearchForm({
   getPreferences: () => preferences,
   onError: () => notify(translator.text("searchError")),
 });
-const syncWriter = createSyncWriter();
+const syncWriter = createSyncWriter(() => preferences);
+const changeOrder = createChangeOrder(deviceId(), preferences);
 let activeLocale;
 let toastTimer;
 
@@ -51,7 +59,7 @@ function saveLocal() {
 // Typed font names wait for a pause; other changes sync at once so a quick close keeps them.
 function save(key) {
   saveLocal();
-  syncWriter.write(preferences);
+  syncWriter.write();
 
   if (!key.endsWith("CustomFont")) {
     syncWriter.flush();
@@ -109,6 +117,7 @@ $("open-settings").addEventListener("click", async () => {
 
 function updatePreference(key, value) {
   preferences[key] = value;
+  changeOrder.stamp(preferences);
 
   if (key === "language") {
     void updateLanguage();
@@ -140,18 +149,19 @@ if (preferences.showServiceIcons) {
 
 // Apply preferences changed by another tab or device. Returns whether anything changed.
 function applyExternal(value) {
+  if (!changeOrder.isCurrent(value)) {
+    return false;
+  }
+
   const next = readPreferences(value);
 
-  // Keep an in-progress edit intact; the next new tab loads the latest preferences.
-  if (
-    document.querySelector("dialog[open]") ||
-    JSON.stringify(next) === JSON.stringify(preferences)
-  ) {
+  if (JSON.stringify(next) === JSON.stringify(preferences)) {
     return false;
   }
 
   preferences = next;
   void updateLanguage(true);
+  settings?.refresh();
 
   return true;
 }
@@ -181,14 +191,14 @@ void readSynced().then((value) => {
   const merged = mergeSynced(value, preferences);
 
   if (!merged) {
-    syncWriter.write(preferences);
+    syncWriter.write();
     syncWriter.flush();
   } else if (applyExternal(merged)) {
     saveLocal();
   }
 });
 
-void updateLanguage(!bootstrapped);
+void updateLanguage();
 
 async function updateLanguage(updateAppearance = false) {
   const selection = resolveLanguage(preferences.language, navigator.languages);

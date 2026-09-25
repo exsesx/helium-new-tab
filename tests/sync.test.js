@@ -1,5 +1,11 @@
 import { afterEach, expect, test } from "bun:test";
-import { createSyncWriter, mergeSynced, onSyncedChange, readSynced } from "../src/lib/sync.js";
+import {
+  createChangeOrder,
+  createSyncWriter,
+  mergeSynced,
+  onSyncedChange,
+  readSynced,
+} from "../src/lib/sync.js";
 
 afterEach(() => {
   delete globalThis.chrome;
@@ -35,10 +41,12 @@ test("device-only keys stay local when merging synced preferences", () => {
 
 test("writes are debounced and omit device-only keys", async () => {
   const { data } = fakeStorage();
-  const { write } = createSyncWriter();
+  const preferences = { theme: "light", showServiceIcons: true };
+  const { write } = createSyncWriter(() => preferences);
 
-  write({ theme: "light", showServiceIcons: true });
-  write({ theme: "dark", showServiceIcons: true });
+  write();
+  preferences.theme = "dark";
+  write();
   expect(data["helium-tab"]).toBeUndefined();
 
   await Bun.sleep(1100);
@@ -49,9 +57,9 @@ test("writes are debounced and omit device-only keys", async () => {
 
 test("flush writes a pending change at once and cancels the delayed write", async () => {
   const { data } = fakeStorage();
-  const { write, flush } = createSyncWriter();
+  const { write, flush } = createSyncWriter(() => ({ theme: "dark", showServiceIcons: true }));
 
-  write({ theme: "dark", showServiceIcons: true });
+  write();
   flush();
   await Bun.sleep(0);
 
@@ -66,10 +74,49 @@ test("flush writes a pending change at once and cancels the delayed write", asyn
 test("flush without a pending change writes nothing", async () => {
   const { data } = fakeStorage();
 
-  createSyncWriter().flush();
+  createSyncWriter(() => ({ theme: "dark" })).flush();
   await Bun.sleep(0);
 
   expect(data).toEqual({});
+});
+
+test("late copies of this device's earlier changes are not current", () => {
+  const order = createChangeOrder("this");
+  const first = { theme: "dark" };
+  const second = { theme: "light" };
+
+  order.stamp(first);
+  const earlier = { ...first };
+  order.stamp(second);
+
+  expect(second.changedAt).toBeGreaterThan(first.changedAt);
+  expect(second.changedBy).toBe("this");
+
+  // Sync events and other tabs can deliver the first change after the second.
+  expect(order.isCurrent(earlier)).toBe(false);
+  expect(order.isCurrent({ ...second })).toBe(true);
+});
+
+test("copies from other devices and unstamped versions are always current", () => {
+  const order = createChangeOrder("this");
+  order.stamp({});
+
+  expect(order.isCurrent({ theme: "dark", changedAt: 1, changedBy: "other" })).toBe(true);
+  expect(order.isCurrent({ theme: "dark" })).toBe(true);
+  expect(order.isCurrent(null)).toBe(true);
+});
+
+test("a newer copy of this device's changes from another tab moves the order forward", () => {
+  const saved = { changedAt: Date.now() + 60_000, changedBy: "this" };
+  const order = createChangeOrder("this", { changedAt: 5, changedBy: "this" });
+
+  expect(order.isCurrent(saved)).toBe(true);
+  expect(order.isCurrent({ changedAt: saved.changedAt - 1, changedBy: "this" })).toBe(false);
+
+  const next = {};
+  order.stamp(next);
+
+  expect(next.changedAt).toBeGreaterThan(saved.changedAt);
 });
 
 test("reports only sync changes to the preferences key", () => {
@@ -87,9 +134,9 @@ test("reports only sync changes to the preferences key", () => {
 
 test("does nothing without extension storage", async () => {
   expect(await readSynced()).toBeUndefined();
-  const { write, flush } = createSyncWriter();
+  const { write, flush } = createSyncWriter(() => ({ theme: "dark" }));
 
-  expect(() => write({ theme: "dark" })).not.toThrow();
+  expect(() => write()).not.toThrow();
   expect(() => flush()).not.toThrow();
   expect(() => onSyncedChange(() => {})).not.toThrow();
 });

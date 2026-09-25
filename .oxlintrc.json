@@ -19,7 +19,7 @@
     "chrome": "readonly",
     "Bun": "readonly",
     "process": "readonly",
-    "__TAB_TITLES__": "readonly"
+    "__PAGE_MESSAGES__": "readonly"
   },
   "ignorePatterns": ["dist/**"]
 }

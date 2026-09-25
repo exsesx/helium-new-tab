@@ -1,4 +1,5 @@
 import english from "./locales/en.json";
+import { translate } from "./languages.js";
 
 export { languages, resolveLanguage } from "./languages.js";
 
@@ -46,27 +47,7 @@ export function createTranslator(
     },
 
     apply(root) {
-      for (const [attribute, target] of [
-        ["data-i18n", null],
-        ["data-i18n-label", "aria-label"],
-        ["data-i18n-placeholder", "placeholder"],
-      ]) {
-        for (const element of root.querySelectorAll(`[${attribute}]`)) {
-          const key = element.getAttribute(attribute);
-          const message = messages[key] ?? english[key];
-          const text = message?.replace("{font}", element.dataset.fontExample ?? "Inter");
-
-          if (text === undefined) {
-            continue;
-          }
-
-          if (target) {
-            element.setAttribute(target, text);
-          } else {
-            element.textContent = text;
-          }
-        }
-      }
+      translate(root, (key) => messages[key] ?? english[key]);
     },
   };
 }

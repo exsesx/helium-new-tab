@@ -13,6 +13,18 @@ test("embeds both tab favicons in the page", async () => {
   expect(html).toContain('href="data:image/png;base64,');
   expect(html).toContain('href="data:image/svg+xml;base64,');
   expect(html).not.toContain('href="assets/favicon-');
+  expect(await dist("assets/favicon-light.png").exists()).toBe(false);
+  expect(await dist("assets/favicon-dark.svg").exists()).toBe(false);
+});
+
+test("packages the extension icons and their editable source", async () => {
+  const manifest = await dist("manifest.json").json();
+
+  for (const path of Object.values(manifest.icons)) {
+    expect(await dist(path).exists()).toBe(true);
+  }
+
+  expect(await dist("assets/extension-icon.svg").exists()).toBe(true);
 });
 
 test("writes the package version into the packaged manifest", async () => {

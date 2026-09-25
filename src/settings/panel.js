@@ -32,14 +32,19 @@ export function createSettings({ getPreferences, onChange, translator, languages
     ...["ui", "mono", "clock", "date", "search"].map((key) => [`${key}-font`, `${key}Font`]),
   ];
 
-  // These settings change nothing while the clock or date is hidden.
+  // These settings change nothing in a light appearance or while the clock or date is hidden.
+  const usesDarkBackground = (preferences) => preferences.theme !== "light";
+  const showsClock = (preferences) => preferences.showClock;
+  const showsDate = (preferences) => preferences.showDate;
+
   const dependencies = [
-    ["time-format", "showClock"],
-    ["show-seconds", "showClock"],
-    ["clock-font", "showClock"],
-    ["clock-custom-font", "showClock"],
-    ["date-font", "showDate"],
-    ["date-custom-font", "showDate"],
+    ["background", usesDarkBackground],
+    ["time-format", showsClock],
+    ["show-seconds", showsClock],
+    ["clock-font", showsClock],
+    ["clock-custom-font", showsClock],
+    ["date-font", showsDate],
+    ["date-custom-font", showsDate],
   ];
 
   // Render each custom name in its own font, so a missing font is visible while typing.
@@ -65,8 +70,8 @@ export function createSettings({ getPreferences, onChange, translator, languages
       }
     }
 
-    for (const [id, key] of dependencies) {
-      find(id).disabled = !preferences[key];
+    for (const [id, isActive] of dependencies) {
+      find(id).disabled = !isActive(preferences);
     }
 
     for (const key of ["ui", "mono", "clock", "date", "search"]) {
@@ -96,17 +101,32 @@ export function createSettings({ getPreferences, onChange, translator, languages
 
   dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
 
-  dialog.addEventListener("click", (event) => {
+  // The backdrop belongs to the dialog, so clicks on it target the dialog itself.
+  function onBackdrop(event) {
     const bounds = dialog.getBoundingClientRect();
-    const clickedOutside =
+    const outsidePanel =
       event.clientX < bounds.left ||
       event.clientX > bounds.right ||
       event.clientY < bounds.top ||
       event.clientY > bounds.bottom;
 
-    if (event.target === dialog && clickedOutside) {
+    return event.target === dialog && outsidePanel;
+  }
+
+  // Close only when the press also started on the backdrop, so a text selection that is
+  // dragged past the panel's edge does not dismiss it.
+  let pressedBackdrop = false;
+
+  dialog.addEventListener("pointerdown", (event) => {
+    pressedBackdrop = onBackdrop(event);
+  });
+
+  dialog.addEventListener("click", (event) => {
+    if (pressedBackdrop && onBackdrop(event)) {
       dialog.close();
     }
+
+    pressedBackdrop = false;
   });
 
   document.body.append(dialog);
@@ -115,6 +135,13 @@ export function createSettings({ getPreferences, onChange, translator, languages
     open() {
       sync();
       dialog.showModal();
+    },
+
+    // Show changes that arrive from another tab or device while the panel is open.
+    refresh() {
+      if (dialog.open) {
+        sync();
+      }
     },
   };
 }

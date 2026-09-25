@@ -30,8 +30,9 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   Bare names open only with a known top-level domain, so `example.com` opens a site while
   `next.js` searches. Local names such as `localhost:3000`, `printer.local`, and IP
   addresses open over HTTP. Press `/` to focus search while the page has focus.
-  Hold Ctrl, Cmd, or Alt while pressing Enter or clicking the arrow to open the result in a
-  new tab; hold Shift to open it in a new window.
+  Hold Ctrl, Cmd, or Alt while pressing Enter or clicking the arrow, or middle-click the
+  arrow, to open the result in a background tab and stay on this page, as links do. Add
+  Shift to switch to the new tab, or hold only Shift to open a new window.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
 - Preferences saved in the extension's browser profile and synced across devices when the
   browser syncs extension data. Service icons stay a per-device choice.
@@ -60,7 +61,8 @@ favicon while you type a recognized bang. Icons come from the browser's own favi
 through the optional `favicon` permission, which the browser asks you to grant when you turn
 the setting on. Nothing is downloaded, and sites you have never visited keep the search icon.
 Removing the permission on the extensions page turns the setting off again.
-The image has rounded corners and fades in and out; reduced-motion settings disable the fade.
+The image has rounded corners and fades in and out. Reduced-motion settings keep fades like
+this one and remove movement, so Customize fades in place instead of sliding.
 Unknown bangs keep the search icon. The localhost preview cannot show service icons.
 Custom address-bar shortcuts are not included.
 The localhost preview supports the same local bangs and uses DuckDuckGo for ordinary searches.
@@ -74,7 +76,7 @@ src/                       # Everything that ships: edit here
   index.html               # New-tab page shell
   manifest.json            # Extension metadata and permissions
   app.js                   # Search, clock, preferences, language switching
-  bootstrap.js             # Synchronous title, appearance and font startup
+  bootstrap.js             # Synchronous title, appearance, font and page-text startup
   style.css                # Page and settings styles
   assets/                  # Tab favicons, extension SVG and raster icon sizes
   lib/                     # Preferences, font, search and date/time logic
@@ -120,8 +122,8 @@ The localhost preview uses DuckDuckGo and cannot verify native browser integrati
 - Check the tab title and favicon in light and dark browser appearance, including on a fresh tab.
 - Change appearance, language, clock, and font preferences; open another new tab and confirm
   they persist without a flash of the default settings.
-- Check Ctrl or Cmd+Enter and Shift+Enter open searches, bangs, and addresses in a new tab
-  or window.
+- Check Ctrl or Cmd+Enter opens searches, bangs, and addresses in a background tab,
+  Ctrl or Cmd+Shift+Enter switches to the new tab, and Shift+Enter opens a window.
 - Check `/` search focus, Escape dismissal, keyboard navigation in Customize, and the
   settings layout in narrow and short windows.
 
