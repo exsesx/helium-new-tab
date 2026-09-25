@@ -33,6 +33,14 @@ warnings, and no slower first paint.
 - Verify with unit tests for address validation and Playwright tests for adding,
   reordering, and opening sites.
 
+## Considering
+
+Ideas that are not approved yet and may be dropped.
+
+- Custom backgrounds, such as following the browser's theme colors or picking a color.
+  Chromium does not share theme colors with extensions beyond light or dark mode, so
+  following the browser needs investigation first.
+
 ## Not planned
 
 - Downloading bang catalog updates at runtime. The catalog ships with each release so the
