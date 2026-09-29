@@ -936,3 +936,57 @@ test("the scrim over an image follows the appearance", async ({ page }) => {
   expect(await scrim()).toMatch(/^color\(srgb 0\.11\d* 0\.12\d* 0\.12\d* \/ 0\.35\)$/);
   expect(await clockColor()).toBe("rgb(227, 229, 229)");
 });
+
+test("pinned tiles over a chosen color follow its text, not the appearance", async ({ page }) => {
+  const sites = [{ url: "https://example.com/", title: "Example" }];
+
+  // The tile's background, and the colors of its light and dark pairs, all as rgb().
+  const tileColors = () =>
+    page.locator("#pinned-sites .site-icon").evaluate((icon) => {
+      const probe = document.createElement("span");
+      const rgb = (color) => {
+        probe.style.color = color;
+
+        return getComputedStyle(probe).color;
+      };
+
+      document.body.append(probe);
+
+      const colors = {
+        tile: getComputedStyle(icon).backgroundColor,
+        light: rgb(icon.style.getPropertyValue("--tone")),
+        dark: rgb(icon.style.getPropertyValue("--tone-dark")),
+      };
+
+      probe.remove();
+
+      return colors;
+    });
+
+  // A pastel page in a dark appearance keeps the light tiles its dark text goes with.
+  await page.emulateMedia({ colorScheme: "dark" });
+  await savePinnedSites(page, sites, {
+    showPinnedSites: true,
+    background: "color",
+    backgroundColor: "#fbe58a",
+  });
+  await page.reload();
+
+  const onPastel = await tileColors();
+
+  expect(onPastel.tile).toBe(onPastel.light);
+
+  // A dark page in a light appearance gets the deep tiles its light text goes with.
+  await page.emulateMedia({ colorScheme: "light" });
+  await savePinnedSites(page, sites, {
+    showPinnedSites: true,
+    background: "color",
+    backgroundColor: "#1e2a4a",
+  });
+  await page.reload();
+
+  const onDark = await tileColors();
+
+  expect(onDark.tile).toBe(onDark.dark);
+  await expect(page.locator("#pinned-sites .site-icon")).not.toHaveCSS("box-shadow", "none");
+});
