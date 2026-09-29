@@ -56,7 +56,6 @@ export function renderPinnedSites(container, sites) {
     link.className = "pinned-site";
     link.href = site.url;
     link.rel = "noreferrer";
-    link.title = site.title;
     title.className = "pinned-title";
     title.textContent = site.title;
 

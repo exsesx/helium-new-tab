@@ -392,8 +392,9 @@ h1 {
   color: var(--text);
 }
 
-/* Letter tiles take their site's pastel; see site-tiles.js and palette.js. Hover lifts a
-   tile about as much as the search field lifts on focus. */
+/* Letter tiles take their site's pastel; see site-tiles.js and palette.js. Hover shifts a
+   tile's own surface, darker on light pages and lighter on dark ones, so neither state ever
+   matches the page. */
 .site-icon {
   display: grid;
   place-items: center;
@@ -414,7 +415,7 @@ h1 {
 .site-icon:not(.has-favicon) {
   --tile-bg: var(--tone);
   --tile-text: var(--tone-text);
-  --tile-hover-bg: color-mix(in srgb, var(--tone), #fff 45%);
+  --tile-hover-bg: color-mix(in srgb, var(--tone), #000 6%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -422,6 +423,10 @@ h1 {
     --tile-bg: var(--tone-dark);
     --tile-text: var(--tone-dark-text);
     --tile-hover-bg: color-mix(in srgb, var(--tone-dark), #fff 7%);
+  }
+
+  :root:not([data-theme="light"]) .site-icon.has-favicon {
+    --tile-hover-bg: color-mix(in srgb, var(--search-bg), var(--text) 12%);
   }
 }
 
@@ -431,10 +436,15 @@ h1 {
   --tile-hover-bg: color-mix(in srgb, var(--tone-dark), #fff 7%);
 }
 
-/* Favicons sit on the search field's surface and lift to its focused surface. */
+:root[data-theme="dark"] .site-icon.has-favicon {
+  --tile-hover-bg: color-mix(in srgb, var(--search-bg), var(--text) 12%);
+}
+
+/* Favicons rest on the search field's surface. Its focused surface matches the page in
+   some appearances, so hover derives from the resting one instead. */
 .site-icon.has-favicon {
   --tile-bg: var(--search-bg);
-  --tile-hover-bg: var(--search-focus-bg);
+  --tile-hover-bg: color-mix(in srgb, var(--search-bg), #000 6%);
 }
 
 .site-favicon {

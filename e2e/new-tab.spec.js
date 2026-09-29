@@ -469,6 +469,9 @@ test("pinned sites are on the page from its first paint without shifting it", as
   expect(frames[0]).toMatch(/^Ggithub\.com \| EExample @ /);
   await expect(pinnedLinks(page).first()).toHaveAccessibleName("github.com");
   await expect(pinnedLinks(page).first()).toHaveAttribute("href", "https://github.com/");
+
+  // The visible label names the tile, so no tooltip repeats it.
+  await expect(pinnedLinks(page).first()).not.toHaveAttribute("title");
 });
 
 test("pinned sites sit below the clock and date, last on the page", async ({ page }) => {
