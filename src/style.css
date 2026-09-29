@@ -19,8 +19,10 @@
   /* Flip favicons cached in the other theme's color; see markIconTone. */
   --light-icon-filter: invert(1) hue-rotate(180deg);
   --dark-icon-filter: none;
-  /* Keeps text legible over a background image. */
+  /* Tones down a background image; see body::before. Dark text needs more help from the glow
+     than light text does. */
   --scrim: #fff;
+  --scrim-glow: 45%;
   font-family: var(--interface-font, system-ui, sans-serif);
   font-synthesis: none;
 }
@@ -43,7 +45,8 @@
     --error: #ffb4ab;
     --light-icon-filter: none;
     --dark-icon-filter: invert(1) hue-rotate(180deg);
-    --scrim: #1e2020;
+    --scrim: #000;
+    --scrim-glow: 35%;
   }
 }
 
@@ -66,7 +69,8 @@
   --error: #ffb4ab;
   --light-icon-filter: none;
   --dark-icon-filter: invert(1) hue-rotate(180deg);
-  --scrim: #1e2020;
+  --scrim: #000;
+  --scrim-glow: 35%;
 }
 
 * {
@@ -83,27 +87,26 @@ body {
   font-size: 14px;
 }
 
-/* The image is painted on the page canvas under a scrim that follows the appearance. Small
-   details drawn in the page color use the scrim's color instead. */
+/* The image is painted on the page canvas, so the page itself stays transparent. */
 :root[data-background-image] body {
-  --bg: var(--scrim);
   background: transparent;
 }
 
+/* One even scrim over the whole image, light or dark with the appearance, and a soft glow
+   behind the logo, search, and clock that fades out well inside the window. */
 :root[data-background-image] body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-color: color-mix(in srgb, var(--scrim) 35%, transparent);
-  background-image:
-    radial-gradient(
-      ellipse 60% 65% at 50% 42%,
-      color-mix(in srgb, var(--scrim) 50%, transparent),
-      transparent
-    ),
-    linear-gradient(to top, color-mix(in srgb, var(--scrim) 70%, transparent), transparent 120px);
+  background-color: color-mix(in srgb, var(--scrim) 22%, transparent);
+  background-image: radial-gradient(
+    ellipse min(36vw, 460px) min(32svh, 300px) at 50% calc(clamp(48px, 25svh, 300px) + 150px),
+    color-mix(in srgb, var(--scrim) var(--scrim-glow), transparent),
+    color-mix(in srgb, var(--scrim) calc(var(--scrim-glow) * 0.6), transparent) 50%,
+    transparent
+  );
 }
 
 /* Background swaps crossfade briefly; with reduced motion they switch at once. */

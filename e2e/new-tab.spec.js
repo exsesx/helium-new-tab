@@ -924,17 +924,26 @@ test("the scrim over an image follows the appearance", async ({ page }) => {
   const clockColor = () =>
     page.locator("h1").evaluate((element) => getComputedStyle(element).color);
 
+  const glow = () =>
+    page.evaluate(() => getComputedStyle(document.body, "::before").backgroundImage);
+
   await saveBackgroundImage(page);
   await page.emulateMedia({ colorScheme: "light" });
   await page.reload();
 
-  expect(await scrim()).toBe("color(srgb 1 1 1 / 0.35)");
+  expect(await scrim()).toBe("color(srgb 1 1 1 / 0.22)");
   expect(await clockColor()).toBe("rgb(41, 43, 43)");
 
   await page.emulateMedia({ colorScheme: "dark" });
 
-  expect(await scrim()).toMatch(/^color\(srgb 0\.11\d* 0\.12\d* 0\.12\d* \/ 0\.35\)$/);
+  expect(await scrim()).toBe("color(srgb 0 0 0 / 0.22)");
   expect(await clockColor()).toBe("rgb(227, 229, 229)");
+
+  // Besides the even scrim there is only one soft glow: no edge vignettes or bands.
+  const layers = await glow();
+
+  expect(layers.match(/gradient\(/g)).toHaveLength(1);
+  expect(layers).toMatch(/^radial-gradient\(/);
 });
 
 test("pinned tiles over a chosen color follow its text, not the appearance", async ({ page }) => {
