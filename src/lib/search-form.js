@@ -1,5 +1,6 @@
 import { resolveSearchDestination } from "./search.js";
 import { createSearchIcon } from "./search-icon.js";
+import { SEARCH_KEY_ACTIONS, searchKeyAction } from "./search-keys.js";
 import { cachedServiceIconUrl, markIconTone, serviceIconsSupported } from "./service-icons.js";
 
 // Where results open. The first three are chrome.search.query dispositions; it has none for
@@ -190,16 +191,24 @@ export function createSearchForm({ form, input, icon, service, getPreferences, o
       return;
     }
 
-    if (
-      event.key === "/" &&
-      !event.metaKey &&
-      !event.ctrlKey &&
-      !event.altKey &&
-      !document.querySelector("dialog[open]") &&
-      !event.target.matches("input, textarea, select, [contenteditable]")
-    ) {
-      event.preventDefault();
-      input.focus();
+    const action = searchKeyAction(event, {
+      typeToSearch: getPreferences().typeToSearch,
+      hasQuery: input.value !== "",
+      isDialogOpen: () => document.querySelector("dialog[open]") !== null,
+    });
+
+    switch (action) {
+      case SEARCH_KEY_ACTIONS.focus:
+        event.preventDefault();
+        input.focus();
+        break;
+
+      // Focus moves before the browser handles the key, so the character lands in the field.
+      // Existing text is kept and the new character goes after it.
+      case SEARCH_KEY_ACTIONS.type:
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+        break;
     }
   });
 
