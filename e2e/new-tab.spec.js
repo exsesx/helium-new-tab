@@ -1392,3 +1392,133 @@ test("an image that does not fit in local storage is refused with a message", as
   const stored = await page.evaluate((key) => localStorage.getItem(key), BACKGROUND_IMAGE_KEY);
   expect(stored).toBeNull();
 });
+
+// The root's background attributes and the chosen color's text properties.
+function rootBackground(page) {
+  return page.evaluate(() => {
+    const root = document.documentElement;
+
+    return {
+      background: root.dataset.background,
+      foreground: root.dataset.foreground ?? null,
+      image: Object.hasOwn(root.dataset, "backgroundImage"),
+      customText: root.style.getPropertyValue("--custom-text"),
+    };
+  });
+}
+
+test("leaving color mode clears the foreground and its text colors", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Color" }).check();
+  await page.getByRole("radio", { name: "Sky" }).click();
+
+  expect(await rootBackground(page)).toMatchObject({ background: "color", foreground: "dark" });
+
+  await page.getByRole("radio", { name: "Default" }).check();
+
+  expect(await rootBackground(page)).toEqual({
+    background: "blend",
+    foreground: null,
+    image: false,
+    customText: "",
+  });
+});
+
+test("removing an image reveals the synced choice with its own foreground", async ({ page }) => {
+  // Over a chosen color, the color's foreground returns with it.
+  await saveBackgroundImage(page);
+  await savePreferences(page, { background: "color", backgroundColor: "#1e2a4a" });
+  await page.reload();
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("button", { name: "Remove image" }).click();
+
+  expect(await rootBackground(page)).toMatchObject({
+    background: "color",
+    foreground: "light",
+    image: false,
+  });
+
+  // Over the default background, nothing is left behind.
+  await saveBackgroundImage(page);
+  await savePreferences(page, {});
+  await page.reload();
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("button", { name: "Remove image" }).click();
+
+  expect(await rootBackground(page)).toEqual({
+    background: "blend",
+    foreground: null,
+    image: false,
+    customText: "",
+  });
+});
+
+test("a color chosen on another device repaints live, foreground included", async ({ page }) => {
+  const clockColor = () =>
+    page.locator("h1").evaluate((element) => getComputedStyle(element).color);
+  const fromOtherDevice = (preferences) =>
+    page.evaluate(
+      ([key, value]) => window.deliverSyncChange(key, value),
+      [PREFERENCES_KEY, { ...preferences, changedAt: Date.now(), changedBy: "other-device" }],
+    );
+
+  await fakeSyncStorage(page);
+  await savePreferences(page, { background: "color", backgroundColor: "#dbe4ff" });
+  await page.reload();
+
+  expect(await rootBackground(page)).toMatchObject({ background: "color", foreground: "dark" });
+
+  await fromOtherDevice({ background: "color", backgroundColor: "#1e2a4a" });
+
+  await expect(page.locator("html")).toHaveAttribute("data-foreground", "light");
+  await expect(page.locator("html")).toHaveCSS("--custom-bg", "#1e2a4a");
+  expect(await clockColor()).toBe("rgb(227, 229, 229)");
+  // The page color crossfades into the new one.
+  await expect.poll(() => pageBackground(page)).toBe("rgb(30, 42, 74)");
+
+  await fromOtherDevice({ background: "helium" });
+
+  await expect(page.locator("html")).not.toHaveAttribute("data-foreground");
+  await expect(page.locator("html")).toHaveAttribute("data-background", "helium");
+});
+
+test("switching the appearance over an image flips the scrim in the same frame", async ({
+  page,
+}) => {
+  const strengths = scrimStrengths("#88876c");
+
+  await saveBackgroundImage(page);
+  await page.emulateMedia({ colorScheme: "light", reducedMotion: "no-preference" });
+  await page.reload();
+
+  await page.emulateMedia({ colorScheme: "dark", reducedMotion: "no-preference" });
+
+  // Nothing animates between the two: the scrim and the page behind it change at once.
+  const frames = await page.evaluate(async () => {
+    const samples = [];
+
+    for (let frame = 0; frame < 4; frame++) {
+      samples.push({
+        scrim: getComputedStyle(document.body, "::before").backgroundColor,
+        body: getComputedStyle(document.body).backgroundColor,
+        animating: document
+          .getAnimations()
+          .some(({ effect }) => [document.body, document.documentElement].includes(effect.target)),
+      });
+
+      await new Promise(requestAnimationFrame);
+    }
+
+    return samples;
+  });
+
+  for (const frame of frames) {
+    expect(frame).toEqual({
+      scrim: `color(srgb 0 0 0 / ${strengths.dark / 100})`,
+      body: "rgba(0, 0, 0, 0)",
+      animating: false,
+    });
+  }
+});
