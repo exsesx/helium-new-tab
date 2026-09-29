@@ -327,14 +327,22 @@ h1 {
   .search-submit:active,
   .settings-button:active,
   .close-button:active,
-  .pinned-site:active {
+  .pinned-site:active .site-icon {
     transform: scale(0.97);
   }
 }
 
-/* One centered row of up to eight sites; narrow windows wrap it into two. */
+/* One centered row of up to eight sites under the date, last on the page, as far below it as
+   the clock is below search. Narrow windows wrap it into two. */
 .pinned-sites {
-  margin-top: 20px;
+  margin-top: 36px;
+}
+
+/* The row adds about 100px, so start the page half of that higher to keep it balanced. */
+@media (min-height: 421px) {
+  main:has(.pinned-sites:not([hidden])) {
+    padding-top: clamp(48px, calc(25svh - 50px), 250px);
+  }
 }
 
 .pinned-sites ul {
@@ -347,17 +355,25 @@ h1 {
   list-style: none;
 }
 
+/* The icon square reacts to hover, focus, and presses; the label only brightens. */
 .pinned-site {
   display: grid;
   justify-items: center;
   gap: 6px;
   width: 76px;
-  padding: 10px 4px 8px;
-  border-radius: 12px;
 }
 
-.pinned-site:hover {
-  background: var(--tint);
+.pinned-site:focus-visible {
+  outline: none;
+}
+
+.pinned-site:focus-visible .site-icon {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.pinned-site:hover .site-icon {
+  background: var(--tile-hover-bg);
 }
 
 .pinned-title {
@@ -368,13 +384,16 @@ h1 {
   color: var(--secondary);
   font-size: 12px;
   line-height: 16px;
+  transition: color 0.15s;
 }
 
-.pinned-site:hover .pinned-title {
+.pinned-site:hover .pinned-title,
+.pinned-site:focus-visible .pinned-title {
   color: var(--text);
 }
 
-/* Letter tiles take their site's pastel; see site-tiles.js and palette.js. */
+/* Letter tiles take their site's pastel; see site-tiles.js and palette.js. Hover lifts a
+   tile about as much as the search field lifts on focus. */
 .site-icon {
   display: grid;
   place-items: center;
@@ -385,27 +404,37 @@ h1 {
   font-size: 18px;
   font-weight: 550;
   line-height: 1;
+  background: var(--tile-bg);
+  color: var(--tile-text);
+  transition:
+    background-color 0.15s,
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .site-icon:not(.has-favicon) {
-  background: var(--tone);
-  color: var(--tone-text);
+  --tile-bg: var(--tone);
+  --tile-text: var(--tone-text);
+  --tile-hover-bg: color-mix(in srgb, var(--tone), #fff 45%);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .site-icon:not(.has-favicon) {
-    background: var(--tone-dark);
-    color: var(--tone-dark-text);
+    --tile-bg: var(--tone-dark);
+    --tile-text: var(--tone-dark-text);
+    --tile-hover-bg: color-mix(in srgb, var(--tone-dark), #fff 7%);
   }
 }
 
 :root[data-theme="dark"] .site-icon:not(.has-favicon) {
-  background: var(--tone-dark);
-  color: var(--tone-dark-text);
+  --tile-bg: var(--tone-dark);
+  --tile-text: var(--tone-dark-text);
+  --tile-hover-bg: color-mix(in srgb, var(--tone-dark), #fff 7%);
 }
 
+/* Favicons sit on the search field's surface and lift to its focused surface. */
 .site-icon.has-favicon {
-  background: var(--search-bg);
+  --tile-bg: var(--search-bg);
+  --tile-hover-bg: var(--search-focus-bg);
 }
 
 .site-favicon {
@@ -767,7 +796,8 @@ input[type="checkbox"]:checked:before {
     margin-bottom: 18px;
   }
 
-  .clock-block {
+  .clock-block,
+  .pinned-sites {
     margin-top: 20px;
   }
 }
@@ -942,7 +972,8 @@ input[type="checkbox"]:checked:before {
 }
 
 .pinned-settings {
-  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
 }
 
 .settings-heading {
@@ -1059,7 +1090,7 @@ input[type="checkbox"]:checked:before {
 .icon-button:disabled,
 .add-site-button:disabled {
   cursor: default;
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .pinned-site-form .section-help {

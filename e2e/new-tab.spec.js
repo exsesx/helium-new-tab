@@ -431,15 +431,21 @@ test("shows no pinned sites row until a site is pinned", async ({ page }) => {
   await expect(page.locator("#pinned-sites a")).toHaveCount(0);
 });
 
-test("pinned sites are on the page from its first paint", async ({ page }) => {
-  // Record the tiles each frame is about to paint, from the first frame that has the page.
+test("pinned sites are on the page from its first paint without shifting it", async ({ page }) => {
+  // Record the tiles and where the search field and row sit in each frame about to paint,
+  // from the first frame that has the page.
   await page.addInitScript(() => {
     window.paintedSites = [];
 
     function record() {
       if (document.getElementById("search")) {
         const links = [...document.querySelectorAll("#pinned-sites a")];
-        window.paintedSites.push(links.map((link) => link.textContent).join(" | "));
+        const searchTop = document.getElementById("search-form").getBoundingClientRect().top;
+        const rowTop = document.getElementById("pinned-sites").getBoundingClientRect().top;
+
+        window.paintedSites.push(
+          `${links.map((link) => link.textContent).join(" | ")} @ ${searchTop}, ${rowTop}`,
+        );
       }
 
       if (window.paintedSites.length < 5) {
@@ -459,9 +465,22 @@ test("pinned sites are on the page from its first paint", async ({ page }) => {
 
   const frames = await page.evaluate(() => window.paintedSites);
 
-  expect(new Set(frames)).toEqual(new Set(["Ggithub.com | EExample"]));
+  expect(new Set(frames).size).toBe(1);
+  expect(frames[0]).toMatch(/^Ggithub\.com \| EExample @ /);
   await expect(pinnedLinks(page).first()).toHaveAccessibleName("github.com");
   await expect(pinnedLinks(page).first()).toHaveAttribute("href", "https://github.com/");
+});
+
+test("pinned sites sit below the clock and date, last on the page", async ({ page }) => {
+  await savePinnedSites(page, [{ url: "https://github.com/", title: "github.com" }]);
+  await page.reload();
+
+  const search = await page.locator("#search-form").boundingBox();
+  const date = await page.locator("#date").boundingBox();
+  const row = await page.locator("#pinned-sites").boundingBox();
+
+  expect(date.y).toBeGreaterThan(search.y + search.height);
+  expect(row.y).toBeGreaterThan(date.y + date.height);
 });
 
 test("adds, renames, reorders, and removes pinned sites in Customize", async ({ page }) => {
@@ -495,6 +514,12 @@ test("adds, renames, reorders, and removes pinned sites in Customize", async ({ 
   await add.click();
 
   await expect(pinnedLinks(page)).toHaveText(["Ggithub.com", "EExample"]);
+
+  // Only moves that stay within the list are offered.
+  await expect(page.getByRole("button", { name: "Move github.com up" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Move github.com down" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Move Example up" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Move Example down" })).toBeDisabled();
 
   const name = page.getByLabel("Name for github.com");
   await name.fill("GitHub");

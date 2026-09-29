@@ -96,6 +96,14 @@
           </button>
         </form>
 
+        <div class="clock-block" id="clock-block">
+          <h1>
+            <span class="visually-hidden" data-i18n="currentTime">Current time</span>
+            <time id="clock" dir="auto"></time>
+          </h1>
+          <p id="date" dir="auto"></p>
+        </div>
+
         <!-- bootstrap.js fills this before the first paint when sites are pinned. -->
         <nav
           id="pinned-sites"
@@ -104,14 +112,6 @@
           data-i18n-label="pinnedSites"
           hidden
         ></nav>
-
-        <div class="clock-block" id="clock-block">
-          <h1>
-            <span class="visually-hidden" data-i18n="currentTime">Current time</span>
-            <time id="clock" dir="auto"></time>
-          </h1>
-          <p id="date" dir="auto"></p>
-        </div>
       </section>
     </main>
 
