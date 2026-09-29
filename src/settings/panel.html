@@ -40,15 +40,91 @@
     </span>
   </div>
 
-  <div class="setting">
-    <label for="background" data-i18n="darkBackground">Dark background</label>
-    <span class="select-control">
-      <select id="background">
-        <option value="blend" data-i18n="backgroundBlend">Blended</option>
-        <option value="helium" data-i18n="backgroundHelium">Helium</option>
-      </select>
-    </span>
-  </div>
+  <fieldset class="background-settings">
+    <legend data-i18n="background">Background</legend>
+
+    <!-- Each mode is a radio and a panel with the same value, so more modes can be added. -->
+    <div class="background-modes">
+      <label>
+        <input type="radio" name="background-mode" value="default" />
+        <span data-i18n="default">Default</span>
+      </label>
+      <label>
+        <input type="radio" name="background-mode" value="color" />
+        <span id="color-mode-label" data-i18n="colorBackground">Color</span>
+      </label>
+      <label>
+        <input type="radio" name="background-mode" value="image" />
+        <span data-i18n="imageBackground">Image</span>
+      </label>
+    </div>
+
+    <div class="background-panel" data-background-panel="default">
+      <div class="setting">
+        <label for="background" data-i18n="darkBackground">Dark background</label>
+        <span class="select-control">
+          <select id="background">
+            <option value="blend" data-i18n="backgroundBlend">Blended</option>
+            <option value="helium" data-i18n="backgroundHelium">Helium</option>
+          </select>
+        </span>
+      </div>
+    </div>
+
+    <div class="background-panel" data-background-panel="color" hidden>
+      <!-- Customize adds a swatch for each preset before the custom color. -->
+      <div
+        id="background-colors"
+        class="swatches"
+        role="radiogroup"
+        aria-labelledby="color-mode-label"
+      >
+        <label class="swatch custom-swatch">
+          <input
+            id="custom-color"
+            type="color"
+            aria-label="Custom color"
+            data-i18n-label="customColor"
+          />
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            aria-hidden="true"
+          >
+            <path d="m14 7 3 3M5 19l1-4 9.5-9.5a2.1 2.1 0 0 1 3 3L9 18z" />
+          </svg>
+        </label>
+      </div>
+    </div>
+
+    <div class="background-panel" data-background-panel="image" hidden>
+      <div class="image-controls">
+        <img id="background-preview" class="background-preview" alt="" hidden />
+
+        <label class="image-button">
+          <input
+            id="background-file"
+            class="visually-hidden"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
+          />
+          <span data-i18n="chooseImage">Choose image…</span>
+        </label>
+
+        <button id="remove-background-image" class="image-button" type="button" hidden>
+          <span data-i18n="removeImage">Remove image</span>
+        </button>
+      </div>
+
+      <p id="background-image-message" class="setting-help" aria-live="polite"></p>
+
+      <p class="setting-help" data-i18n="imageHelp">
+        Your image stays on this device and does not sync. Nothing is uploaded.
+      </p>
+    </div>
+  </fieldset>
 
   <div class="setting">
     <label for="show-clock" data-i18n="showClock">Show clock</label>

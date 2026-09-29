@@ -1179,3 +1179,177 @@ input[type="checkbox"]:checked:before {
 .pinned-site-form .section-help {
   margin: 0;
 }
+
+.background-settings {
+  margin: 16px 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.background-settings legend {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 0 0 8px;
+}
+
+/* A segmented control; each mode is a visually hidden radio and its label. */
+.background-modes {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 2px;
+  margin-bottom: 12px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--tint);
+}
+
+.background-modes label {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 7px 8px;
+  border-radius: 8px;
+  color: var(--secondary);
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.background-modes input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.background-modes label:has(:checked) {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px #0000001a;
+}
+
+.background-modes label:has(:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+  gap: 10px;
+  padding: 6px 2px 18px;
+}
+
+.swatch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 36px;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px #0000001f;
+  color: #292b2b;
+  cursor: pointer;
+}
+
+.swatch[aria-checked="true"],
+.custom-swatch.is-selected {
+  box-shadow:
+    inset 0 0 0 1px #0000001f,
+    0 0 0 2px var(--panel),
+    0 0 0 4px var(--accent);
+}
+
+/* The custom tile shows its color once chosen, over a spectrum until then. */
+.custom-swatch {
+  background:
+    linear-gradient(var(--swatch), var(--swatch)),
+    conic-gradient(#fbdbe2, #fbe58a, #c9f5b2, #a9f2eb, #dbe4ff, #e3d9fd, #fbdbe2);
+}
+
+.custom-swatch svg {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.custom-swatch.is-selected svg {
+  visibility: hidden;
+}
+
+.custom-swatch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-swatch:has(:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.image-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0 14px;
+}
+
+.background-preview {
+  width: 64px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.image-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: var(--tint);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.image-button:hover {
+  background: var(--border);
+}
+
+.image-button:has(:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.image-button[aria-busy="true"] {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+/* The message stays in the page, empty, so screen readers announce what appears in it. */
+#background-image-message {
+  margin-top: 0;
+  color: var(--text);
+}
+
+#background-image-message:empty {
+  margin: 0;
+}

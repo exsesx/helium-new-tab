@@ -9,6 +9,7 @@ import {
 import { serviceIconsSupported } from "../lib/service-icons.js";
 import { showSiteFavicons } from "../lib/site-favicons.js";
 import { createSiteIcon } from "../lib/site-tiles.js";
+import { createBackgroundSettings } from "./background.js";
 
 // Messages for the reasons addPinnedSite gives.
 const SITE_ERRORS = {
@@ -56,7 +57,6 @@ export function createSettings({
   const fields = [
     ["language", "language"],
     ["theme", "theme"],
-    ["background", "background"],
     ["show-clock", "showClock"],
     ["time-format", "timeFormat"],
     ["show-seconds", "showSeconds"],
@@ -83,6 +83,13 @@ export function createSettings({
     ["date-custom-font", showsDate],
     ["pinned-site-controls", showsPinnedSites],
   ];
+
+  const background = createBackgroundSettings({
+    dialog,
+    getPreferences,
+    onChange,
+    onUpdate: () => sync(),
+  });
 
   // Render each custom name in its own font, so a missing font is visible while typing.
   function previewFont(key) {
@@ -291,9 +298,11 @@ export function createSettings({
   siteAddress.addEventListener("input", clearSiteError);
 
   function sync() {
-    translator.apply(dialog);
-
     const preferences = getPreferences();
+
+    // Background settings may show a message, so translate after they update.
+    background.sync();
+    translator.apply(dialog);
 
     for (const [id, key] of fields) {
       const field = find(id);
@@ -370,6 +379,7 @@ export function createSettings({
 
   return {
     open() {
+      background.reset();
       sync();
       dialog.showModal();
     },
@@ -377,6 +387,7 @@ export function createSettings({
     // Show changes that arrive from another tab or device while the panel is open.
     refresh() {
       if (dialog.open) {
+        background.load();
         sync();
       }
     },
