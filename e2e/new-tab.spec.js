@@ -1117,3 +1117,81 @@ test("pinned tiles over a chosen color follow its text, not the appearance", asy
   expect(onDark.tile).toBe(onDark.dark);
   await expect(page.locator("#pinned-sites .site-icon")).not.toHaveCSS("box-shadow", "none");
 });
+
+// Stands in for chrome.storage in the preview: records sync writes and can deliver a change as
+// if another device had made it.
+async function fakeSyncStorage(page) {
+  await page.addInitScript(() => {
+    const stored = {};
+    const listeners = [];
+
+    window.syncWrites = [];
+    window.chrome ??= {};
+    window.chrome.storage = {
+      sync: {
+        async get(key) {
+          return { [key]: stored[key] };
+        },
+
+        async set(items) {
+          window.syncWrites.push(structuredClone(items));
+          Object.assign(stored, items);
+        },
+      },
+
+      onChanged: {
+        addListener(listener) {
+          listeners.push(listener);
+        },
+      },
+    };
+
+    window.deliverSyncChange = (key, newValue) => {
+      stored[key] = newValue;
+
+      for (const listener of listeners) {
+        listener({ [key]: { newValue } }, "sync");
+      }
+    };
+  });
+}
+
+test("dragging the custom color previews live and syncs once the picker closes", async ({
+  page,
+}) => {
+  await fakeSyncStorage(page);
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Color" }).check();
+  const baseline = await page.evaluate(() => window.syncWrites.length);
+
+  // A drag reports each step as an input event, with no change event until the picker closes.
+  for (const color of ["#202020", "#404040", "#606060", "#f0f0f0"]) {
+    await page.getByLabel("Custom color").evaluate((input, value) => {
+      input.value = value;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }, color);
+
+    await expect(page.locator("html")).toHaveCSS("--custom-bg", color);
+  }
+
+  await expect(page.locator("html")).toHaveAttribute("data-foreground", "dark");
+
+  // Every step reaches this device's cache for the next tab's first paint, but none syncs yet.
+  const cached = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  expect(cached).toMatchObject({ background: "color", backgroundColor: "#f0f0f0" });
+  expect(await page.evaluate(() => window.syncWrites.length)).toBe(baseline);
+
+  await page.getByLabel("Custom color").evaluate((input) => {
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+
+  const writes = await page.evaluate(() => window.syncWrites);
+
+  expect(writes).toHaveLength(baseline + 1);
+  expect(writes.at(-1)[PREFERENCES_KEY]).toMatchObject({ backgroundColor: "#f0f0f0" });
+});

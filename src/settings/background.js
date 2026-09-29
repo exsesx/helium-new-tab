@@ -123,8 +123,12 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
       swatch.tabIndex = swatch === focusable ? 0 : -1;
     }
 
-    // The custom tile shows a color that is not a preset.
-    colorInput.value = preferences.backgroundColor;
+    // The custom tile shows a color that is not a preset. Chromium passes a new value on to an
+    // open picker, so write it only when it changed elsewhere, never during a drag.
+    if (colorInput.value !== preferences.backgroundColor) {
+      colorInput.value = preferences.backgroundColor;
+    }
+
     customSwatch.classList.toggle("is-selected", mode === "color" && !selected);
     customSwatch.style.setProperty(
       "--swatch",
@@ -218,7 +222,8 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
     next.focus();
   });
 
-  // The picker reports every step of a drag; only the final color syncs at once.
+  // The picker reports every step of a drag, which previews at once and syncs after a pause like
+  // a typed font name; closing the picker syncs the final color at once.
   colorInput.addEventListener("input", () => {
     chooseColor(colorInput.value, false);
     onUpdate();
