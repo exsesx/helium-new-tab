@@ -44,6 +44,21 @@ warnings, and no slower first paint.
 - Verify with unit tests for stored preferences and Playwright tests for choosing, painting,
   and removing a background.
 
+## Done
+
+### Type anywhere to search
+
+- Typing a character on the page focuses the search field and types it there, so Escape
+  from the address bar and then typing works without pressing `/` first.
+- Typing while a link or button has focus goes to the search field too. Text already in
+  the field is kept and the new characters go after it.
+- Keys held with Ctrl, Cmd, or Alt, keys that are not characters, a leading space, input
+  method composition, and typing in fields or in **Customize** keep their usual behavior.
+  Space still presses a focused button.
+- `/` still only focuses the field, and Escape still leaves it.
+- **Customize → Type anywhere to search** turns it off, leaving only `/`. The setting syncs
+  with the other preferences and is on by default.
+
 ## Considering
 
 Ideas that are not approved yet and may be dropped.
@@ -55,8 +70,6 @@ Ideas that are not approved yet and may be dropped.
   independent version.
 - Following the browser's theme colors. Chromium does not share theme colors with
   extensions beyond light or dark mode, so this needs investigation first.
-- Typing anywhere on the page to search, so Escape from the address bar and then typing
-  works without pressing `/` first.
 
 ## Not planned
 
