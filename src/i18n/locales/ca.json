@@ -45,6 +45,8 @@
   "backgroundBlend": "Integrat",
   "backgroundHelium": "Helium",
   "darkBackground": "Fons fosc",
+  "typeToSearch": "Escriu a qualsevol lloc per cercar",
+  "typeToSearchHelp": "El que escriguis en aquesta pàgina va directament al camp de cerca. Si està desactivat, prem / primer.",
   "showServiceIcons": "Mostra les icones dels serveis",
   "serviceIconsHelp": "Fa servir les icones dels llocs ja desades al navegador. No es baixa res. En activar-ho, es demana permís per llegir-les."
 }

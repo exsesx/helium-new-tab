@@ -45,6 +45,8 @@
   "backgroundBlend": "Afgestemd",
   "backgroundHelium": "Helium",
   "darkBackground": "Donkere achtergrond",
+  "typeToSearch": "Overal typen om te zoeken",
+  "typeToSearchHelp": "Wat je op deze pagina typt, komt direct in het zoekveld. Als dit uit staat, druk je eerst op /.",
   "showServiceIcons": "Dienstpictogrammen tonen",
   "serviceIconsHelp": "Gebruikt websitepictogrammen die al in je browser zijn opgeslagen. Er wordt niets gedownload. Bij inschakelen wordt toestemming gevraagd om ze te lezen."
 }

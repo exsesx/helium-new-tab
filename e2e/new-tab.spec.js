@@ -204,6 +204,121 @@ test("slash focuses search and Escape leaves it", async ({ page }) => {
   await expect(page.locator("#search")).not.toBeFocused();
 });
 
+test("slash focuses search without typing itself", async ({ page }) => {
+  await page.goto("/");
+
+  await page.keyboard.press("/");
+  await page.keyboard.type("abc");
+
+  await expect(page.locator("#search")).toBeFocused();
+  await expect(page.locator("#search")).toHaveValue("abc");
+});
+
+test("typing on the page types into search", async ({ page }) => {
+  await page.goto("/");
+
+  await page.keyboard.type("abc");
+
+  await expect(page.locator("#search")).toBeFocused();
+  await expect(page.locator("#search")).toHaveValue("abc");
+  await expect(page.locator("#search-service")).toBeHidden();
+
+  // After Escape, more typing continues the query instead of replacing it.
+  await page.keyboard.press("Escape");
+  await page.keyboard.type("d");
+
+  await expect(page.locator("#search")).toHaveValue("abcd");
+});
+
+test("typing into search updates the recognized bang service", async ({ page }) => {
+  await page.goto("/");
+
+  await page.keyboard.type("!yt music");
+
+  await expect(page.locator("#search")).toHaveValue("!yt music");
+  await expect(page.locator("#search-service")).toHaveText("YouTube");
+});
+
+test("typing while a button has focus types into search", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).focus();
+  await page.keyboard.type("abc");
+
+  await expect(page.locator("#search")).toBeFocused();
+  await expect(page.locator("#search")).toHaveValue("abc");
+});
+
+test("typing while a link has focus types into search", async ({ page }) => {
+  await page.goto("/");
+
+  // No link ships on the page yet, so add one the way pinned sites will.
+  await page.evaluate(() => {
+    const link = document.createElement("a");
+    link.href = "https://example.com/";
+    link.textContent = "Example";
+    document.querySelector("main").append(link);
+  });
+
+  await page.getByRole("link", { name: "Example" }).focus();
+  await page.keyboard.type("abc");
+
+  await expect(page.locator("#search")).toBeFocused();
+  await expect(page.locator("#search")).toHaveValue("abc");
+  await expect(page).toHaveURL("/");
+});
+
+test("a space keeps pressing a focused button", async ({ page }) => {
+  await page.goto("/");
+
+  await page.keyboard.type("abc");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Customize" }).focus();
+  await page.keyboard.press("Space");
+
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.locator("#search")).toHaveValue("abc");
+});
+
+test("typing with Ctrl held does not reach search", async ({ page }) => {
+  await page.goto("/");
+
+  await page.keyboard.press("Control+b");
+
+  await expect(page.locator("#search")).not.toBeFocused();
+  await expect(page.locator("#search")).toHaveValue("");
+});
+
+test("typing in Customize stays in Customize", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.type("abc");
+
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.locator("#search")).toHaveValue("");
+});
+
+test("with typing to search off, only slash focuses search", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("switch", { name: "Type anywhere to search" }).uncheck();
+  await page.keyboard.press("Escape");
+  await page.reload();
+
+  await page.keyboard.type("abc");
+
+  await expect(page.locator("#search")).not.toBeFocused();
+  await expect(page.locator("#search")).toHaveValue("");
+
+  await page.keyboard.press("/");
+
+  await expect(page.locator("#search")).toBeFocused();
+  await expect(page.locator("#search")).toHaveValue("");
+});
+
 test("names the recognized bang service before the query", async ({ page }) => {
   await page.goto("/");
   const search = page.locator("#search");

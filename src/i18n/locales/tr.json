@@ -45,6 +45,8 @@
   "backgroundBlend": "Uyumlu",
   "backgroundHelium": "Helium",
   "darkBackground": "Koyu arka plan",
+  "typeToSearch": "Aramak için herhangi bir yere yazın",
+  "typeToSearchHelp": "Bu sayfada yazdıklarınız doğrudan arama kutusuna gider. Kapalıyken önce / tuşuna basın.",
   "showServiceIcons": "Hizmet simgelerini göster",
   "serviceIconsHelp": "Tarayıcıda zaten kayıtlı site simgelerini kullanır. Hiçbir şey indirilmez. Açıldığında bunları okumak için izin istenir."
 }

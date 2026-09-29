@@ -45,6 +45,8 @@
   "backgroundBlend": "Usklađena",
   "backgroundHelium": "Helium",
   "darkBackground": "Tamna pozadina",
+  "typeToSearch": "Tipkajte bilo gdje za pretraživanje",
+  "typeToSearchHelp": "Tekst upisan na ovoj stranici ide ravno u polje za pretraživanje. Kad je isključeno, najprije pritisnite /.",
   "showServiceIcons": "Prikaži ikone servisa",
   "serviceIconsHelp": "Koristi ikone web-mjesta već spremljene u pregledniku. Ništa se ne preuzima. Uključivanje traži dopuštenje za njihovo čitanje."
 }

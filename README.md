@@ -29,7 +29,9 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
 - Search through the browser's default provider or navigate directly to a website.
   Bare names open only with a known top-level domain, so `example.com` opens a site while
   `next.js` searches. Local names such as `localhost:3000`, `printer.local`, and IP
-  addresses open over HTTP. Press `/` to focus search while the page has focus.
+  addresses open over HTTP. Start typing while the page has focus to search, even after
+  pressing Escape in the address bar, or press `/` to focus search. Turn off
+  **Customize → Type anywhere to search** to leave only `/`.
   Hold Ctrl, Cmd, or Alt while pressing Enter or clicking the arrow, or middle-click the
   arrow, to open the result in a background tab and stay on this page, as links do. Add
   Shift to switch to the new tab, or hold only Shift to open a new window.
@@ -124,8 +126,9 @@ The localhost preview uses DuckDuckGo and cannot verify native browser integrati
   they persist without a flash of the default settings.
 - Check Ctrl or Cmd+Enter opens searches, bangs, and addresses in a background tab,
   Ctrl or Cmd+Shift+Enter switches to the new tab, and Shift+Enter opens a window.
-- Check `/` search focus, Escape dismissal, keyboard navigation in Customize, and the
-  settings layout in narrow and short windows.
+- Check `/` search focus, typing on the page after pressing Escape in the address bar,
+  Escape dismissal, keyboard navigation in Customize, and the settings layout in narrow
+  and short windows.
 
 ## Languages
 

@@ -45,6 +45,8 @@
   "backgroundBlend": "브라우저와 조화",
   "backgroundHelium": "Helium",
   "darkBackground": "어두운 배경",
+  "typeToSearch": "아무 곳에서나 입력해 검색",
+  "typeToSearchHelp": "이 페이지에서 입력하면 바로 검색창에 입력됩니다. 끄면 먼저 / 키를 눌러야 합니다.",
   "showServiceIcons": "서비스 아이콘 표시",
   "serviceIconsHelp": "브라우저에 이미 저장된 사이트 아이콘을 사용합니다. 아무것도 다운로드하지 않습니다. 켜면 아이콘을 읽을 권한을 요청합니다."
 }

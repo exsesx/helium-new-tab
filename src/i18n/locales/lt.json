@@ -45,6 +45,8 @@
   "backgroundBlend": "Suderintas",
   "backgroundHelium": "Helium",
   "darkBackground": "Tamsus fonas",
+  "typeToSearch": "Rašykite bet kur, kad ieškotumėte",
+  "typeToSearchHelp": "Šiame puslapyje įvestas tekstas patenka tiesiai į paieškos lauką. Išjungus pirmiausia paspauskite /.",
   "showServiceIcons": "Rodyti paslaugų piktogramas",
   "serviceIconsHelp": "Naudoja naršyklėje jau išsaugotas svetainių piktogramas. Niekas neatsisiunčiama. Įjungus prašoma leidimo jas skaityti."
 }

@@ -45,6 +45,8 @@
   "backgroundBlend": "Usklajeno",
   "backgroundHelium": "Helium",
   "darkBackground": "Temno ozadje",
+  "typeToSearch": "Tipkajte kjer koli za iskanje",
+  "typeToSearchHelp": "Kar natipkate na tej strani, gre naravnost v iskalno polje. Ko je izklopljeno, najprej pritisnite /.",
   "showServiceIcons": "Prikaži ikone storitev",
   "serviceIconsHelp": "Uporablja ikone spletnih mest, ki so že shranjene v brskalniku. Nič se ne prenese. Ob vklopu se zahteva dovoljenje za njihovo branje."
 }

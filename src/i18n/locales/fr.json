@@ -45,6 +45,8 @@
   "backgroundBlend": "Harmonisé",
   "backgroundHelium": "Helium",
   "darkBackground": "Arrière-plan sombre",
+  "typeToSearch": "Taper n’importe où pour rechercher",
+  "typeToSearchHelp": "Ce que vous tapez sur cette page va directement dans le champ de recherche. Si c’est désactivé, appuyez d’abord sur /.",
   "showServiceIcons": "Afficher les icônes des services",
   "serviceIconsHelp": "Utilise les icônes de sites déjà enregistrées dans le navigateur. Rien n’est téléchargé. L’activation demande l’autorisation de les lire."
 }

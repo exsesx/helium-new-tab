@@ -45,6 +45,8 @@
   "backgroundBlend": "Tilpasset",
   "backgroundHelium": "Helium",
   "darkBackground": "Mørk baggrund",
+  "typeToSearch": "Skriv hvor som helst for at søge",
+  "typeToSearchHelp": "Det, du skriver på siden, går direkte til søgefeltet. Når det er slået fra, skal du først trykke på /.",
   "showServiceIcons": "Vis tjenesteikoner",
   "serviceIconsHelp": "Bruger webstedsikoner, der allerede er gemt i browseren. Intet hentes. Når du slår det til, bliver du bedt om tilladelse til at læse dem."
 }

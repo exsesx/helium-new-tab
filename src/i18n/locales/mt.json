@@ -45,6 +45,8 @@
   "backgroundBlend": "Integrat",
   "backgroundHelium": "Helium",
   "darkBackground": "Sfond skur",
+  "typeToSearch": "Ikteb kullimkien biex tfittex",
+  "typeToSearchHelp": "Dak li tikteb f’din il-paġna jmur dritt fil-kaxxa tat-tfittxija. Meta tkun mitfija, agħfas / l-ewwel.",
   "showServiceIcons": "Uri l-ikoni tas-servizzi",
   "serviceIconsHelp": "Juża l-ikoni tas-siti diġà ssejvjati fil-browser. Xejn ma jitniżżel. Meta tixgħelha, tintalab permess biex jinqraw."
 }
