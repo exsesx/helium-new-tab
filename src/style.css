@@ -864,10 +864,16 @@ input[type="checkbox"]:checked:before {
   min-width: 0;
 }
 
+/* The caption labels the rows below it, so the section's separator above it is its only line.
+   The first row's control sits about 8px under the caption. */
 .font-settings legend {
   font-size: 12px;
   color: var(--muted);
-  padding: 0 0 8px;
+  padding: 0;
+}
+
+.font-settings legend + .setting {
+  border-top: 0;
 }
 
 .font-note {
