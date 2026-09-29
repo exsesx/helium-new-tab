@@ -44,8 +44,10 @@ warnings, and no slower first paint.
 
 ### Pinned sites
 
-- Let people pin up to eight favorite sites as a row of shortcuts below the search field.
+- Let people pin up to eight favorite sites as a row of shortcuts below the clock and date.
   Sites are chosen by hand, never collected from browsing history.
+- **Customize → Show pinned sites** shows the row. It is off by default so the page stays
+  minimal, syncs with the other preferences, and keeps the list while off.
 - Add, rename, reorder, and remove sites in **Customize** with the keyboard or a pointer.
   Addresses follow the search field's rules, so `github.com` pins `https://github.com/`
   while text it would search for, and sites already pinned, are refused.
@@ -56,8 +58,8 @@ warnings, and no slower first paint.
 - Show icons from the browser's favicon cache when **Show service icons** is on, and a
   pastel letter tile from Helium's palette otherwise. Nothing is downloaded.
 - Skip a most-visited list, because the `topSites` permission shows an install warning.
-- Show no row until a site is pinned, and draw it with the first paint so the page does not
-  shift.
+- Show no row until the switch is on and a site is pinned, and draw it with the first paint
+  so the page does not shift.
 
 ## Considering
 

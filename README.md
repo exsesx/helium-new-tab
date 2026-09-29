@@ -35,11 +35,13 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   Hold Ctrl, Cmd, or Alt while pressing Enter or clicking the arrow, or middle-click the
   arrow, to open the result in a background tab and stay on this page, as links do. Add
   Shift to switch to the new tab, or hold only Shift to open a new window.
-- Up to eight pinned sites in a row below the search field, added, renamed, reordered, and
-  removed in **Customize**. Sites are chosen by hand, never collected from browsing history.
-  They are ordinary links, so Ctrl, Cmd, or a middle click opens a background tab and Shift
-  opens a new window. Each shows a colored letter, or its cached favicon when service icons
-  are on. The row is drawn with the first paint and takes no space until a site is pinned.
+- Up to eight pinned sites in a row below the clock and date, added, renamed, reordered, and
+  removed in **Customize**. They are off by default; turn on **Customize → Show pinned
+  sites** to show the row. Turning it off again keeps the list. Sites are chosen by hand,
+  never collected from browsing history. They are ordinary links, so Ctrl, Cmd, or a middle
+  click opens a background tab and Shift opens a new window. Each shows a colored letter, or
+  its cached favicon when service icons are on. The row is drawn with the first paint and
+  takes no space until a site is pinned.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
 - Preferences and pinned sites saved in the extension's browser profile and synced across
   devices when the browser syncs extension data. Service icons stay a per-device choice.
