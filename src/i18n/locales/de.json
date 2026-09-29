@@ -45,6 +45,8 @@
   "backgroundBlend": "Abgestimmt",
   "backgroundHelium": "Helium",
   "darkBackground": "Dunkler Hintergrund",
+  "typeToSearch": "Überall tippen zum Suchen",
+  "typeToSearchHelp": "Eingaben auf dieser Seite landen direkt im Suchfeld. Wenn dies ausgeschaltet ist, drücke zuerst /.",
   "showServiceIcons": "Dienstsymbole anzeigen",
   "serviceIconsHelp": "Verwendet bereits im Browser gespeicherte Website-Symbole. Es wird nichts heruntergeladen. Beim Einschalten wird um die Berechtigung gebeten, sie zu lesen."
 }

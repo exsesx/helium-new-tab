@@ -45,6 +45,8 @@
   "backgroundBlend": "Dopasowane",
   "backgroundHelium": "Helium",
   "darkBackground": "Ciemne tło",
+  "typeToSearch": "Pisz w dowolnym miejscu, aby wyszukać",
+  "typeToSearchHelp": "Tekst wpisany na tej stronie trafia prosto do pola wyszukiwania. Po wyłączeniu najpierw naciśnij /.",
   "showServiceIcons": "Pokazuj ikony serwisów",
   "serviceIconsHelp": "Używa ikon witryn zapisanych już w przeglądarce. Nic nie jest pobierane. Włączenie wymaga zgody na ich odczyt."
 }

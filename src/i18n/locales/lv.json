@@ -45,6 +45,8 @@
   "backgroundBlend": "Saskaņots",
   "backgroundHelium": "Helium",
   "darkBackground": "Tumšais fons",
+  "typeToSearch": "Rakstiet jebkur, lai meklētu",
+  "typeToSearchHelp": "Šajā lapā ierakstītais nonāk tieši meklēšanas laukā. Kad izslēgts, vispirms nospiediet /.",
   "showServiceIcons": "Rādīt pakalpojumu ikonas",
   "serviceIconsHelp": "Izmanto pārlūkā jau saglabātās vietņu ikonas. Nekas netiek lejupielādēts. Ieslēdzot tiek prasīta atļauja tās lasīt."
 }

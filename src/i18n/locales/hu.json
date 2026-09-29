@@ -45,6 +45,8 @@
   "backgroundBlend": "Összehangolt",
   "backgroundHelium": "Helium",
   "darkBackground": "Sötét háttér",
+  "typeToSearch": "Keresés gépeléssel bárhol",
+  "typeToSearchHelp": "Az oldalon begépelt szöveg egyenesen a keresőmezőbe kerül. Kikapcsolva előbb nyomja meg a / billentyűt.",
   "showServiceIcons": "Szolgáltatásikonok megjelenítése",
   "serviceIconsHelp": "A böngészőben már tárolt webhelyikonokat használja. Semmi sem töltődik le. Bekapcsoláskor engedélyt kér az olvasásukhoz."
 }

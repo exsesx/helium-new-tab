@@ -45,6 +45,8 @@
   "backgroundBlend": "Integrato",
   "backgroundHelium": "Helium",
   "darkBackground": "Sfondo scuro",
+  "typeToSearch": "Digita ovunque per cercare",
+  "typeToSearchHelp": "Ciò che digiti in questa pagina va direttamente nel campo di ricerca. Se è disattivata, premi prima /.",
   "showServiceIcons": "Mostra le icone dei servizi",
   "serviceIconsHelp": "Usa le icone dei siti già salvate nel browser. Non viene scaricato nulla. Attivandola viene chiesto il permesso di leggerle."
 }

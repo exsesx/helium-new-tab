@@ -45,6 +45,8 @@
   "backgroundBlend": "Comhtháite",
   "backgroundHelium": "Helium",
   "darkBackground": "Cúlra dorcha",
+  "typeToSearch": "Clóscríobh áit ar bith chun cuardach a dhéanamh",
+  "typeToSearchHelp": "Téann a gclóscríobhann tú ar an leathanach seo díreach isteach sa bhosca cuardaigh. Nuair atá sé múchta, brúigh / ar dtús.",
   "showServiceIcons": "Taispeáin deilbhíní seirbhísí",
   "serviceIconsHelp": "Úsáideann sé deilbhíní suíomhanna atá sábháilte sa bhrabhsálaí cheana. Ní íoslódáiltear aon rud. Nuair a chasann tú air é, iarrtar cead iad a léamh."
 }

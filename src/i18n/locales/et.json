@@ -45,6 +45,8 @@
   "backgroundBlend": "Sobitatud",
   "backgroundHelium": "Helium",
   "darkBackground": "Tume taust",
+  "typeToSearch": "Otsimiseks trüki kõikjal",
+  "typeToSearchHelp": "Sellel lehel trükitu läheb otse otsinguvälja. Kui see on välja lülitatud, vajuta enne /.",
   "showServiceIcons": "Näita teenuste ikoone",
   "serviceIconsHelp": "Kasutab brauserisse juba salvestatud saitide ikoone. Midagi ei laadita alla. Sisselülitamisel küsitakse nende lugemiseks luba."
 }

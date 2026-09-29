@@ -45,6 +45,8 @@
   "backgroundBlend": "Asortat",
   "backgroundHelium": "Helium",
   "darkBackground": "Fundal întunecat",
+  "typeToSearch": "Tastează oriunde pentru a căuta",
+  "typeToSearchHelp": "Ce tastezi pe această pagină ajunge direct în câmpul de căutare. Când este dezactivat, apasă mai întâi /.",
   "showServiceIcons": "Afișează pictogramele serviciilor",
   "serviceIconsHelp": "Folosește pictogramele site-urilor deja salvate în browser. Nu se descarcă nimic. La activare, se cere permisiunea de a le citi."
 }

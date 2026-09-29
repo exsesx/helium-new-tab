@@ -45,6 +45,8 @@
   "backgroundBlend": "Samræmdur",
   "backgroundHelium": "Helium",
   "darkBackground": "Dökkur bakgrunnur",
+  "typeToSearch": "Skrifaðu hvar sem er til að leita",
+  "typeToSearchHelp": "Það sem þú skrifar á síðunni fer beint í leitarreitinn. Þegar slökkt er á þessu skaltu fyrst ýta á /.",
   "showServiceIcons": "Sýna tákn þjónusta",
   "serviceIconsHelp": "Notar tákn vefsvæða sem þegar eru vistuð í vafranum. Engu er hlaðið niður. Þegar kveikt er á þessu er beðið um heimild til að lesa þau."
 }

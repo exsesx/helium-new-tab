@@ -45,6 +45,8 @@
   "backgroundBlend": "与浏览器融合",
   "backgroundHelium": "Helium",
   "darkBackground": "深色背景",
+  "typeToSearch": "在任意位置输入即可搜索",
+  "typeToSearchHelp": "在此页面上输入的内容会直接进入搜索框。关闭后，需先按 / 键。",
   "showServiceIcons": "显示服务图标",
   "serviceIconsHelp": "使用浏览器中已保存的网站图标，不会下载任何内容。开启时会请求读取这些图标的权限。"
 }

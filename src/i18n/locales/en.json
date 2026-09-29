@@ -45,6 +45,8 @@
   "backgroundBlend": "Blended",
   "backgroundHelium": "Helium",
   "darkBackground": "Dark background",
+  "typeToSearch": "Type anywhere to search",
+  "typeToSearchHelp": "Typing on this page goes straight to the search field. When this is off, press / first.",
   "showServiceIcons": "Show service icons",
   "serviceIconsHelp": "Uses site icons already saved in your browser. Nothing is downloaded. Turning this on asks for permission to read them."
 }

@@ -45,6 +45,8 @@
   "backgroundBlend": "I përshtatur",
   "backgroundHelium": "Helium",
   "darkBackground": "Sfondi i errët",
+  "typeToSearch": "Shkruani kudo për të kërkuar",
+  "typeToSearchHelp": "Çfarë shkruani në këtë faqe shkon drejt e në fushën e kërkimit. Kur është joaktiv, shtypni fillimisht /.",
   "showServiceIcons": "Shfaq ikonat e shërbimeve",
   "serviceIconsHelp": "Përdor ikonat e sajteve të ruajtura tashmë në shfletues. Nuk shkarkohet asgjë. Kur e aktivizoni, kërkohet leje për t’i lexuar."
 }

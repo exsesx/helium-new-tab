@@ -45,6 +45,8 @@
   "backgroundBlend": "Sladěné",
   "backgroundHelium": "Helium",
   "darkBackground": "Tmavé pozadí",
+  "typeToSearch": "Psaním kdekoli spustit hledání",
+  "typeToSearchHelp": "Text napsaný na této stránce jde rovnou do pole hledání. Když je vypnuto, nejdřív stiskněte /.",
   "showServiceIcons": "Zobrazovat ikony služeb",
   "serviceIconsHelp": "Používá ikony webů již uložené v prohlížeči. Nic se nestahuje. Po zapnutí se zobrazí žádost o oprávnění je číst."
 }

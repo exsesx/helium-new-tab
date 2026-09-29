@@ -45,6 +45,8 @@
   "backgroundBlend": "ブラウザーに調和",
   "backgroundHelium": "Helium",
   "darkBackground": "ダークモードの背景",
+  "typeToSearch": "どこでも入力して検索",
+  "typeToSearchHelp": "このページで入力した文字は検索欄に直接入ります。オフのときは先に / を押します。",
   "showServiceIcons": "サービスのアイコンを表示",
   "serviceIconsHelp": "ブラウザーに保存済みのサイトアイコンを使用します。何もダウンロードしません。オンにすると、アイコンを読み取る権限を求められます。"
 }
