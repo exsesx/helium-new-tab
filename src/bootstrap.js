@@ -1,3 +1,4 @@
+import { applyBackgroundImage, loadBackgroundImage } from "./lib/background.js";
 import { loadPinnedSites, loadPreferences, applyAppearance } from "./lib/preferences.js";
 import { renderPinnedSites } from "./lib/site-tiles.js";
 import { resolveLanguage, translate } from "./i18n/languages.js";
@@ -11,6 +12,9 @@ const selection = resolveLanguage(preferences.language, navigator.languages);
 const messages = __PAGE_MESSAGES__[selection.language];
 document.title = messages.newTab;
 applyAppearance(preferences);
+
+// This device's image covers the synced background. Only a string is read here, no decoding.
+applyBackgroundImage(loadBackgroundImage());
 
 // Hand off the validated preferences without rereading storage or resolving fonts.
 window.__heliumTabPreferences = preferences;

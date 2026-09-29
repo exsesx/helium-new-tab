@@ -1,4 +1,9 @@
 import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
+import {
+  applyBackgroundImage,
+  BACKGROUND_IMAGE_KEY,
+  loadBackgroundImage,
+} from "./lib/background.js";
 import { createClock } from "./lib/clock.js";
 import { readPinnedSites, readPreferences } from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
@@ -64,12 +69,13 @@ function saveLocal(key = PREFERENCES_KEY, value = preferences) {
   }
 }
 
-// Typed font names wait for a pause; other changes sync at once so a quick close keeps them.
-function save(key) {
+// Typed font names and dragged colors wait for a pause; other changes sync at once so a quick
+// close keeps them.
+function save(settled) {
   saveLocal();
   syncWriter.write();
 
-  if (!key.endsWith("CustomFont")) {
+  if (settled) {
     syncWriter.flush();
   }
 }
@@ -106,12 +112,12 @@ $("open-settings").addEventListener("click", async () => {
         getPinnedSites: () => pinned.sites,
         translator,
         languages,
-        onChange(key, value) {
+        onChange(key, value, settled) {
           if (key === "showServiceIcons" && value) {
             return requestServiceIcons().then((granted) => updatePreference(key, granted));
           }
 
-          updatePreference(key, value);
+          updatePreference(key, value, settled);
         },
         onPinnedSitesChange: updatePinnedSites,
       });
@@ -126,8 +132,14 @@ $("open-settings").addEventListener("click", async () => {
   }
 });
 
-function updatePreference(key, value) {
+function updatePreference(key, value, settled = !key.endsWith("CustomFont")) {
   preferences[key] = value;
+
+  // Choosing a color also shows it.
+  if (key === "backgroundColor") {
+    preferences.background = "color";
+  }
+
   changeOrder.stamp(preferences);
 
   if (key === "language") {
@@ -142,7 +154,7 @@ function updatePreference(key, value) {
     renderSites();
   }
 
-  save(key);
+  save(settled);
 }
 
 // Turn icons off when the permission was removed, such as from the extensions page.
@@ -189,15 +201,35 @@ function applyExternal(value) {
   return true;
 }
 
-window.addEventListener("storage", (event) => {
-  if (event.key !== PREFERENCES_KEY && event.key !== null) {
-    return;
-  }
-
+function applyExternalPreferences(value) {
   try {
-    applyExternal(JSON.parse(event.newValue));
+    applyExternal(JSON.parse(value));
   } catch {
     /* Ignore malformed external data. */
+  }
+}
+
+// Another tab on this device chose or removed its background image.
+function applyExternalImage() {
+  applyBackgroundImage(loadBackgroundImage());
+  settings?.refresh();
+}
+
+window.addEventListener("storage", (event) => {
+  switch (event.key) {
+    case PREFERENCES_KEY:
+      applyExternalPreferences(event.newValue);
+      break;
+
+    case BACKGROUND_IMAGE_KEY:
+      applyExternalImage();
+      break;
+
+    // Storage was cleared.
+    case null:
+      applyExternalPreferences(event.newValue);
+      applyExternalImage();
+      break;
   }
 });
 

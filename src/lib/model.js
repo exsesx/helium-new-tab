@@ -1,4 +1,5 @@
 import { languages } from "../i18n/languages.js";
+import { DEFAULT_BACKGROUND_COLOR, isHexColor } from "./background.js";
 
 export const fonts = {
   system: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -8,6 +9,7 @@ export const fonts = {
 export const defaults = {
   theme: "system",
   background: "blend",
+  backgroundColor: DEFAULT_BACKGROUND_COLOR,
   language: "auto",
   showClock: true,
   timeFormat: "auto",
@@ -35,8 +37,12 @@ export function readPreferences(value) {
     return result;
   }
 
-  if (["blend", "helium"].includes(value.background)) {
+  if (["blend", "helium", "color"].includes(value.background)) {
     result.background = value.background;
+  }
+
+  if (isHexColor(value.backgroundColor)) {
+    result.backgroundColor = value.backgroundColor.toLowerCase();
   }
 
   if (Object.hasOwn(languages, value.language)) {

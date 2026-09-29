@@ -27,6 +27,15 @@
       :root[data-background="helium"] {
         --dark-bg: #3b3c3c;
       }
+
+      :root[data-background="color"] {
+        --bg: var(--custom-bg);
+      }
+
+      :root[data-background-image] {
+        --bg: var(--image-bg);
+        background: var(--bg) var(--background-image) center / cover no-repeat fixed;
+      }
     </style>
     <title data-i18n="newTab">New Tab</title>
 
