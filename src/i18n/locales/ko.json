@@ -48,5 +48,17 @@
   "typeToSearch": "아무 곳에서나 입력해 검색",
   "typeToSearchHelp": "이 페이지에서 입력하면 바로 검색창에 입력됩니다. 끄면 먼저 / 키를 눌러야 합니다.",
   "showServiceIcons": "서비스 아이콘 표시",
-  "serviceIconsHelp": "브라우저에 이미 저장된 사이트 아이콘을 사용합니다. 아무것도 다운로드하지 않습니다. 켜면 아이콘을 읽을 권한을 요청합니다."
+  "serviceIconsHelp": "브라우저에 이미 저장된 사이트 아이콘을 검색창과 고정한 사이트에 사용합니다. 아무것도 다운로드하지 않습니다. 켜면 아이콘을 읽을 권한을 요청합니다.",
+  "pinnedSites": "고정한 사이트",
+  "pinnedSitesHelp": "검색창 아래에 표시되는 바로가기입니다. 사이트를 최대 8개까지 고정할 수 있습니다.",
+  "pinnedSitesFull": "최대 8개까지 고정할 수 있습니다. 다른 사이트를 추가하려면 하나를 삭제하세요.",
+  "siteAddress": "사이트 주소",
+  "siteName": "이름(선택사항)",
+  "addSite": "사이트 추가",
+  "siteAddressError": "example.com과 같은 웹사이트 주소를 입력하세요.",
+  "siteDuplicateError": "이미 고정된 사이트입니다.",
+  "siteNameFor": "{site} 이름",
+  "moveSiteUp": "{site} 위로 이동",
+  "moveSiteDown": "{site} 아래로 이동",
+  "removeSite": "{site} 삭제"
 }

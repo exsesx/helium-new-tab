@@ -13,6 +13,7 @@
   --toggle-off: #767979;
   --tint: #e6e7e7;
   --border: #d8dada;
+  --error: #b3261e;
   /* Flip favicons cached in the other theme's color; see markIconTone. */
   --light-icon-filter: invert(1) hue-rotate(180deg);
   --dark-icon-filter: none;
@@ -35,6 +36,7 @@
     --toggle-off: #8a8e8e;
     --tint: #303232;
     --border: #454848;
+    --error: #ffb4ab;
     --light-icon-filter: none;
     --dark-icon-filter: invert(1) hue-rotate(180deg);
   }
@@ -54,6 +56,7 @@
   --toggle-off: #8a8e8e;
   --tint: #303232;
   --border: #454848;
+  --error: #ffb4ab;
   --light-icon-filter: none;
   --dark-icon-filter: invert(1) hue-rotate(180deg);
 }
@@ -776,7 +779,8 @@ input[type="checkbox"]:checked:before {
   }
 
   .settings-button,
-  .close-button {
+  .close-button,
+  .icon-button {
     min-height: 44px;
     min-width: 44px;
   }
@@ -785,7 +789,9 @@ input[type="checkbox"]:checked:before {
     min-height: 44px;
   }
 
-  .custom-font input {
+  .custom-font input,
+  .site-field input,
+  .site-name {
     font-size: 16px;
     min-height: 44px;
   }
@@ -835,14 +841,16 @@ input[type="checkbox"]:checked:before {
   padding: 2px 0 14px;
 }
 
-.custom-font label {
+.custom-font label,
+.site-field label {
   display: block;
   color: var(--muted);
   font-size: 12px;
   margin-bottom: 6px;
 }
 
-.custom-font input {
+.custom-font input,
+.site-field input {
   width: 100%;
   min-width: 0;
   border: 1px solid var(--border);
@@ -931,4 +939,129 @@ input[type="checkbox"]:checked:before {
 :root[data-show-date="false"] #date,
 :root[data-show-clock="false"][data-show-date="false"] .clock-block {
   display: none;
+}
+
+.pinned-settings {
+  margin-top: 16px;
+}
+
+.settings-heading {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  padding-bottom: 4px;
+}
+
+.section-help {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.pinned-site-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pinned-site-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+}
+
+.pinned-site-item .site-icon {
+  width: 28px;
+  height: 28px;
+  margin-inline-end: 4px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.pinned-site-item .site-favicon {
+  width: 18px;
+  height: 18px;
+}
+
+.site-name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text);
+  background: transparent;
+  text-overflow: ellipsis;
+}
+
+.site-name:hover,
+.site-name:focus {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--secondary);
+}
+
+.icon-button:hover:not(:disabled) {
+  background: var(--tint);
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pinned-site-form {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.field-error {
+  margin: 6px 0 0;
+  color: var(--error);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.add-site-button {
+  justify-self: start;
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: var(--tint);
+  color: var(--text);
+}
+
+.add-site-button:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.icon-button:disabled,
+.add-site-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.pinned-site-form .section-help {
+  margin: 0;
 }

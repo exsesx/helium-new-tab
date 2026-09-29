@@ -48,5 +48,17 @@
   "typeToSearch": "Psaním kdekoli spustit hledání",
   "typeToSearchHelp": "Text napsaný na této stránce jde rovnou do pole hledání. Když je vypnuto, nejdřív stiskněte /.",
   "showServiceIcons": "Zobrazovat ikony služeb",
-  "serviceIconsHelp": "Používá ikony webů již uložené v prohlížeči. Nic se nestahuje. Po zapnutí se zobrazí žádost o oprávnění je číst."
+  "serviceIconsHelp": "Používá ikony webů již uložené v prohlížeči, ve vyhledávacím poli a u připnutých webů. Nic se nestahuje. Po zapnutí se zobrazí žádost o oprávnění je číst.",
+  "pinnedSites": "Připnuté weby",
+  "pinnedSitesHelp": "Zkratky pod vyhledávacím polem. Připnout můžete až 8 webů.",
+  "pinnedSitesFull": "Limit je 8 webů. Chcete-li přidat další, jeden odeberte.",
+  "siteAddress": "Adresa webu",
+  "siteName": "Název (nepovinné)",
+  "addSite": "Přidat web",
+  "siteAddressError": "Zadejte adresu webu, například example.com.",
+  "siteDuplicateError": "Tento web už je připnutý.",
+  "siteNameFor": "Název pro {site}",
+  "moveSiteUp": "Posunout {site} nahoru",
+  "moveSiteDown": "Posunout {site} dolů",
+  "removeSite": "Odebrat {site}"
 }

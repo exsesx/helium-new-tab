@@ -48,5 +48,17 @@
   "typeToSearch": "Überall tippen zum Suchen",
   "typeToSearchHelp": "Eingaben auf dieser Seite landen direkt im Suchfeld. Wenn dies ausgeschaltet ist, drücke zuerst /.",
   "showServiceIcons": "Dienstsymbole anzeigen",
-  "serviceIconsHelp": "Verwendet bereits im Browser gespeicherte Website-Symbole. Es wird nichts heruntergeladen. Beim Einschalten wird um die Berechtigung gebeten, sie zu lesen."
+  "serviceIconsHelp": "Verwendet bereits im Browser gespeicherte Website-Symbole im Suchfeld und für angeheftete Websites. Es wird nichts heruntergeladen. Beim Einschalten wird um die Berechtigung gebeten, sie zu lesen.",
+  "pinnedSites": "Angeheftete Websites",
+  "pinnedSitesHelp": "Verknüpfungen unter dem Suchfeld. Du kannst bis zu 8 Websites anheften.",
+  "pinnedSitesFull": "Das Limit sind 8 Websites. Entferne eine, um eine andere hinzuzufügen.",
+  "siteAddress": "Website-Adresse",
+  "siteName": "Name (optional)",
+  "addSite": "Website hinzufügen",
+  "siteAddressError": "Gib eine Website-Adresse ein, z. B. example.com.",
+  "siteDuplicateError": "Diese Website ist bereits angeheftet.",
+  "siteNameFor": "Name für {site}",
+  "moveSiteUp": "{site} nach oben verschieben",
+  "moveSiteDown": "{site} nach unten verschieben",
+  "removeSite": "{site} entfernen"
 }

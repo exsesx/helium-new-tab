@@ -48,5 +48,17 @@
   "typeToSearch": "Pisz w dowolnym miejscu, aby wyszukać",
   "typeToSearchHelp": "Tekst wpisany na tej stronie trafia prosto do pola wyszukiwania. Po wyłączeniu najpierw naciśnij /.",
   "showServiceIcons": "Pokazuj ikony serwisów",
-  "serviceIconsHelp": "Używa ikon witryn zapisanych już w przeglądarce. Nic nie jest pobierane. Włączenie wymaga zgody na ich odczyt."
+  "serviceIconsHelp": "Używa ikon witryn zapisanych już w przeglądarce — w polu wyszukiwania i przy przypiętych witrynach. Nic nie jest pobierane. Włączenie wymaga zgody na ich odczyt.",
+  "pinnedSites": "Przypięte witryny",
+  "pinnedSitesHelp": "Skróty pod polem wyszukiwania. Możesz przypiąć maksymalnie 8 witryn.",
+  "pinnedSitesFull": "Limit to 8 witryn. Usuń jedną, aby dodać inną.",
+  "siteAddress": "Adres witryny",
+  "siteName": "Nazwa (opcjonalnie)",
+  "addSite": "Dodaj witrynę",
+  "siteAddressError": "Wpisz adres witryny, np. example.com.",
+  "siteDuplicateError": "Ta witryna jest już przypięta.",
+  "siteNameFor": "Nazwa dla {site}",
+  "moveSiteUp": "Przenieś {site} w górę",
+  "moveSiteDown": "Przenieś {site} w dół",
+  "removeSite": "Usuń {site}"
 }

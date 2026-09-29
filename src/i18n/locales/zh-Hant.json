@@ -48,5 +48,17 @@
   "typeToSearch": "在任意位置輸入即可搜尋",
   "typeToSearchHelp": "在此頁面上輸入的內容會直接進入搜尋框。關閉後，需先按 / 鍵。",
   "showServiceIcons": "顯示服務圖示",
-  "serviceIconsHelp": "使用瀏覽器中已儲存的網站圖示，不會下載任何內容。開啟時會要求讀取這些圖示的權限。"
+  "serviceIconsHelp": "在搜尋框和釘選的網站中使用瀏覽器已儲存的網站圖示，不會下載任何內容。開啟時會要求讀取這些圖示的權限。",
+  "pinnedSites": "釘選的網站",
+  "pinnedSitesHelp": "顯示在搜尋框下方的捷徑。最多可釘選 8 個網站。",
+  "pinnedSitesFull": "最多只能釘選 8 個網站。移除一個後才能新增其他網站。",
+  "siteAddress": "網站網址",
+  "siteName": "名稱（選填）",
+  "addSite": "新增網站",
+  "siteAddressError": "請輸入網站網址，例如 example.com。",
+  "siteDuplicateError": "此網站已釘選。",
+  "siteNameFor": "{site} 的名稱",
+  "moveSiteUp": "上移 {site}",
+  "moveSiteDown": "下移 {site}",
+  "removeSite": "移除 {site}"
 }

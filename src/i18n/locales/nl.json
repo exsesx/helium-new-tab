@@ -48,5 +48,17 @@
   "typeToSearch": "Overal typen om te zoeken",
   "typeToSearchHelp": "Wat je op deze pagina typt, komt direct in het zoekveld. Als dit uit staat, druk je eerst op /.",
   "showServiceIcons": "Dienstpictogrammen tonen",
-  "serviceIconsHelp": "Gebruikt websitepictogrammen die al in je browser zijn opgeslagen. Er wordt niets gedownload. Bij inschakelen wordt toestemming gevraagd om ze te lezen."
+  "serviceIconsHelp": "Gebruikt websitepictogrammen die al in je browser zijn opgeslagen, in het zoekveld en voor vastgezette websites. Er wordt niets gedownload. Bij inschakelen wordt toestemming gevraagd om ze te lezen.",
+  "pinnedSites": "Vastgezette websites",
+  "pinnedSitesHelp": "Snelkoppelingen onder het zoekveld. Je kunt tot 8 websites vastzetten.",
+  "pinnedSitesFull": "De limiet is 8 websites. Verwijder er een om een andere toe te voegen.",
+  "siteAddress": "Websiteadres",
+  "siteName": "Naam (optioneel)",
+  "addSite": "Website toevoegen",
+  "siteAddressError": "Voer een websiteadres in, zoals example.com.",
+  "siteDuplicateError": "Deze website is al vastgezet.",
+  "siteNameFor": "Naam voor {site}",
+  "moveSiteUp": "{site} omhoog verplaatsen",
+  "moveSiteDown": "{site} omlaag verplaatsen",
+  "removeSite": "{site} verwijderen"
 }

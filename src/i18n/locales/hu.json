@@ -48,5 +48,17 @@
   "typeToSearch": "Keresés gépeléssel bárhol",
   "typeToSearchHelp": "Az oldalon begépelt szöveg egyenesen a keresőmezőbe kerül. Kikapcsolva előbb nyomja meg a / billentyűt.",
   "showServiceIcons": "Szolgáltatásikonok megjelenítése",
-  "serviceIconsHelp": "A böngészőben már tárolt webhelyikonokat használja. Semmi sem töltődik le. Bekapcsoláskor engedélyt kér az olvasásukhoz."
+  "serviceIconsHelp": "A böngészőben már tárolt webhelyikonokat használja a keresőmezőben és a kitűzött webhelyeknél. Semmi sem töltődik le. Bekapcsoláskor engedélyt kér az olvasásukhoz.",
+  "pinnedSites": "Kitűzött webhelyek",
+  "pinnedSitesHelp": "Parancsikonok a keresőmező alatt. Legfeljebb 8 webhelyet tűzhetsz ki.",
+  "pinnedSitesFull": "A korlát 8 webhely. Távolíts el egyet, hogy újat adhass hozzá.",
+  "siteAddress": "Webhely címe",
+  "siteName": "Név (nem kötelező)",
+  "addSite": "Webhely hozzáadása",
+  "siteAddressError": "Adj meg egy webhelycímet, például example.com.",
+  "siteDuplicateError": "Ez a webhely már ki van tűzve.",
+  "siteNameFor": "{site} neve",
+  "moveSiteUp": "{site} mozgatása feljebb",
+  "moveSiteDown": "{site} mozgatása lejjebb",
+  "removeSite": "{site} eltávolítása"
 }

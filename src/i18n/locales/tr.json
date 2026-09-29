@@ -48,5 +48,17 @@
   "typeToSearch": "Aramak için herhangi bir yere yazın",
   "typeToSearchHelp": "Bu sayfada yazdıklarınız doğrudan arama kutusuna gider. Kapalıyken önce / tuşuna basın.",
   "showServiceIcons": "Hizmet simgelerini göster",
-  "serviceIconsHelp": "Tarayıcıda zaten kayıtlı site simgelerini kullanır. Hiçbir şey indirilmez. Açıldığında bunları okumak için izin istenir."
+  "serviceIconsHelp": "Tarayıcıda zaten kayıtlı site simgelerini arama alanında ve sabitlenen sitelerde kullanır. Hiçbir şey indirilmez. Açıldığında bunları okumak için izin istenir.",
+  "pinnedSites": "Sabitlenen siteler",
+  "pinnedSitesHelp": "Arama alanının altındaki kısayollar. En fazla 8 site sabitleyebilirsiniz.",
+  "pinnedSitesFull": "Sınır 8 sitedir. Başka bir site eklemek için birini kaldırın.",
+  "siteAddress": "Site adresi",
+  "siteName": "Ad (isteğe bağlı)",
+  "addSite": "Site ekle",
+  "siteAddressError": "example.com gibi bir web sitesi adresi girin.",
+  "siteDuplicateError": "Bu site zaten sabitlenmiş.",
+  "siteNameFor": "{site} için ad",
+  "moveSiteUp": "{site} sitesini yukarı taşı",
+  "moveSiteDown": "{site} sitesini aşağı taşı",
+  "removeSite": "{site} sitesini kaldır"
 }

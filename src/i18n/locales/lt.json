@@ -48,5 +48,17 @@
   "typeToSearch": "Rašykite bet kur, kad ieškotumėte",
   "typeToSearchHelp": "Šiame puslapyje įvestas tekstas patenka tiesiai į paieškos lauką. Išjungus pirmiausia paspauskite /.",
   "showServiceIcons": "Rodyti paslaugų piktogramas",
-  "serviceIconsHelp": "Naudoja naršyklėje jau išsaugotas svetainių piktogramas. Niekas neatsisiunčiama. Įjungus prašoma leidimo jas skaityti."
+  "serviceIconsHelp": "Naudoja naršyklėje jau išsaugotas svetainių piktogramas paieškos lauke ir prisegtoms svetainėms. Niekas neatsisiunčiama. Įjungus prašoma leidimo jas skaityti.",
+  "pinnedSites": "Prisegtos svetainės",
+  "pinnedSitesHelp": "Nuorodos po paieškos lauku. Galite prisegti iki 8 svetainių.",
+  "pinnedSitesFull": "Riba – 8 svetainės. Pašalinkite vieną, kad pridėtumėte kitą.",
+  "siteAddress": "Svetainės adresas",
+  "siteName": "Pavadinimas (neprivaloma)",
+  "addSite": "Pridėti svetainę",
+  "siteAddressError": "Įveskite svetainės adresą, pavyzdžiui, example.com.",
+  "siteDuplicateError": "Ši svetainė jau prisegta.",
+  "siteNameFor": "{site} pavadinimas",
+  "moveSiteUp": "Perkelti {site} aukštyn",
+  "moveSiteDown": "Perkelti {site} žemyn",
+  "removeSite": "Pašalinti {site}"
 }

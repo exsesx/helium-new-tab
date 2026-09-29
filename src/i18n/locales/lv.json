@@ -48,5 +48,17 @@
   "typeToSearch": "Rakstiet jebkur, lai meklētu",
   "typeToSearchHelp": "Šajā lapā ierakstītais nonāk tieši meklēšanas laukā. Kad izslēgts, vispirms nospiediet /.",
   "showServiceIcons": "Rādīt pakalpojumu ikonas",
-  "serviceIconsHelp": "Izmanto pārlūkā jau saglabātās vietņu ikonas. Nekas netiek lejupielādēts. Ieslēdzot tiek prasīta atļauja tās lasīt."
+  "serviceIconsHelp": "Izmanto pārlūkā jau saglabātās vietņu ikonas meklēšanas laukā un piespraustajām vietnēm. Nekas netiek lejupielādēts. Ieslēdzot tiek prasīta atļauja tās lasīt.",
+  "pinnedSites": "Piespraustās vietnes",
+  "pinnedSitesHelp": "Saīsnes zem meklēšanas lauka. Varat piespraust līdz 8 vietnēm.",
+  "pinnedSitesFull": "Ierobežojums ir 8 vietnes. Noņemiet vienu, lai pievienotu citu.",
+  "siteAddress": "Vietnes adrese",
+  "siteName": "Nosaukums (neobligāts)",
+  "addSite": "Pievienot vietni",
+  "siteAddressError": "Ievadiet vietnes adresi, piemēram, example.com.",
+  "siteDuplicateError": "Šī vietne jau ir piesprausta.",
+  "siteNameFor": "{site} nosaukums",
+  "moveSiteUp": "Pārvietot {site} uz augšu",
+  "moveSiteDown": "Pārvietot {site} uz leju",
+  "removeSite": "Noņemt {site}"
 }

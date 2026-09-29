@@ -48,5 +48,17 @@
   "typeToSearch": "Escriu a qualsevol lloc per cercar",
   "typeToSearchHelp": "El que escriguis en aquesta pàgina va directament al camp de cerca. Si està desactivat, prem / primer.",
   "showServiceIcons": "Mostra les icones dels serveis",
-  "serviceIconsHelp": "Fa servir les icones dels llocs ja desades al navegador. No es baixa res. En activar-ho, es demana permís per llegir-les."
+  "serviceIconsHelp": "Fa servir les icones dels llocs ja desades al navegador, al camp de cerca i per als llocs fixats. No es baixa res. En activar-ho, es demana permís per llegir-les.",
+  "pinnedSites": "Llocs fixats",
+  "pinnedSitesHelp": "Dreceres sota el camp de cerca. Pots fixar fins a 8 llocs.",
+  "pinnedSitesFull": "El límit és de 8 llocs. Treu-ne un per afegir-ne un altre.",
+  "siteAddress": "Adreça del lloc",
+  "siteName": "Nom (opcional)",
+  "addSite": "Afegeix un lloc",
+  "siteAddressError": "Introdueix l’adreça d’un lloc web, com ara example.com.",
+  "siteDuplicateError": "Aquest lloc ja està fixat.",
+  "siteNameFor": "Nom per a {site}",
+  "moveSiteUp": "Mou {site} amunt",
+  "moveSiteDown": "Mou {site} avall",
+  "removeSite": "Treu {site}"
 }

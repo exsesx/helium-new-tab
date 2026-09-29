@@ -104,10 +104,11 @@ test("Customize closes on a backdrop click but not after a dragged selection", a
   const field = page.getByLabel("UI font family");
   await field.fill("JetBrains Mono");
 
-  // Measure the field only after the panel finishes sliding in.
+  // Measure the field only after the panel finishes sliding in, with the field in its middle.
   await dialog.evaluate((element) =>
     Promise.all(element.getAnimations().map((animation) => animation.finished)),
   );
+  await field.evaluate((element) => element.scrollIntoView({ block: "center" }));
 
   const box = await field.boundingBox();
   const backdrop = { x: 100, y: box.y + box.height / 2 };
@@ -408,3 +409,200 @@ test("a middle click on the submit button opens a new tab", async ({ page, conte
 
   await expect(page).toHaveURL("/");
 });
+
+const SITES_KEY = "helium-tab-sites";
+
+async function savePinnedSites(page, sites) {
+  await page.goto("/");
+  await page.evaluate(
+    ([key, value]) => localStorage.setItem(key, JSON.stringify({ sites: value })),
+    [SITES_KEY, sites],
+  );
+}
+
+function pinnedLinks(page) {
+  return page.getByRole("navigation", { name: "Pinned sites" }).getByRole("link");
+}
+
+test("shows no pinned sites row until a site is pinned", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.locator("#pinned-sites")).toBeHidden();
+  await expect(page.locator("#pinned-sites a")).toHaveCount(0);
+});
+
+test("pinned sites are on the page from its first paint", async ({ page }) => {
+  // Record the tiles each frame is about to paint, from the first frame that has the page.
+  await page.addInitScript(() => {
+    window.paintedSites = [];
+
+    function record() {
+      if (document.getElementById("search")) {
+        const links = [...document.querySelectorAll("#pinned-sites a")];
+        window.paintedSites.push(links.map((link) => link.textContent).join(" | "));
+      }
+
+      if (window.paintedSites.length < 5) {
+        requestAnimationFrame(record);
+      }
+    }
+
+    requestAnimationFrame(record);
+  });
+
+  await savePinnedSites(page, [
+    { url: "https://github.com/", title: "github.com" },
+    { url: "https://example.com/", title: "Example" },
+  ]);
+  await page.reload();
+  await page.waitForFunction(() => window.paintedSites.length >= 5);
+
+  const frames = await page.evaluate(() => window.paintedSites);
+
+  expect(new Set(frames)).toEqual(new Set(["Ggithub.com | EExample"]));
+  await expect(pinnedLinks(page).first()).toHaveAccessibleName("github.com");
+  await expect(pinnedLinks(page).first()).toHaveAttribute("href", "https://github.com/");
+});
+
+test("adds, renames, reorders, and removes pinned sites in Customize", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Customize" }).click();
+  const address = page.getByLabel("Site address");
+  const add = page.getByRole("button", { name: "Add site" });
+
+  await address.fill("github.com");
+  await add.click();
+
+  await expect(pinnedLinks(page)).toHaveText(["Ggithub.com"]);
+  await expect(pinnedLinks(page).first()).toHaveAttribute("href", "https://github.com/");
+  await expect(address).toHaveValue("");
+  await expect(address).toBeFocused();
+
+  // Text the search field would search for, and duplicates, are refused where they were typed.
+  await address.fill("next.js");
+  await address.press("Enter");
+
+  await expect(page.getByText("Enter a website address, such as example.com.")).toBeVisible();
+  await expect(address).toHaveAttribute("aria-invalid", "true");
+
+  await address.fill("https://github.com");
+  await address.press("Enter");
+
+  await expect(page.getByText("This site is already pinned.")).toBeVisible();
+
+  await address.fill("example.com");
+  await page.getByLabel("Name (optional)").fill("Example");
+  await add.click();
+
+  await expect(pinnedLinks(page)).toHaveText(["Ggithub.com", "EExample"]);
+
+  const name = page.getByLabel("Name for github.com");
+  await name.fill("GitHub");
+  await name.press("Enter");
+
+  await expect(pinnedLinks(page).first()).toHaveAccessibleName("GitHub");
+  await expect(name).toBeFocused();
+
+  // At the top, the up button is disabled, so focus stays on the row's other move button.
+  await page.getByRole("button", { name: "Move Example up" }).click();
+
+  await expect(pinnedLinks(page)).toHaveText(["EExample", "GGitHub"]);
+  await expect(page.getByRole("button", { name: "Move Example down" })).toBeFocused();
+
+  await page.keyboard.press("Enter");
+
+  await expect(pinnedLinks(page)).toHaveText(["GGitHub", "EExample"]);
+  await expect(page.getByRole("button", { name: "Move Example up" })).toBeFocused();
+
+  await page.getByRole("button", { name: "Remove GitHub" }).click();
+
+  await expect(pinnedLinks(page)).toHaveText(["EExample"]);
+  await expect(page.getByRole("button", { name: "Remove Example" })).toBeFocused();
+
+  await page.keyboard.press("Enter");
+
+  await expect(page.locator("#pinned-sites")).toBeHidden();
+  await expect(address).toBeFocused();
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
+
+  expect(saved.sites).toEqual([]);
+});
+
+test("pinned sites persist and follow changes from another tab", async ({ context }) => {
+  const first = await context.newPage();
+  const second = await context.newPage();
+  await first.goto("/");
+  await second.goto("/");
+
+  await first.getByRole("button", { name: "Customize" }).click();
+  await first.getByLabel("Site address").fill("example.com");
+  await first.getByLabel("Site address").press("Enter");
+
+  await expect(pinnedLinks(second)).toHaveText(["Eexample.com"]);
+
+  await second.reload();
+
+  await expect(pinnedLinks(second)).toHaveText(["Eexample.com"]);
+});
+
+test("adding stops at eight pinned sites", async ({ page }) => {
+  const sites = ["a", "b", "c", "d", "e", "f", "g"].map((letter) => ({
+    url: `https://${letter}.example.com/`,
+    title: `${letter}.example.com`,
+  }));
+
+  await savePinnedSites(page, sites);
+  await page.reload();
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  await page.getByLabel("Site address").fill("h.example.com");
+  await page.getByLabel("Site address").press("Enter");
+
+  await expect(pinnedLinks(page)).toHaveCount(8);
+  await expect(page.getByRole("button", { name: "Add site" })).toBeDisabled();
+  await expect(page.getByLabel("Site address")).toBeDisabled();
+  await expect(page.getByText("8 sites is the limit. Remove one to add another.")).toBeVisible();
+  await expect(page.getByLabel("Name for h.example.com")).toBeFocused();
+
+  await page.getByRole("button", { name: "Remove a.example.com" }).click();
+
+  await expect(page.getByRole("button", { name: "Add site" })).toBeEnabled();
+});
+
+test("a plain click on a pinned site opens it in this tab", async ({ page }) => {
+  await savePinnedSites(page, [{ url: "https://example.com/", title: "Example" }]);
+  await page.reload();
+
+  const request = page.waitForRequest((request) => request.isNavigationRequest());
+  await pinnedLinks(page).first().click();
+
+  expect((await request).url()).toBe("https://example.com/");
+});
+
+// Headless Chromium opens every new page in its own window, so these check only that the
+// link opens elsewhere. Browser-opened tabs cannot load routed remote pages, so the site is local.
+for (const [name, options] of [
+  ["a modified click", { modifiers: ["ControlOrMeta"] }],
+  ["a middle click", { button: "middle" }],
+  ["a Shift click", { modifiers: ["Shift"] }],
+]) {
+  test(`${name} on a pinned site opens it elsewhere and stays here`, async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const url = new URL("/?pinned", baseURL);
+
+    await savePinnedSites(page, [{ url: url.href, title: "Preview" }]);
+    await page.reload();
+
+    const opened = context.waitForEvent("page");
+    await pinnedLinks(page).first().click(options);
+
+    const newPage = await opened;
+    await newPage.waitForURL(url.href);
+
+    await expect(page).toHaveURL("/");
+  });
+}
