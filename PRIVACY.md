@@ -9,6 +9,10 @@ that changed it, so a device can tell its own older changes from newer ones. The
 created on the device and identifies nothing else. It has no account, analytics, advertising,
 telemetry, or backend. It does not collect or transmit browsing history.
 
+A background color you choose syncs with the other preferences. A background image you choose
+is resized on your device and kept only in this device's local storage; it is never synced or
+uploaded, and **Remove image** deletes it.
+
 The extension makes no external network requests. Translations, images, scripts,
 and styles ship in the extension; custom fonts must already be installed on your device.
 
