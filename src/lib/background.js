@@ -3,7 +3,8 @@
 // The image stays on this device. It is kept apart from the synced preferences, so other
 // devices never point at an image they do not have.
 export const BACKGROUND_IMAGE_KEY = "helium-tab-background";
-// About 1.5 MB of data URL, well inside the page's local storage quota.
+// About 1.5 MB of data URL. Chromium gives an origin's local storage 5 Mi UTF-16 code units
+// (10 MiB), so the largest record takes about 30% of it; photos usually take 1% to 7%.
 export const MAX_IMAGE_LENGTH = 1.5 * 1024 * 1024;
 export const DEFAULT_BACKGROUND_COLOR = "#dbe4ff";
 

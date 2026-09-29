@@ -1356,3 +1356,39 @@ test("without a WebP encoder, a transparent PNG is stored as JPEG over its avera
     expect(Math.abs(channel - expected)).toBeLessThan(12);
   }
 });
+
+test("an image that does not fit in local storage is refused with a message", async ({ page }) => {
+  await page.goto("/");
+
+  // Fill this origin's local storage until a few characters are left.
+  await page.evaluate(() => {
+    let low = 0;
+    let high = 16 * 1024 * 1024;
+
+    while (low < high) {
+      const middle = Math.ceil((low + high) / 2);
+
+      try {
+        localStorage.setItem("filler", "x".repeat(middle));
+        low = middle;
+      } catch {
+        high = middle - 1;
+      }
+    }
+
+    localStorage.setItem("filler", "x".repeat(low));
+  });
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+  await chooseTestImage(page);
+
+  await expect(page.locator("#background-image-message")).toHaveText(
+    "There is not enough space on this device to keep this image.",
+  );
+  await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+  await expect(page.getByRole("button", { name: "Remove image" })).toBeHidden();
+
+  const stored = await page.evaluate((key) => localStorage.getItem(key), BACKGROUND_IMAGE_KEY);
+  expect(stored).toBeNull();
+});
