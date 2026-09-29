@@ -237,11 +237,13 @@ h1 {
   }
 }
 
-.search-favicon.is-light {
+.search-favicon.is-light,
+.site-favicon.is-light {
   filter: var(--light-icon-filter);
 }
 
-.search-favicon.is-dark {
+.search-favicon.is-dark,
+.site-favicon.is-dark {
   filter: var(--dark-icon-filter);
 }
 
@@ -321,8 +323,100 @@ h1 {
 @media (prefers-reduced-motion: no-preference) {
   .search-submit:active,
   .settings-button:active,
-  .close-button:active {
+  .close-button:active,
+  .pinned-site:active {
     transform: scale(0.97);
+  }
+}
+
+/* One centered row of up to eight sites; narrow windows wrap it into two. */
+.pinned-sites {
+  margin-top: 20px;
+}
+
+.pinned-sites ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pinned-site {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 76px;
+  padding: 10px 4px 8px;
+  border-radius: 12px;
+}
+
+.pinned-site:hover {
+  background: var(--tint);
+}
+
+.pinned-title {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.pinned-site:hover .pinned-title {
+  color: var(--text);
+}
+
+/* Letter tiles take their site's pastel; see site-tiles.js and palette.js. */
+.site-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 550;
+  line-height: 1;
+}
+
+.site-icon:not(.has-favicon) {
+  background: var(--tone);
+  color: var(--tone-text);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .site-icon:not(.has-favicon) {
+    background: var(--tone-dark);
+    color: var(--tone-dark-text);
+  }
+}
+
+:root[data-theme="dark"] .site-icon:not(.has-favicon) {
+  background: var(--tone-dark);
+  color: var(--tone-dark-text);
+}
+
+.site-icon.has-favicon {
+  background: var(--search-bg);
+}
+
+.site-favicon {
+  width: 24px;
+  height: 24px;
+  /* Soften square icons like app icons do, as the search field's favicon does. */
+  border-radius: 25%;
+  object-fit: contain;
+  transition: opacity 160ms ease;
+}
+
+@starting-style {
+  .site-favicon {
+    opacity: 0;
   }
 }
 
@@ -649,6 +743,15 @@ input[type="checkbox"]:checked:before {
 
   select {
     max-width: 160px;
+  }
+
+  .pinned-site {
+    width: 64px;
+  }
+
+  .pinned-sites .site-icon {
+    width: 40px;
+    height: 40px;
   }
 }
 

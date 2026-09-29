@@ -25,6 +25,14 @@ test("requests icons at the screen's device pixel size", () => {
   }
 });
 
+test("requests larger icons for pinned sites", () => {
+  globalThis.chrome = { runtime: { getURL: (path) => `chrome-extension://id${path}` } };
+
+  const url = new URL(serviceIconUrl("https://github.com", 2, 24));
+
+  expect(url.searchParams.get("size")).toBe("48");
+});
+
 test("keeps the search icon when the browser only has its generic globe", async () => {
   const globe = [71, 76, 79, 66, 69];
   const icons = new Map([

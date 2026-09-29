@@ -1,11 +1,19 @@
-import { readPreferences, resolvedFonts } from "./model.js";
-import { PREFERENCES_KEY } from "./storage.js";
+import { readPinnedSites, readPreferences, resolvedFonts } from "./model.js";
+import { PINNED_SITES_KEY, PREFERENCES_KEY } from "./storage.js";
 
 export function loadPreferences() {
   try {
     return readPreferences(JSON.parse(localStorage.getItem(PREFERENCES_KEY)));
   } catch {
     return readPreferences(null);
+  }
+}
+
+export function loadPinnedSites() {
+  try {
+    return readPinnedSites(JSON.parse(localStorage.getItem(PINNED_SITES_KEY)));
+  } catch {
+    return readPinnedSites(null);
   }
 }
 

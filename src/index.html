@@ -96,6 +96,15 @@
           </button>
         </form>
 
+        <!-- bootstrap.js fills this before the first paint when sites are pinned. -->
+        <nav
+          id="pinned-sites"
+          class="pinned-sites"
+          aria-label="Pinned sites"
+          data-i18n-label="pinnedSites"
+          hidden
+        ></nav>
+
         <div class="clock-block" id="clock-block">
           <h1>
             <span class="visually-hidden" data-i18n="currentTime">Current time</span>
