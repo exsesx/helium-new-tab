@@ -48,5 +48,18 @@
   "typeToSearch": "Escribe en cualquier lugar para buscar",
   "typeToSearchHelp": "Lo que escribas en esta página va directo al campo de búsqueda. Si está desactivado, pulsa / primero.",
   "showServiceIcons": "Mostrar iconos de servicios",
-  "serviceIconsHelp": "Usa los iconos de sitios ya guardados en el navegador. No se descarga nada. Al activarlo, se pide permiso para leerlos."
+  "serviceIconsHelp": "Usa los iconos de sitios ya guardados en el navegador, en el campo de búsqueda y para los sitios fijados. No se descarga nada. Al activarlo, se pide permiso para leerlos.",
+  "pinnedSites": "Sitios fijados",
+  "showPinnedSites": "Mostrar sitios fijados",
+  "showPinnedSitesHelp": "Hasta 8 accesos directos bajo el reloj y la fecha. Al ocultarlos, tu lista se conserva.",
+  "pinnedSitesFull": "El límite es de 8 sitios. Quita uno para añadir otro.",
+  "siteAddress": "Dirección del sitio",
+  "siteName": "Nombre (opcional)",
+  "addSite": "Añadir sitio",
+  "siteAddressError": "Introduce la dirección de un sitio web, como example.com.",
+  "siteDuplicateError": "Este sitio ya está fijado.",
+  "siteNameFor": "Nombre de {site}",
+  "moveSiteUp": "Subir {site}",
+  "moveSiteDown": "Bajar {site}",
+  "removeSite": "Quitar {site}"
 }

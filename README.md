@@ -35,9 +35,16 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   Hold Ctrl, Cmd, or Alt while pressing Enter or clicking the arrow, or middle-click the
   arrow, to open the result in a background tab and stay on this page, as links do. Add
   Shift to switch to the new tab, or hold only Shift to open a new window.
+- Up to eight pinned sites in a row below the clock and date, added, renamed, reordered, and
+  removed in **Customize**. They are off by default; turn on **Customize → Show pinned
+  sites** to show the row. Turning it off again keeps the list. Sites are chosen by hand,
+  never collected from browsing history. They are ordinary links, so Ctrl, Cmd, or a middle
+  click opens a background tab and Shift opens a new window. Each shows a colored letter, or
+  its cached favicon when service icons are on. The row is drawn with the first paint and
+  takes no space until a site is pinned.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
-- Preferences saved in the extension's browser profile and synced across devices when the
-  browser syncs extension data. Service icons stay a per-device choice.
+- Preferences and pinned sites saved in the extension's browser profile and synced across
+  devices when the browser syncs extension data. Service icons stay a per-device choice.
 - No analytics, remote fonts, or external network requests.
   Required permissions are `search` and `storage`, neither of which shows an install warning.
   Service icons ask for the optional `favicon` permission when you turn them on.
@@ -65,7 +72,8 @@ the setting on. Nothing is downloaded, and sites you have never visited keep the
 Removing the permission on the extensions page turns the setting off again.
 The image has rounded corners and fades in and out. Reduced-motion settings keep fades like
 this one and remove movement, so Customize fades in place instead of sliding.
-Unknown bangs keep the search icon. The localhost preview cannot show service icons.
+Unknown bangs keep the search icon. Pinned sites use the same cache, and sites without a
+cached icon keep their letter. The localhost preview cannot show service icons.
 Custom address-bar shortcuts are not included.
 The localhost preview supports the same local bangs and uses DuckDuckGo for ordinary searches.
 

@@ -1,13 +1,16 @@
 import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
 import { createClock } from "./lib/clock.js";
-import { readPreferences } from "./lib/model.js";
+import { readPinnedSites, readPreferences } from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
 import {
   hasServiceIcons,
   onServiceIconsRevoked,
   requestServiceIcons,
+  serviceIconsSupported,
 } from "./lib/service-icons.js";
-import { PREFERENCES_KEY } from "./lib/storage.js";
+import { showSiteFavicons } from "./lib/site-favicons.js";
+import { renderPinnedSites } from "./lib/site-tiles.js";
+import { PINNED_SITES_KEY, PREFERENCES_KEY } from "./lib/storage.js";
 import {
   createChangeOrder,
   createSyncWriter,
@@ -16,13 +19,15 @@ import {
   onSyncedChange,
   readSynced,
 } from "./lib/sync.js";
-import { applyAppearance } from "./lib/preferences.js";
+import { applyAppearance, loadPinnedSites } from "./lib/preferences.js";
 
 const $ = (id) => document.getElementById(id);
 
 // bootstrap.js runs first and has already validated and applied these.
 let preferences = window.__heliumTabPreferences;
+let pinned = window.__heliumTabSites ?? loadPinnedSites();
 delete window.__heliumTabPreferences;
+delete window.__heliumTabSites;
 
 const translator = createTranslator();
 const clock = createClock({ clock: $("clock"), date: $("date"), container: $("clock-block") });
@@ -34,8 +39,11 @@ const searchForm = createSearchForm({
   getPreferences: () => preferences,
   onError: () => notify(translator.text("searchError")),
 });
+const device = deviceId();
 const syncWriter = createSyncWriter(() => preferences);
-const changeOrder = createChangeOrder(deviceId(), preferences);
+const changeOrder = createChangeOrder(device, preferences);
+const sitesWriter = createSyncWriter(() => pinned, PINNED_SITES_KEY);
+const sitesOrder = createChangeOrder(device, pinned);
 let activeLocale;
 let toastTimer;
 
@@ -48,9 +56,9 @@ function notify(message) {
   }, 3500);
 }
 
-function saveLocal() {
+function saveLocal(key = PREFERENCES_KEY, value = preferences) {
   try {
-    localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences));
+    localStorage.setItem(key, JSON.stringify(value));
   } catch {
     notify(translator.text("storageError"));
   }
@@ -67,6 +75,7 @@ function save(key) {
 }
 
 window.addEventListener("pagehide", syncWriter.flush);
+window.addEventListener("pagehide", sitesWriter.flush);
 
 function applyPreferences(updateAppearance = true) {
   if (updateAppearance) {
@@ -94,6 +103,7 @@ $("open-settings").addEventListener("click", async () => {
 
       settings = createSettings({
         getPreferences: () => preferences,
+        getPinnedSites: () => pinned.sites,
         translator,
         languages,
         onChange(key, value) {
@@ -103,6 +113,7 @@ $("open-settings").addEventListener("click", async () => {
 
           updatePreference(key, value);
         },
+        onPinnedSitesChange: updatePinnedSites,
       });
     }
 
@@ -125,6 +136,10 @@ function updatePreference(key, value) {
     applyAppearance(preferences);
   } else {
     applyPreferences();
+  }
+
+  if (key === "showServiceIcons" || key === "showPinnedSites") {
+    renderSites();
   }
 
   save(key);
@@ -159,9 +174,17 @@ function applyExternal(value) {
     return false;
   }
 
+  const rowChanged =
+    next.showServiceIcons !== preferences.showServiceIcons ||
+    next.showPinnedSites !== preferences.showPinnedSites;
+
   preferences = next;
   void updateLanguage(true);
   settings?.refresh();
+
+  if (rowChanged) {
+    renderSites();
+  }
 
   return true;
 }
@@ -195,6 +218,98 @@ void readSynced().then((value) => {
     syncWriter.flush();
   } else if (applyExternal(merged)) {
     saveLocal();
+  }
+});
+
+// Pinned sites. bootstrap.js has already drawn them with letter tiles when they are on. While
+// they are off, the list is kept and synced but the row stays empty.
+function showsSiteFavicons() {
+  return preferences.showServiceIcons && serviceIconsSupported();
+}
+
+function renderSites() {
+  const row = $("pinned-sites");
+  const links = [...row.querySelectorAll("a")];
+  const focused = links.indexOf(document.activeElement);
+
+  renderPinnedSites(row, preferences.showPinnedSites ? pinned.sites : []);
+
+  // Keep keyboard focus in the row when another tab or device changes it.
+  if (focused !== -1) {
+    const next = row.querySelectorAll("a");
+    next[Math.min(focused, next.length - 1)]?.focus();
+  }
+
+  if (showsSiteFavicons()) {
+    void showSiteFavicons(row);
+  }
+}
+
+if (showsSiteFavicons()) {
+  void showSiteFavicons($("pinned-sites"));
+}
+
+function updatePinnedSites(sites) {
+  pinned = { ...pinned, sites };
+  sitesOrder.stamp(pinned);
+  renderSites();
+
+  saveLocal(PINNED_SITES_KEY, pinned);
+  sitesWriter.write();
+  sitesWriter.flush();
+}
+
+// Apply pinned sites changed by another tab or device. Returns whether anything changed.
+function applyExternalSites(value) {
+  if (!sitesOrder.isCurrent(value)) {
+    return false;
+  }
+
+  const next = readPinnedSites(value);
+
+  if (JSON.stringify(next) === JSON.stringify(pinned)) {
+    return false;
+  }
+
+  pinned = next;
+  renderSites();
+  settings?.refresh();
+
+  return true;
+}
+
+function isSyncedSites(value) {
+  return Boolean(value) && typeof value === "object";
+}
+
+window.addEventListener("storage", (event) => {
+  if (event.key !== PINNED_SITES_KEY && event.key !== null) {
+    return;
+  }
+
+  try {
+    applyExternalSites(JSON.parse(event.newValue));
+  } catch {
+    /* Ignore malformed external data. */
+  }
+});
+
+onSyncedChange((value) => {
+  if (isSyncedSites(value) && applyExternalSites(value)) {
+    saveLocal(PINNED_SITES_KEY, pinned);
+  }
+}, PINNED_SITES_KEY);
+
+// Synced sites win once they exist. Only a list with sites seeds them, so a new device cannot
+// replace another device's list with an empty one before sync delivers it.
+void readSynced(PINNED_SITES_KEY).then((value) => {
+  if (isSyncedSites(value)) {
+    if (applyExternalSites(value)) {
+      saveLocal(PINNED_SITES_KEY, pinned);
+    }
+  } else if (pinned.sites.length > 0) {
+    sitesWriter.write();
+    sitesWriter.flush();
   }
 });
 

@@ -1,10 +1,10 @@
 # Privacy
 
-Helium New Tab stores appearance, language, clock, font, and service-icon preferences in local
-storage within your browser profile. It also copies them, except the service-icon choice, to
-the browser's extension sync storage. If your browser syncs extension data through your
-browser account, those preferences follow you to your other devices; otherwise they stay on
-this device. Each saved copy also notes when it changed and a random identifier for the device
+Helium New Tab stores appearance, language, clock, font, and service-icon preferences, and the
+addresses and names of sites you pin, in local storage within your browser profile. It also
+copies them, except the service-icon choice, to the browser's extension sync storage. If your
+browser syncs extension data through your browser account, those preferences and pinned sites
+follow you to your other devices; otherwise they stay on this device. Each saved copy also notes when it changed and a random identifier for the device
 that changed it, so a device can tell its own older changes from newer ones. The identifier is
 created on the device and identifies nothing else. It has no account, analytics, advertising,
 telemetry, or backend. It does not collect or transmit browsing history.
@@ -15,8 +15,8 @@ and styles ship in the extension; custom fonts must already be installed on your
 **Customize → Show service icons** is off by default. Turning it on asks for the optional
 `favicon` permission, which lets the extension read site icons your browser has already
 saved. While you type a recognized bang, the extension looks up the destination's icon in
-that local cache. No icon service or website receives a request. Bangs with query-dependent
-hostnames show no icon.
+that local cache, and pinned sites show their icons from it. No icon service or website receives
+a request. Bangs with query-dependent hostnames show no icon.
 
 The bang catalog ships with the extension. Maintainers update this snapshot manually
 with extension releases. The extension does not download or cache bang catalogs.

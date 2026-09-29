@@ -48,5 +48,18 @@
   "typeToSearch": "Taper n’importe où pour rechercher",
   "typeToSearchHelp": "Ce que vous tapez sur cette page va directement dans le champ de recherche. Si c’est désactivé, appuyez d’abord sur /.",
   "showServiceIcons": "Afficher les icônes des services",
-  "serviceIconsHelp": "Utilise les icônes de sites déjà enregistrées dans le navigateur. Rien n’est téléchargé. L’activation demande l’autorisation de les lire."
+  "serviceIconsHelp": "Utilise les icônes de sites déjà enregistrées dans le navigateur, dans le champ de recherche et pour les sites épinglés. Rien n’est téléchargé. L’activation demande l’autorisation de les lire.",
+  "pinnedSites": "Sites épinglés",
+  "showPinnedSites": "Afficher les sites épinglés",
+  "showPinnedSitesHelp": "Jusqu’à 8 raccourcis sous l’horloge et la date. Les masquer conserve votre liste.",
+  "pinnedSitesFull": "La limite est de 8 sites. Retirez-en un pour en ajouter un autre.",
+  "siteAddress": "Adresse du site",
+  "siteName": "Nom (facultatif)",
+  "addSite": "Ajouter le site",
+  "siteAddressError": "Saisissez l’adresse d’un site web, par exemple example.com.",
+  "siteDuplicateError": "Ce site est déjà épinglé.",
+  "siteNameFor": "Nom de {site}",
+  "moveSiteUp": "Monter {site}",
+  "moveSiteDown": "Descendre {site}",
+  "removeSite": "Retirer {site}"
 }

@@ -11,8 +11,8 @@ function syncArea() {
   return typeof chrome !== "undefined" ? chrome.storage?.sync : undefined;
 }
 
-function shared(preferences) {
-  const result = { ...preferences };
+function shared(value) {
+  const result = { ...value };
 
   for (const key of DEVICE_KEYS) {
     delete result[key];
@@ -36,7 +36,8 @@ export function mergeSynced(value, local) {
   return result;
 }
 
-export async function readSynced() {
+// Preferences by default; pinned sites pass their own key.
+export async function readSynced(key = PREFERENCES_KEY) {
   const area = syncArea();
 
   if (!area) {
@@ -44,15 +45,15 @@ export async function readSynced() {
   }
 
   try {
-    return (await area.get(PREFERENCES_KEY))[PREFERENCES_KEY];
+    return (await area.get(key))[key];
   } catch {
     return undefined;
   }
 }
 
-// Debounces writes of the current preferences; flush() sends a pending write at once so
-// closing the tab cannot drop it.
-export function createSyncWriter(getPreferences) {
+// Debounces writes of the current value; flush() sends a pending write at once so closing the
+// tab cannot drop it.
+export function createSyncWriter(getValue, key = PREFERENCES_KEY) {
   let timer;
   let changed = false;
 
@@ -71,7 +72,7 @@ export function createSyncWriter(getPreferences) {
       return;
     }
 
-    area.set({ [PREFERENCES_KEY]: shared(getPreferences()) }).catch(() => {
+    area.set({ [key]: shared(getValue()) }).catch(() => {
       // Local storage still has the change; sync retries on the next save.
     });
   }
@@ -110,10 +111,10 @@ export function createChangeOrder(device, initial) {
   let latest = initial?.changedBy === device ? initial.changedAt : 0;
 
   return {
-    stamp(preferences) {
+    stamp(value) {
       latest = Math.max(Date.now(), latest + 1);
-      preferences.changedAt = latest;
-      preferences.changedBy = device;
+      value.changedAt = latest;
+      value.changedBy = device;
     },
 
     isCurrent(value) {
@@ -132,12 +133,12 @@ export function createChangeOrder(device, initial) {
   };
 }
 
-export function onSyncedChange(listener) {
+export function onSyncedChange(listener, key = PREFERENCES_KEY) {
   const storage = typeof chrome !== "undefined" ? chrome.storage : undefined;
 
   storage?.onChanged?.addListener((changes, areaName) => {
-    if (areaName === "sync" && Object.hasOwn(changes, PREFERENCES_KEY)) {
-      listener(changes[PREFERENCES_KEY].newValue);
+    if (areaName === "sync" && Object.hasOwn(changes, key)) {
+      listener(changes[key].newValue);
     }
   });
 }

@@ -48,5 +48,18 @@
   "typeToSearch": "Písaním kdekoľvek spustiť vyhľadávanie",
   "typeToSearchHelp": "Text napísaný na tejto stránke ide rovno do poľa vyhľadávania. Keď je vypnuté, najprv stlačte /.",
   "showServiceIcons": "Zobrazovať ikony služieb",
-  "serviceIconsHelp": "Používa ikony webov už uložené v prehliadači. Nič sa nesťahuje. Po zapnutí sa zobrazí žiadosť o povolenie ich čítať."
+  "serviceIconsHelp": "Používa ikony webov už uložené v prehliadači, vo vyhľadávacom poli a pri pripnutých weboch. Nič sa nesťahuje. Po zapnutí sa zobrazí žiadosť o povolenie ich čítať.",
+  "pinnedSites": "Pripnuté weby",
+  "showPinnedSites": "Zobraziť pripnuté weby",
+  "showPinnedSitesHelp": "Až 8 skratiek pod hodinami a dátumom. Skrytím sa zoznam nestratí.",
+  "pinnedSitesFull": "Limit je 8 webov. Ak chcete pridať ďalší, jeden odstráňte.",
+  "siteAddress": "Adresa webu",
+  "siteName": "Názov (nepovinné)",
+  "addSite": "Pridať web",
+  "siteAddressError": "Zadajte adresu webu, napríklad example.com.",
+  "siteDuplicateError": "Tento web je už pripnutý.",
+  "siteNameFor": "Názov pre {site}",
+  "moveSiteUp": "Posunúť {site} nahor",
+  "moveSiteDown": "Posunúť {site} nadol",
+  "removeSite": "Odstrániť {site}"
 }

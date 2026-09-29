@@ -48,5 +48,18 @@
   "typeToSearch": "Hae kirjoittamalla missä tahansa",
   "typeToSearchHelp": "Sivulla kirjoitettu teksti menee suoraan hakukenttään. Kun asetus on pois päältä, paina ensin /.",
   "showServiceIcons": "Näytä palveluiden kuvakkeet",
-  "serviceIconsHelp": "Käyttää selaimeen jo tallennettuja sivustojen kuvakkeita. Mitään ei ladata. Käyttöön otettaessa pyydetään lupa lukea ne."
+  "serviceIconsHelp": "Käyttää selaimeen jo tallennettuja sivustojen kuvakkeita hakukentässä ja kiinnitetyissä sivustoissa. Mitään ei ladata. Käyttöön otettaessa pyydetään lupa lukea ne.",
+  "pinnedSites": "Kiinnitetyt sivustot",
+  "showPinnedSites": "Näytä kiinnitetyt sivustot",
+  "showPinnedSitesHelp": "Enintään 8 pikakuvaketta kellon ja päivämäärän alla. Luettelo säilyy, kun ne piilotetaan.",
+  "pinnedSitesFull": "Enimmäismäärä on 8 sivustoa. Poista yksi lisätäksesi toisen.",
+  "siteAddress": "Sivuston osoite",
+  "siteName": "Nimi (valinnainen)",
+  "addSite": "Lisää sivusto",
+  "siteAddressError": "Anna verkkosivuston osoite, esimerkiksi example.com.",
+  "siteDuplicateError": "Tämä sivusto on jo kiinnitetty.",
+  "siteNameFor": "Sivuston {site} nimi",
+  "moveSiteUp": "Siirrä {site} ylös",
+  "moveSiteDown": "Siirrä {site} alas",
+  "removeSite": "Poista {site}"
 }

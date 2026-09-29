@@ -102,9 +102,123 @@
     </div>
 
     <p id="service-icons-help" class="setting-help" data-i18n="serviceIconsHelp">
-      Uses site icons already saved in your browser. Nothing is downloaded. Turning this on asks for
-      permission to read them.
+      Uses site icons already saved in your browser, in the search field and for pinned sites.
+      Nothing is downloaded. Turning this on asks for permission to read them.
     </p>
+  </div>
+
+  <div class="pinned-settings">
+    <div class="setting">
+      <label for="show-pinned-sites" data-i18n="showPinnedSites">Show pinned sites</label>
+      <input
+        id="show-pinned-sites"
+        type="checkbox"
+        role="switch"
+        aria-describedby="show-pinned-sites-help"
+      />
+    </div>
+
+    <p id="show-pinned-sites-help" class="setting-help" data-i18n="showPinnedSitesHelp">
+      Up to 8 shortcuts below the clock and date. Hiding them keeps your list.
+    </p>
+
+    <!-- Disabled as a whole while pinned sites are off; see dependencies in panel.js. -->
+    <fieldset
+      id="pinned-site-controls"
+      class="pinned-site-controls"
+      aria-label="Pinned sites"
+      data-i18n-label="pinnedSites"
+    >
+      <ol id="pinned-site-list" class="pinned-site-list"></ol>
+
+      <template id="pinned-site-item">
+        <li class="pinned-site-item">
+          <input
+            class="site-name"
+            type="text"
+            maxlength="40"
+            autocomplete="off"
+            spellcheck="false"
+            data-action="rename"
+            data-i18n-label="siteNameFor"
+          />
+          <button class="icon-button" type="button" data-action="up" data-i18n-label="moveSiteUp">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="m6 15 6-6 6 6" />
+            </svg>
+          </button>
+          <button
+            class="icon-button"
+            type="button"
+            data-action="down"
+            data-i18n-label="moveSiteDown"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+          <button
+            class="icon-button"
+            type="button"
+            data-action="remove"
+            data-i18n-label="removeSite"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="m7 7 10 10M17 7 7 17" />
+            </svg>
+          </button>
+        </li>
+      </template>
+
+      <form id="pinned-site-form" class="pinned-site-form" novalidate>
+        <div class="site-field">
+          <label for="pinned-site-address" data-i18n="siteAddress">Site address</label>
+          <input
+            id="pinned-site-address"
+            type="text"
+            inputmode="url"
+            maxlength="2048"
+            placeholder="example.com"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            aria-describedby="pinned-site-error"
+          />
+          <p id="pinned-site-error" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <div class="site-field">
+          <label for="pinned-site-title" data-i18n="siteName">Name (optional)</label>
+          <input id="pinned-site-title" type="text" maxlength="40" autocomplete="off" />
+        </div>
+
+        <button id="add-pinned-site" class="add-site-button" type="submit" data-i18n="addSite">
+          Add site
+        </button>
+
+        <p id="pinned-sites-full" class="section-help" data-i18n="pinnedSitesFull" hidden>
+          8 sites is the limit. Remove one to add another.
+        </p>
+      </form>
+    </fieldset>
   </div>
 
   <fieldset class="font-settings">

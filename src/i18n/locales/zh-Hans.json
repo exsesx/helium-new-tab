@@ -48,5 +48,18 @@
   "typeToSearch": "在任意位置输入即可搜索",
   "typeToSearchHelp": "在此页面上输入的内容会直接进入搜索框。关闭后，需先按 / 键。",
   "showServiceIcons": "显示服务图标",
-  "serviceIconsHelp": "使用浏览器中已保存的网站图标，不会下载任何内容。开启时会请求读取这些图标的权限。"
+  "serviceIconsHelp": "在搜索框和固定的网站中使用浏览器已保存的网站图标，不会下载任何内容。开启时会请求读取这些图标的权限。",
+  "pinnedSites": "固定的网站",
+  "showPinnedSites": "显示固定的网站",
+  "showPinnedSitesHelp": "在时钟和日期下方显示最多 8 个快捷方式。隐藏后列表仍会保留。",
+  "pinnedSitesFull": "最多只能固定 8 个网站。移除一个后才能添加新网站。",
+  "siteAddress": "网站地址",
+  "siteName": "名称（可选）",
+  "addSite": "添加网站",
+  "siteAddressError": "请输入网站地址，例如 example.com。",
+  "siteDuplicateError": "此网站已固定。",
+  "siteNameFor": "{site} 的名称",
+  "moveSiteUp": "上移 {site}",
+  "moveSiteDown": "下移 {site}",
+  "removeSite": "移除 {site}"
 }

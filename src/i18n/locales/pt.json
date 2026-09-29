@@ -48,5 +48,18 @@
   "typeToSearch": "Escrever em qualquer lugar para pesquisar",
   "typeToSearchHelp": "O que escrever nesta página vai diretamente para o campo de pesquisa. Quando desativado, prima / primeiro.",
   "showServiceIcons": "Mostrar ícones dos serviços",
-  "serviceIconsHelp": "Usa os ícones de sites já guardados no navegador. Nada é transferido. Ao ativar, é pedida permissão para os ler."
+  "serviceIconsHelp": "Usa os ícones de sites já guardados no navegador, no campo de pesquisa e nos sites afixados. Nada é transferido. Ao ativar, é pedida permissão para os ler.",
+  "pinnedSites": "Sites afixados",
+  "showPinnedSites": "Mostrar sites afixados",
+  "showPinnedSitesHelp": "Até 8 atalhos por baixo do relógio e da data. Ao ocultá-los, a lista é mantida.",
+  "pinnedSitesFull": "O limite é de 8 sites. Remova um para adicionar outro.",
+  "siteAddress": "Endereço do site",
+  "siteName": "Nome (opcional)",
+  "addSite": "Adicionar site",
+  "siteAddressError": "Introduza o endereço de um site, como example.com.",
+  "siteDuplicateError": "Este site já está afixado.",
+  "siteNameFor": "Nome para {site}",
+  "moveSiteUp": "Mover {site} para cima",
+  "moveSiteDown": "Mover {site} para baixo",
+  "removeSite": "Remover {site}"
 }

@@ -48,5 +48,18 @@
   "typeToSearch": "Skriv hvor som helst for å søke",
   "typeToSearchHelp": "Det du skriver på siden, går rett til søkefeltet. Når det er slått av, trykker du først på /.",
   "showServiceIcons": "Vis tjenesteikoner",
-  "serviceIconsHelp": "Bruker nettstedikoner som allerede er lagret i nettleseren. Ingenting lastes ned. Når du slår det på, blir du bedt om tillatelse til å lese dem."
+  "serviceIconsHelp": "Bruker nettstedikoner som allerede er lagret i nettleseren, i søkefeltet og for festede nettsteder. Ingenting lastes ned. Når du slår det på, blir du bedt om tillatelse til å lese dem.",
+  "pinnedSites": "Festede nettsteder",
+  "showPinnedSites": "Vis festede nettsteder",
+  "showPinnedSitesHelp": "Opptil 8 snarveier under klokken og datoen. Listen beholdes når de er skjult.",
+  "pinnedSitesFull": "Grensen er 8 nettsteder. Fjern ett for å legge til et annet.",
+  "siteAddress": "Nettstedsadresse",
+  "siteName": "Navn (valgfritt)",
+  "addSite": "Legg til nettsted",
+  "siteAddressError": "Skriv inn en nettstedsadresse, for eksempel example.com.",
+  "siteDuplicateError": "Dette nettstedet er allerede festet.",
+  "siteNameFor": "Navn på {site}",
+  "moveSiteUp": "Flytt {site} opp",
+  "moveSiteDown": "Flytt {site} ned",
+  "removeSite": "Fjern {site}"
 }

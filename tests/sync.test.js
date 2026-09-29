@@ -1,4 +1,6 @@
 import { afterEach, expect, test } from "bun:test";
+import { readPinnedSites } from "../src/lib/model.js";
+import { PINNED_SITES_KEY } from "../src/lib/storage.js";
 import {
   createChangeOrder,
   createSyncWriter,
@@ -139,4 +141,41 @@ test("does nothing without extension storage", async () => {
   expect(() => write()).not.toThrow();
   expect(() => flush()).not.toThrow();
   expect(() => onSyncedChange(() => {})).not.toThrow();
+});
+
+test("pinned sites sync as their own item and survive a round trip", async () => {
+  const { data } = fakeStorage({ "helium-tab": { theme: "dark" } });
+  const pinned = {
+    sites: [{ url: "https://github.com/", title: "GitHub" }],
+    changedAt: 1,
+    changedBy: "this",
+  };
+  const { write, flush } = createSyncWriter(() => pinned, PINNED_SITES_KEY);
+
+  write();
+  flush();
+  await Bun.sleep(0);
+
+  expect(data["helium-tab"]).toEqual({ theme: "dark" });
+  expect(readPinnedSites(await readSynced(PINNED_SITES_KEY))).toEqual(pinned);
+
+  pinned.sites = [];
+  write();
+  flush();
+  await Bun.sleep(0);
+
+  expect(data[PINNED_SITES_KEY].sites).toEqual([]);
+});
+
+test("reports sync changes only for the requested key", () => {
+  const { listeners } = fakeStorage();
+  const values = [];
+
+  onSyncedChange((value) => values.push(value), PINNED_SITES_KEY);
+
+  listeners[0]({ "helium-tab": { newValue: { theme: "dark" } } }, "sync");
+  listeners[0]({ [PINNED_SITES_KEY]: { newValue: { sites: [] } } }, "local");
+  listeners[0]({ [PINNED_SITES_KEY]: { newValue: { sites: [] } } }, "sync");
+
+  expect(values).toEqual([{ sites: [] }]);
 });

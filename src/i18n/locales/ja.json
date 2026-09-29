@@ -48,5 +48,18 @@
   "typeToSearch": "どこでも入力して検索",
   "typeToSearchHelp": "このページで入力した文字は検索欄に直接入ります。オフのときは先に / を押します。",
   "showServiceIcons": "サービスのアイコンを表示",
-  "serviceIconsHelp": "ブラウザーに保存済みのサイトアイコンを使用します。何もダウンロードしません。オンにすると、アイコンを読み取る権限を求められます。"
+  "serviceIconsHelp": "ブラウザーに保存済みのサイトアイコンを、検索欄と固定したサイトで使用します。何もダウンロードしません。オンにすると、アイコンを読み取る権限を求められます。",
+  "pinnedSites": "固定したサイト",
+  "showPinnedSites": "固定したサイトを表示",
+  "showPinnedSitesHelp": "時計と日付の下に最大 8 件のショートカットを表示します。非表示にしてもリストは保持されます。",
+  "pinnedSitesFull": "固定できるのは 8 サイトまでです。追加するには 1 つ削除してください。",
+  "siteAddress": "サイトのアドレス",
+  "siteName": "名前（省略可）",
+  "addSite": "サイトを追加",
+  "siteAddressError": "example.com のようなウェブサイトのアドレスを入力してください。",
+  "siteDuplicateError": "このサイトはすでに固定されています。",
+  "siteNameFor": "{site} の名前",
+  "moveSiteUp": "{site} を上に移動",
+  "moveSiteDown": "{site} を下に移動",
+  "removeSite": "{site} を削除"
 }

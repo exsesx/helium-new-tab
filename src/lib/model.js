@@ -15,6 +15,7 @@ export const defaults = {
   showDate: true,
   showServiceIcons: false,
   typeToSearch: true,
+  showPinnedSites: false,
   uiFont: "system",
   monoFont: "system",
   uiCustomFont: "",
@@ -54,7 +55,13 @@ export function readPreferences(value) {
     result.timeFormat = value.timeFormat;
   }
 
-  for (const key of ["showSeconds", "showDate", "showServiceIcons", "typeToSearch"]) {
+  for (const key of [
+    "showSeconds",
+    "showDate",
+    "showServiceIcons",
+    "typeToSearch",
+    "showPinnedSites",
+  ]) {
     if (typeof value[key] === "boolean") {
       result[key] = value[key];
     }
@@ -91,6 +98,82 @@ export function readPreferences(value) {
     if (typeof value[key] === "string") {
       result[key] = value[key].slice(0, 120);
     }
+  }
+
+  return result;
+}
+
+// Pinned sites keep one row tidy and their synced item small.
+export const PINNED_SITES_LIMIT = 8;
+export const SITE_TITLE_LIMIT = 40;
+export const SITE_URL_LIMIT = 2048;
+
+// The normalized http(s) address of a pinned site, or "" for anything else.
+export function siteUrl(value) {
+  if (typeof value !== "string" || value.length > SITE_URL_LIMIT) {
+    return "";
+  }
+
+  try {
+    const url = new URL(value);
+    const isWebsite = url.protocol === "https:" || url.protocol === "http:";
+
+    if (!isWebsite || !url.hostname || url.username || url.password) {
+      return "";
+    }
+
+    return url.href.length > SITE_URL_LIMIT ? "" : url.href;
+  } catch {
+    return "";
+  }
+}
+
+// The hostname without a leading www., which names and colors a site by default.
+export function siteHost(url) {
+  return new URL(url).hostname.replace(/^www\./, "");
+}
+
+// A one-line title of limited length, or the site's hostname when none is left.
+export function siteTitle(value, url) {
+  const text = typeof value === "string" ? value : "";
+  const printable = [...text.trim()].filter((char) => char.charCodeAt(0) >= 32 && char !== "\x7f");
+  const title = printable.slice(0, SITE_TITLE_LIMIT).join("").trim();
+
+  return title || siteHost(url);
+}
+
+export function readPinnedSites(value) {
+  const result = { sites: [] };
+
+  if (!value || typeof value !== "object") {
+    return result;
+  }
+
+  const entries = Array.isArray(value.sites) ? value.sites : [];
+  const seen = new Set();
+
+  for (const entry of entries) {
+    const url = siteUrl(entry?.url);
+
+    if (!url || seen.has(url)) {
+      continue;
+    }
+
+    seen.add(url);
+    result.sites.push({ url, title: siteTitle(entry.title, url) });
+
+    if (result.sites.length === PINNED_SITES_LIMIT) {
+      break;
+    }
+  }
+
+  // Ordered like preferences; see createChangeOrder.
+  if (Number.isFinite(value.changedAt)) {
+    result.changedAt = value.changedAt;
+  }
+
+  if (typeof value.changedBy === "string") {
+    result.changedBy = value.changedBy.slice(0, 64);
   }
 
   return result;

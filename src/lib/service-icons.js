@@ -49,9 +49,13 @@ export function onServiceIconsRevoked(listener) {
 // Matches the .search-favicon width in style.css.
 const ICON_SIZE = 20;
 
-export function serviceIconUrl(origin, pixelRatio = globalThis.devicePixelRatio || 1) {
+export function serviceIconUrl(
+  origin,
+  pixelRatio = globalThis.devicePixelRatio || 1,
+  iconSize = ICON_SIZE,
+) {
   // Ask for the screen's device pixels; the browser returns its closest cached size.
-  const size = Math.ceil(ICON_SIZE * pixelRatio);
+  const size = Math.ceil(iconSize * pixelRatio);
   const url = new URL(chrome.runtime.getURL("/_favicon/"));
   url.searchParams.set("pageUrl", origin);
   url.searchParams.set("size", String(size));
@@ -129,11 +133,15 @@ function sameBytes(first, second) {
 }
 
 // Resolves to the icon URL, or "" when the browser has no icon of its own for the site.
-export function cachedServiceIconUrl(origin, pixelRatio = globalThis.devicePixelRatio || 1) {
-  const url = serviceIconUrl(origin, pixelRatio);
+export function cachedServiceIconUrl(
+  origin,
+  pixelRatio = globalThis.devicePixelRatio || 1,
+  iconSize = ICON_SIZE,
+) {
+  const url = serviceIconUrl(origin, pixelRatio, iconSize);
 
   if (!cachedIcons.has(url)) {
-    const genericUrl = serviceIconUrl(UNKNOWN_SITE, pixelRatio);
+    const genericUrl = serviceIconUrl(UNKNOWN_SITE, pixelRatio, iconSize);
     const check = Promise.all([readIcon(url), readIcon(genericUrl)])
       .then(([icon, generic]) => (sameBytes(icon, generic) ? "" : url))
       .catch(() => "");

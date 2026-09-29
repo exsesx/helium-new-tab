@@ -13,6 +13,7 @@
   --toggle-off: #767979;
   --tint: #e6e7e7;
   --border: #d8dada;
+  --error: #b3261e;
   /* Flip favicons cached in the other theme's color; see markIconTone. */
   --light-icon-filter: invert(1) hue-rotate(180deg);
   --dark-icon-filter: none;
@@ -35,6 +36,7 @@
     --toggle-off: #8a8e8e;
     --tint: #303232;
     --border: #454848;
+    --error: #ffb4ab;
     --light-icon-filter: none;
     --dark-icon-filter: invert(1) hue-rotate(180deg);
   }
@@ -54,6 +56,7 @@
   --toggle-off: #8a8e8e;
   --tint: #303232;
   --border: #454848;
+  --error: #ffb4ab;
   --light-icon-filter: none;
   --dark-icon-filter: invert(1) hue-rotate(180deg);
 }
@@ -237,11 +240,13 @@ h1 {
   }
 }
 
-.search-favicon.is-light {
+.search-favicon.is-light,
+.site-favicon.is-light {
   filter: var(--light-icon-filter);
 }
 
-.search-favicon.is-dark {
+.search-favicon.is-dark,
+.site-favicon.is-dark {
   filter: var(--dark-icon-filter);
 }
 
@@ -321,8 +326,139 @@ h1 {
 @media (prefers-reduced-motion: no-preference) {
   .search-submit:active,
   .settings-button:active,
-  .close-button:active {
+  .close-button:active,
+  .pinned-site:active .site-icon {
     transform: scale(0.97);
+  }
+}
+
+/* One centered row of up to eight sites under the date, last on the page, as far below it as
+   the clock is below search. Narrow windows wrap it into two. */
+.pinned-sites {
+  margin-top: 36px;
+}
+
+/* The row adds about 100px, so start the page half of that higher to keep it balanced. */
+@media (min-height: 421px) {
+  main:has(.pinned-sites:not([hidden])) {
+    padding-top: clamp(48px, calc(25svh - 50px), 250px);
+  }
+}
+
+.pinned-sites ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The icon square reacts to hover, focus, and presses; the label only brightens. */
+.pinned-site {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 76px;
+}
+
+.pinned-site:focus-visible {
+  outline: none;
+}
+
+.pinned-site:focus-visible .site-icon {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.pinned-site:hover .site-icon {
+  background: var(--tile-hover-bg);
+}
+
+.pinned-title {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--secondary);
+  font-size: 12px;
+  line-height: 16px;
+  transition: color 0.15s;
+}
+
+.pinned-site:hover .pinned-title,
+.pinned-site:focus-visible .pinned-title {
+  color: var(--text);
+}
+
+/* Letter tiles take their site's pastel; see site-tiles.js and palette.js. Hover shifts a
+   tile's own surface, darker on light pages and lighter on dark ones, so neither state ever
+   matches the page. */
+.site-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 550;
+  line-height: 1;
+  background: var(--tile-bg);
+  color: var(--tile-text);
+  transition:
+    background-color 0.15s,
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.site-icon:not(.has-favicon) {
+  --tile-bg: var(--tone);
+  --tile-text: var(--tone-text);
+  --tile-hover-bg: color-mix(in srgb, var(--tone), #000 6%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .site-icon:not(.has-favicon) {
+    --tile-bg: var(--tone-dark);
+    --tile-text: var(--tone-dark-text);
+    --tile-hover-bg: color-mix(in srgb, var(--tone-dark), #fff 7%);
+  }
+
+  :root:not([data-theme="light"]) .site-icon.has-favicon {
+    --tile-hover-bg: color-mix(in srgb, var(--search-bg), var(--text) 12%);
+  }
+}
+
+:root[data-theme="dark"] .site-icon:not(.has-favicon) {
+  --tile-bg: var(--tone-dark);
+  --tile-text: var(--tone-dark-text);
+  --tile-hover-bg: color-mix(in srgb, var(--tone-dark), #fff 7%);
+}
+
+:root[data-theme="dark"] .site-icon.has-favicon {
+  --tile-hover-bg: color-mix(in srgb, var(--search-bg), var(--text) 12%);
+}
+
+/* Favicons rest on the search field's surface. Its focused surface matches the page in
+   some appearances, so hover derives from the resting one instead. */
+.site-icon.has-favicon {
+  --tile-bg: var(--search-bg);
+  --tile-hover-bg: color-mix(in srgb, var(--search-bg), #000 6%);
+}
+
+.site-favicon {
+  width: 24px;
+  height: 24px;
+  /* Soften square icons like app icons do, as the search field's favicon does. */
+  border-radius: 25%;
+  object-fit: contain;
+  transition: opacity 160ms ease;
+}
+
+@starting-style {
+  .site-favicon {
+    opacity: 0;
   }
 }
 
@@ -650,6 +786,15 @@ input[type="checkbox"]:checked:before {
   select {
     max-width: 160px;
   }
+
+  .pinned-site {
+    width: 64px;
+  }
+
+  .pinned-sites .site-icon {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 @media (max-height: 420px) {
@@ -661,7 +806,8 @@ input[type="checkbox"]:checked:before {
     margin-bottom: 18px;
   }
 
-  .clock-block {
+  .clock-block,
+  .pinned-sites {
     margin-top: 20px;
   }
 }
@@ -673,7 +819,8 @@ input[type="checkbox"]:checked:before {
   }
 
   .settings-button,
-  .close-button {
+  .close-button,
+  .icon-button {
     min-height: 44px;
     min-width: 44px;
   }
@@ -682,7 +829,9 @@ input[type="checkbox"]:checked:before {
     min-height: 44px;
   }
 
-  .custom-font input {
+  .custom-font input,
+  .site-field input,
+  .site-name {
     font-size: 16px;
     min-height: 44px;
   }
@@ -715,10 +864,16 @@ input[type="checkbox"]:checked:before {
   min-width: 0;
 }
 
+/* The caption labels the rows below it, so the section's separator above it is its only line.
+   The first row's control sits about 8px under the caption. */
 .font-settings legend {
   font-size: 12px;
   color: var(--muted);
-  padding: 0 0 8px;
+  padding: 0;
+}
+
+.font-settings legend + .setting {
+  border-top: 0;
 }
 
 .font-note {
@@ -732,14 +887,16 @@ input[type="checkbox"]:checked:before {
   padding: 2px 0 14px;
 }
 
-.custom-font label {
+.custom-font label,
+.site-field label {
   display: block;
   color: var(--muted);
   font-size: 12px;
   margin-bottom: 6px;
 }
 
-.custom-font input {
+.custom-font input,
+.site-field input {
   width: 100%;
   min-width: 0;
   border: 1px solid var(--border);
@@ -828,4 +985,158 @@ input[type="checkbox"]:checked:before {
 :root[data-show-date="false"] #date,
 :root[data-show-clock="false"][data-show-date="false"] .clock-block {
   display: none;
+}
+
+:root[data-show-pinned-sites="false"] .pinned-sites {
+  display: none;
+}
+
+/* The switch is an ordinary row; its list and add form follow as one group, and a single
+   separator closes the section. */
+.pinned-settings {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pinned-settings .setting-help {
+  margin-bottom: 12px;
+}
+
+.section-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.pinned-site-controls {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+/* While pinned sites are off, the group dims as one. Controls that are disabled on their own,
+   such as the first site's move-up button, keep their usual dimming inside it. */
+.pinned-site-controls:disabled {
+  opacity: 0.5;
+}
+
+.pinned-site-controls:disabled :disabled:not([disabled]) {
+  opacity: 1;
+}
+
+.pinned-site-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pinned-site-list:empty {
+  display: none;
+}
+
+/* Rows sit on the same surface and radius as the selects. */
+.pinned-site-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  padding-inline-start: 8px;
+  border-radius: 8px;
+  background: var(--tint);
+}
+
+.pinned-site-item .site-icon {
+  width: 28px;
+  height: 28px;
+  margin-inline-end: 4px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.pinned-site-item .site-favicon {
+  width: 18px;
+  height: 18px;
+}
+
+.site-name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text);
+  background: transparent;
+  text-overflow: ellipsis;
+}
+
+.site-name:hover,
+.site-name:focus {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--secondary);
+}
+
+.icon-button:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pinned-site-form {
+  display: grid;
+  gap: 8px;
+}
+
+.field-error {
+  margin: 6px 0 0;
+  color: var(--error);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.add-site-button {
+  justify-self: start;
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: var(--tint);
+  color: var(--text);
+}
+
+.add-site-button:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.icon-button:disabled,
+.add-site-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.pinned-site-form .section-help {
+  margin: 0;
 }

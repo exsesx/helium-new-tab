@@ -48,5 +48,18 @@
   "typeToSearch": "Shkruani kudo për të kërkuar",
   "typeToSearchHelp": "Çfarë shkruani në këtë faqe shkon drejt e në fushën e kërkimit. Kur është joaktiv, shtypni fillimisht /.",
   "showServiceIcons": "Shfaq ikonat e shërbimeve",
-  "serviceIconsHelp": "Përdor ikonat e sajteve të ruajtura tashmë në shfletues. Nuk shkarkohet asgjë. Kur e aktivizoni, kërkohet leje për t’i lexuar."
+  "serviceIconsHelp": "Përdor ikonat e sajteve të ruajtura tashmë në shfletues, në fushën e kërkimit dhe për sajtet e fiksuara. Nuk shkarkohet asgjë. Kur e aktivizoni, kërkohet leje për t’i lexuar.",
+  "pinnedSites": "Sajtet e fiksuara",
+  "showPinnedSites": "Shfaq sajtet e fiksuara",
+  "showPinnedSitesHelp": "Deri në 8 shkurtore poshtë orës dhe datës. Kur i fshihni, lista ruhet.",
+  "pinnedSitesFull": "Kufiri është 8 sajte. Hiqni një për të shtuar një tjetër.",
+  "siteAddress": "Adresa e sajtit",
+  "siteName": "Emri (opsional)",
+  "addSite": "Shto sajt",
+  "siteAddressError": "Shkruani adresën e një sajti, p.sh. example.com.",
+  "siteDuplicateError": "Ky sajt është fiksuar tashmë.",
+  "siteNameFor": "Emri për {site}",
+  "moveSiteUp": "Zhvendos {site} lart",
+  "moveSiteDown": "Zhvendos {site} poshtë",
+  "removeSite": "Hiq {site}"
 }

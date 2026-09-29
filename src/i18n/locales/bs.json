@@ -48,5 +48,18 @@
   "typeToSearch": "Kucajte bilo gdje za pretragu",
   "typeToSearchHelp": "Tekst otkucan na ovoj stranici ide pravo u polje za pretragu. Kada je isključeno, prvo pritisnite /.",
   "showServiceIcons": "Prikaži ikone servisa",
-  "serviceIconsHelp": "Koristi ikone stranica već sačuvane u pregledniku. Ništa se ne preuzima. Uključivanje traži dozvolu za njihovo čitanje."
+  "serviceIconsHelp": "Koristi ikone stranica već sačuvane u pregledniku, u polju za pretragu i za prikačene stranice. Ništa se ne preuzima. Uključivanje traži dozvolu za njihovo čitanje.",
+  "pinnedSites": "Prikačene stranice",
+  "showPinnedSites": "Prikaži prikačene stranice",
+  "showPinnedSitesHelp": "Do 8 prečica ispod sata i datuma. Skrivanjem se lista ne briše.",
+  "pinnedSitesFull": "Ograničenje je 8 stranica. Uklonite jednu da biste dodali drugu.",
+  "siteAddress": "Adresa stranice",
+  "siteName": "Naziv (neobavezno)",
+  "addSite": "Dodaj stranicu",
+  "siteAddressError": "Unesite adresu web-stranice, npr. example.com.",
+  "siteDuplicateError": "Ova stranica je već prikačena.",
+  "siteNameFor": "Naziv za {site}",
+  "moveSiteUp": "Pomjeri {site} gore",
+  "moveSiteDown": "Pomjeri {site} dolje",
+  "removeSite": "Ukloni {site}"
 }

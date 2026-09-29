@@ -1,7 +1,10 @@
-import { loadPreferences, applyAppearance } from "./lib/preferences.js";
+import { loadPinnedSites, loadPreferences, applyAppearance } from "./lib/preferences.js";
+import { renderPinnedSites } from "./lib/site-tiles.js";
 import { resolveLanguage, translate } from "./i18n/languages.js";
 
 const preferences = loadPreferences();
+// With pinned sites off, startup reads only the flag; app.js loads the kept list later.
+const pinned = preferences.showPinnedSites ? loadPinnedSites() : undefined;
 
 // The build embeds only the page's own short messages from each translation catalog.
 const selection = resolveLanguage(preferences.language, navigator.languages);
@@ -11,6 +14,22 @@ applyAppearance(preferences);
 
 // Hand off the validated preferences without rereading storage or resolving fonts.
 window.__heliumTabPreferences = preferences;
+window.__heliumTabSites = pinned;
+
+// Draw pinned sites as soon as the parser adds their row, before its first paint, so the page
+// never shifts. Without sites, or while they are off, the row stays hidden and takes no space.
+if (pinned?.sites.length > 0) {
+  const observer = new MutationObserver(() => {
+    const row = document.getElementById("pinned-sites");
+
+    if (row) {
+      observer.disconnect();
+      renderPinnedSites(row, pinned.sites);
+    }
+  });
+
+  observer.observe(document, { childList: true, subtree: true });
+}
 
 // Translate the page while it is parsed, so it never paints English first. Observer callbacks
 // run before the browser can paint parsed content. Customize loads its full catalog later.
