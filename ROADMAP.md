@@ -33,15 +33,35 @@ warnings, and no slower first paint.
 - Verify with unit tests for address validation and Playwright tests for adding,
   reordering, and opening sites.
 
+## Planned: Custom backgrounds
+
+- Let people pick a solid color or their own image in **Customize**. The current
+  backgrounds stay the default.
+- Keep images on the device. They do not sync, because sync's per-item limit is a few
+  kilobytes; a chosen color syncs with the other preferences.
+- Paint the background with the first paint, so a new tab never flashes the default first.
+- Nothing is downloaded, and no new permission shows an install warning.
+- Verify with unit tests for stored preferences and Playwright tests for choosing, painting,
+  and removing a background.
+
 ## Considering
 
 Ideas that are not approved yet and may be dropped.
 
-- Custom backgrounds, such as following the browser's theme colors or picking a color.
-  Chromium does not share theme colors with extensions beyond light or dark mode, so
-  following the browser needs investigation first.
+- An animated background based on Helium's Prism gradient shimmer, off by default so the
+  minimal look stays the default. Load it only after the first paint, draw a still frame
+  with reduced motion, and keep plain JavaScript without Svelte. Helium Prism is
+  GPL-3.0-only, so using its code means relicensing the extension or writing an
+  independent version.
+- Following the browser's theme colors. Chromium does not share theme colors with
+  extensions beyond light or dark mode, so this needs investigation first.
+- Typing anywhere on the page to search, so Escape from the address bar and then typing
+  works without pressing `/` first.
 
 ## Not planned
 
 - Downloading bang catalog updates at runtime. The catalog ships with each release so the
   extension makes no network requests.
+- Taking focus from the address bar when a new tab opens. The browser always focuses the
+  address bar first, and the only workaround reloads the page, which shows the extension's
+  URL in the address bar and slows every new tab.
