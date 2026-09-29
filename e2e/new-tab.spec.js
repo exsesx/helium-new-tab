@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { contrastRatio, foregroundColors } from "../src/lib/background.js";
+import { contrastRatio, foregroundColors, scrimStrengths } from "../src/lib/background.js";
 
 const PREFERENCES_KEY = "helium-tab";
 const BACKGROUND_IMAGE_KEY = "helium-tab-background";
@@ -928,16 +928,19 @@ test("the scrim over an image follows the appearance", async ({ page }) => {
   const glow = () =>
     page.evaluate(() => getComputedStyle(document.body, "::before").backgroundImage);
 
+  // The seeded image's average color is a mid-tone, so both appearances get a middle strength.
+  const strengths = scrimStrengths("#88876c");
+
   await saveBackgroundImage(page);
   await page.emulateMedia({ colorScheme: "light" });
   await page.reload();
 
-  expect(await scrim()).toBe("color(srgb 1 1 1 / 0.22)");
+  expect(await scrim()).toBe(`color(srgb 1 1 1 / ${strengths.light / 100})`);
   expect(await clockColor()).toBe("rgb(41, 43, 43)");
 
   await page.emulateMedia({ colorScheme: "dark" });
 
-  expect(await scrim()).toBe("color(srgb 0 0 0 / 0.22)");
+  expect(await scrim()).toBe(`color(srgb 0 0 0 / ${strengths.dark / 100})`);
   expect(await clockColor()).toBe("rgb(227, 229, 229)");
 
   // Besides the even scrim there is only one soft glow: no edge vignettes or bands.

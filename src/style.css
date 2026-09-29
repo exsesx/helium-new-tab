@@ -19,10 +19,11 @@
   /* Flip favicons cached in the other theme's color; see markIconTone. */
   --light-icon-filter: invert(1) hue-rotate(180deg);
   --dark-icon-filter: none;
-  /* Tones down a background image; see body::before. Dark text needs more help from the glow
-     than light text does. */
+  /* Tones down a background image; see body::before. Its strength follows how far the photo's
+     brightness is from what the text needs; see scrimStrengths. */
   --scrim: #fff;
-  --scrim-glow: 45%;
+  --scrim-strength: var(--scrim-light, 22%);
+  --scrim-glow: 25%;
   font-family: var(--interface-font, system-ui, sans-serif);
   font-synthesis: none;
 }
@@ -46,7 +47,8 @@
     --light-icon-filter: none;
     --dark-icon-filter: invert(1) hue-rotate(180deg);
     --scrim: #000;
-    --scrim-glow: 35%;
+    --scrim-strength: var(--scrim-dark, 22%);
+    --scrim-glow: 15%;
   }
 }
 
@@ -70,7 +72,8 @@
   --light-icon-filter: none;
   --dark-icon-filter: invert(1) hue-rotate(180deg);
   --scrim: #000;
-  --scrim-glow: 35%;
+  --scrim-strength: var(--scrim-dark, 22%);
+  --scrim-glow: 15%;
 }
 
 /* Over a chosen color, text colors come from that color so they stay readable on mid-tones
@@ -102,21 +105,29 @@ body {
   background: transparent;
 }
 
-/* One even scrim over the whole image, light or dark with the appearance, and a soft glow
-   behind the logo, search, and clock that fades out well inside the window. */
+/* One even scrim over the whole image, light or dark with the appearance and stronger when the
+   photo works against the text, and a soft glow behind the logo, search, and clock that fades
+   out well inside the window. */
 :root[data-background-image] body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-color: color-mix(in srgb, var(--scrim) 22%, transparent);
+  background-color: color-mix(in srgb, var(--scrim) var(--scrim-strength), transparent);
   background-image: radial-gradient(
     ellipse min(36vw, 460px) min(32svh, 300px) at 50% calc(clamp(48px, 25svh, 300px) + 150px),
     color-mix(in srgb, var(--scrim) var(--scrim-glow), transparent),
     color-mix(in srgb, var(--scrim) calc(var(--scrim-glow) * 0.6), transparent) 50%,
     transparent
   );
+}
+
+/* Secondary and muted text stay closer to the text color over a photo, whose busy areas swallow
+   the default grays. */
+:root[data-background-image] :is(main, footer) {
+  --secondary: color-mix(in srgb, var(--text) 88%, var(--scrim));
+  --muted: color-mix(in srgb, var(--text) 78%, var(--scrim));
 }
 
 /* Background swaps crossfade briefly; with reduced motion they switch at once. */

@@ -10,6 +10,7 @@ import {
   MAX_IMAGE_LENGTH,
   readBackgroundImage,
   relativeLuminance,
+  scrimStrengths,
 } from "../src/lib/background.js";
 import { readPreferences } from "../src/lib/model.js";
 
@@ -148,5 +149,31 @@ test("pastels keep the default hierarchy of text, secondary, and muted", () => {
     expect(colors.text).toBe("#292b2b");
     expect(contrast("text")).toBeGreaterThan(contrast("secondary"));
     expect(contrast("secondary")).toBeGreaterThan(contrast("muted"));
+  }
+});
+
+test("the scrim over a photo is stronger the more the photo works against the text", () => {
+  const night = scrimStrengths("#0a0a14");
+  const snow = scrimStrengths("#f5f6f5");
+  const middle = scrimStrengths("#808080");
+
+  // Dark text on a night photo needs a strong light scrim; light text barely needs any.
+  expect(night.light).toBeGreaterThan(night.dark);
+  expect(snow.dark).toBeGreaterThan(snow.light);
+
+  expect(night.light).toBeGreaterThan(middle.light);
+  expect(snow.dark).toBeGreaterThan(middle.dark);
+
+  for (const strengths of [
+    night,
+    snow,
+    middle,
+    scrimStrengths("#000000"),
+    scrimStrengths("#ffffff"),
+  ]) {
+    for (const strength of Object.values(strengths)) {
+      expect(strength).toBeGreaterThanOrEqual(18);
+      expect(strength).toBeLessThanOrEqual(40);
+    }
   }
 });

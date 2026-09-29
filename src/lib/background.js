@@ -36,6 +36,11 @@ const MUTED_WEIGHT = 62;
 // Only encodings Customize writes, and only characters that cannot end a CSS url().
 const IMAGE_DATA_URL = /^data:image\/(?:webp|jpeg|png);base64,[A-Za-z0-9+/]+={0,2}$/;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+// The scrim's range over an image, from a photo that already suits the text to one that is its
+// opposite, such as a night photo under dark text.
+const SCRIM_MIN = 18;
+const SCRIM_MAX = 40;
+const IMAGE_PROPERTIES = ["--background-image", "--image-bg", "--scrim-light", "--scrim-dark"];
 
 export function isHexColor(value) {
   return typeof value === "string" && HEX_COLOR.test(value);
@@ -156,20 +161,36 @@ export function loadBackgroundImage() {
   }
 }
 
+// How strongly the scrim tones an image down in each appearance, in percent. A light scrim
+// under dark text needs more strength the darker the photo is, and a dark scrim under light
+// text the brighter it is. Perceived lightness is close to the square root of luminance.
+export function scrimStrengths(averageColor) {
+  const lightness = Math.sqrt(relativeLuminance(averageColor));
+  const strength = (mismatch) => Math.round(SCRIM_MIN + mismatch * (SCRIM_MAX - SCRIM_MIN));
+
+  return { light: strength(1 - lightness), dark: strength(lightness) };
+}
+
 // Paints the image over the synced background, with its average color underneath.
 export function applyBackgroundImage(image) {
   const root = document.documentElement;
 
   if (!image) {
     delete root.dataset.backgroundImage;
-    root.style.removeProperty("--background-image");
-    root.style.removeProperty("--image-bg");
+
+    for (const property of IMAGE_PROPERTIES) {
+      root.style.removeProperty(property);
+    }
 
     return;
   }
 
+  const strengths = scrimStrengths(image.averageColor);
+
   root.style.setProperty("--background-image", `url("${image.dataUrl}")`);
   root.style.setProperty("--image-bg", image.averageColor);
+  root.style.setProperty("--scrim-light", `${strengths.light}%`);
+  root.style.setProperty("--scrim-dark", `${strengths.dark}%`);
   root.dataset.backgroundImage = "";
 }
 
