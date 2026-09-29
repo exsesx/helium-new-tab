@@ -345,7 +345,27 @@ export function createSettings({
     });
   }
 
-  dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
+  // Closing returns focus to Customize. After a pointer close it must not show a keyboard focus
+  // ring, which Chromium otherwise carries over from the panel's own focus.
+  function closeWithPointer() {
+    dialog.close();
+
+    const opener = document.activeElement;
+
+    if (opener && opener !== document.body) {
+      opener.blur();
+      opener.focus({ focusVisible: false });
+    }
+  }
+
+  // A click from Enter or Space has no pointer presses, so keyboard closes keep the ring.
+  dialog.querySelector("[data-close]").addEventListener("click", (event) => {
+    if (event.detail > 0) {
+      closeWithPointer();
+    } else {
+      dialog.close();
+    }
+  });
 
   // The backdrop belongs to the dialog, so clicks on it target the dialog itself.
   function onBackdrop(event) {
@@ -369,7 +389,7 @@ export function createSettings({
 
   dialog.addEventListener("click", (event) => {
     if (pressedBackdrop && onBackdrop(event)) {
-      dialog.close();
+      closeWithPointer();
     }
 
     pressedBackdrop = false;

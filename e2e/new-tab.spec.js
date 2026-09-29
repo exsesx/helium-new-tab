@@ -1028,6 +1028,41 @@ test("reduced transparency keeps the controls over an image opaque", async ({ pa
   expect(search.background).toBe("color(srgb 0.921569 0.921569 0.921569)");
 });
 
+test("closing Customize with a pointer leaves no focus ring; the keyboard keeps it", async ({
+  page,
+}) => {
+  const opener = page.getByRole("button", { name: "Customize" });
+  const dialog = page.getByRole("dialog");
+  const showsRing = () => opener.evaluate((element) => element.matches(":focus-visible"));
+
+  await page.goto("/");
+
+  // Opened from the keyboard, so the panel's focus shows a ring, then closed with a pointer.
+  await opener.focus();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toHaveAttribute("open");
+  await page.getByRole("button", { name: "Close settings" }).click();
+
+  await expect(opener).toBeFocused();
+  expect(await showsRing()).toBe(false);
+
+  // Escape returns focus with its ring.
+  await page.keyboard.press("Enter");
+  await expect(dialog).toHaveAttribute("open");
+  await page.keyboard.press("Escape");
+
+  await expect(opener).toBeFocused();
+  expect(await showsRing()).toBe(true);
+
+  // So does pressing the close button from the keyboard.
+  await page.keyboard.press("Enter");
+  await expect(dialog).toHaveAttribute("open");
+  await page.getByRole("button", { name: "Close settings" }).press("Enter");
+
+  await expect(opener).toBeFocused();
+  expect(await showsRing()).toBe(true);
+});
+
 test("pinned tiles over a chosen color follow its text, not the appearance", async ({ page }) => {
   const sites = [{ url: "https://example.com/", title: "Example" }];
 
