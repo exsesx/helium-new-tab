@@ -985,50 +985,64 @@ input[type="checkbox"]:checked:before {
   display: none;
 }
 
+/* The switch is an ordinary row; its list and add form follow as one group, and a single
+   separator closes the section. */
 .pinned-settings {
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
 }
 
-.settings-heading {
-  margin: 0;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
-  padding-bottom: 4px;
+.pinned-settings .setting-help {
+  margin-bottom: 12px;
 }
 
 .section-help {
-  margin: 0 0 12px;
+  margin: 0;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
 }
 
 .pinned-site-controls {
+  display: grid;
+  gap: 8px;
   margin: 0;
   padding: 0;
   border: 0;
   min-width: 0;
 }
 
-/* Disabled controls dim themselves; dim the tiles and labels beside them to match. */
-.pinned-site-controls:disabled :is(.site-icon, label) {
+/* While pinned sites are off, the group dims as one. Controls that are disabled on their own,
+   such as the first site's move-up button, keep their usual dimming inside it. */
+.pinned-site-controls:disabled {
   opacity: 0.5;
 }
 
+.pinned-site-controls:disabled :disabled:not([disabled]) {
+  opacity: 1;
+}
+
 .pinned-site-list {
+  display: grid;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.pinned-site-list:empty {
+  display: none;
+}
+
+/* Rows sit on the same surface and radius as the selects. */
 .pinned-site-item {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 0;
-  border-top: 1px solid var(--border);
+  padding: 4px;
+  padding-inline-start: 8px;
+  border-radius: 8px;
+  background: var(--tint);
 }
 
 .pinned-site-item .site-icon {
@@ -1050,7 +1064,7 @@ input[type="checkbox"]:checked:before {
   margin: 0;
   padding: 7px 8px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--text);
   background: transparent;
   text-overflow: ellipsis;
@@ -1069,13 +1083,13 @@ input[type="checkbox"]:checked:before {
   width: 32px;
   height: 32px;
   padding: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   color: var(--secondary);
 }
 
 .icon-button:hover:not(:disabled) {
-  background: var(--tint);
+  background: var(--border);
 }
 
 .icon-button svg {
@@ -1085,9 +1099,7 @@ input[type="checkbox"]:checked:before {
 
 .pinned-site-form {
   display: grid;
-  gap: 10px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
+  gap: 8px;
 }
 
 .field-error {

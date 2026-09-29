@@ -107,9 +107,7 @@
     </p>
   </div>
 
-  <section class="pinned-settings" aria-labelledby="pinned-sites-heading">
-    <h3 id="pinned-sites-heading" class="settings-heading" data-i18n="pinnedSites">Pinned sites</h3>
-
+  <div class="pinned-settings">
     <div class="setting">
       <label for="show-pinned-sites" data-i18n="showPinnedSites">Show pinned sites</label>
       <input
@@ -125,7 +123,12 @@
     </p>
 
     <!-- Disabled as a whole while pinned sites are off; see dependencies in panel.js. -->
-    <fieldset id="pinned-site-controls" class="pinned-site-controls">
+    <fieldset
+      id="pinned-site-controls"
+      class="pinned-site-controls"
+      aria-label="Pinned sites"
+      data-i18n-label="pinnedSites"
+    >
       <ol id="pinned-site-list" class="pinned-site-list"></ol>
 
       <template id="pinned-site-item">
@@ -216,7 +219,7 @@
         </p>
       </form>
     </fieldset>
-  </section>
+  </div>
 
   <fieldset class="font-settings">
     <legend data-i18n="globalFonts">Global fonts</legend>
