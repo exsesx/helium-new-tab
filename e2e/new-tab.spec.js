@@ -1221,3 +1221,135 @@ test("secondary and muted text over a mid-tone color stay readable", async ({ pa
   expect(contrastRatio(date, color)).toBeGreaterThanOrEqual(4.5);
   expect(contrastRatio(hint, color)).toBeGreaterThanOrEqual(4.5);
 });
+
+// A landscape JPEG, red on the left and blue on the right, whose EXIF orientation (6) says to
+// show it turned a quarter clockwise, as phones save portrait photos.
+async function rotatedPhoto(page) {
+  const dataUrl = await page.evaluate(() => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = 80;
+    canvas.height = 40;
+    context.fillStyle = "#ff0000";
+    context.fillRect(0, 0, 40, 40);
+    context.fillStyle = "#0000ff";
+    context.fillRect(40, 0, 40, 40);
+
+    return canvas.toDataURL("image/jpeg", 0.95);
+  });
+  const jpeg = Buffer.from(dataUrl.split(",")[1], "base64");
+
+  // An APP1 segment with "Exif", a little-endian TIFF header, and one entry: Orientation = 6.
+  const exif = Buffer.concat([
+    Buffer.from("ffe10022", "hex"),
+    Buffer.from("Exif\0\0", "binary"),
+    Buffer.from("49492a0008000000", "hex"),
+    Buffer.from("0100", "hex"),
+    Buffer.from("120103000100000006000000", "hex"),
+    Buffer.from("00000000", "hex"),
+  ]);
+
+  return Buffer.concat([jpeg.subarray(0, 2), exif, jpeg.subarray(2)]);
+}
+
+// Decodes the stored image and reads its size and the colors near its top and bottom.
+function storedImage(page) {
+  return page.evaluate(async (key) => {
+    const { dataUrl } = JSON.parse(localStorage.getItem(key));
+    const bitmap = await createImageBitmap(await (await fetch(dataUrl)).blob());
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    const context = canvas.getContext("2d");
+    const pixel = (x, y) => Array.from(context.getImageData(x, y, 1, 1).data.slice(0, 3));
+
+    context.drawImage(bitmap, 0, 0);
+
+    return {
+      type: dataUrl.slice(5, dataUrl.indexOf(";")),
+      width: bitmap.width,
+      height: bitmap.height,
+      top: pixel(bitmap.width / 2, 2),
+      bottom: pixel(bitmap.width / 2, bitmap.height - 3),
+      corner: pixel(1, 1),
+    };
+  }, BACKGROUND_IMAGE_KEY);
+}
+
+test("a phone photo is stored upright from its EXIF orientation", async ({ page }) => {
+  await page.goto("/");
+  const photo = await rotatedPhoto(page);
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+  await page
+    .locator("#background-file")
+    .setInputFiles({ name: "portrait.jpg", mimeType: "image/jpeg", buffer: photo });
+  await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+
+  const image = await storedImage(page);
+
+  // Turned a quarter clockwise, the left (red) half is on top and the image is portrait.
+  expect(image.height).toBeGreaterThan(image.width);
+  expect(image.top[0]).toBeGreaterThan(200);
+  expect(image.top[2]).toBeLessThan(60);
+  expect(image.bottom[2]).toBeGreaterThan(200);
+  expect(image.bottom[0]).toBeLessThan(60);
+});
+
+test("without a WebP encoder, a transparent PNG is stored as JPEG over its average color", async ({
+  page,
+}) => {
+  // Behave like a browser whose canvas cannot encode WebP and falls back to PNG.
+  await page.addInitScript(() => {
+    const convertToBlob = OffscreenCanvas.prototype.convertToBlob;
+
+    OffscreenCanvas.prototype.convertToBlob = function (options = {}) {
+      const type = options.type === "image/webp" ? "image/png" : options.type;
+
+      return convertToBlob.call(this, { ...options, type });
+    };
+  });
+  await page.goto("/");
+
+  // Transparent all around a green square, so the average of the visible pixels is green.
+  const png = await page.evaluate(() => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = 64;
+    canvas.height = 64;
+    context.fillStyle = "#1e8c3c";
+    context.fillRect(16, 16, 32, 32);
+
+    return canvas.toDataURL("image/png").split(",")[1];
+  });
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+  await page.locator("#background-file").setInputFiles({
+    name: "cutout.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(png, "base64"),
+  });
+  await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+
+  const image = await storedImage(page);
+  const { averageColor } = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    BACKGROUND_IMAGE_KEY,
+  );
+  const [red, green, blue] = [1, 3, 5].map((start) =>
+    Number.parseInt(averageColor.slice(start, start + 2), 16),
+  );
+
+  expect(image.type).toBe("image/jpeg");
+  expect(averageColor).toBe("#1e8c3c");
+
+  // The transparent corner is the average color the page paints underneath, not black.
+  for (const [channel, expected] of image.corner.map((value, index) => [
+    value,
+    [red, green, blue][index],
+  ])) {
+    expect(Math.abs(channel - expected)).toBeLessThan(12);
+  }
+});

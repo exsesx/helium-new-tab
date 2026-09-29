@@ -82,8 +82,9 @@ function readAsDataUrl(blob) {
 
 async function decode(file) {
   try {
-    // GIFs decode to their first frame.
-    return await createImageBitmap(file);
+    // Phone photos are upright only after their EXIF orientation is applied. GIFs decode to
+    // their first frame.
+    return await createImageBitmap(file, { imageOrientation: "from-image" });
   } catch {
     throw new BackgroundImageError("decode");
   }
