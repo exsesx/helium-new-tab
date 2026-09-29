@@ -25,6 +25,13 @@ export const BACKGROUND_COLORS = [
 
 // The page's text colors in the light and dark appearance; see style.css.
 const FOREGROUNDS = { dark: "#292b2b", light: "#e3e5e5" };
+// Text over a chosen color never drops below WCAG AA for small text. Mid-tones need the
+// strongest text of the chosen tone to reach it.
+const MINIMUM_CONTRAST = 4.5;
+const STRONGEST = { dark: "#000000", light: "#ffffff" };
+// Secondary and muted text start this close to the text color, as the default grays do.
+const SECONDARY_WEIGHT = 78;
+const MUTED_WEIGHT = 62;
 
 // Only encodings Customize writes, and only characters that cannot end a CSS url().
 const IMAGE_DATA_URL = /^data:image\/(?:webp|jpeg|png);base64,[A-Za-z0-9+/]+={0,2}$/;
@@ -59,6 +66,50 @@ export function foregroundFor(color) {
   const light = contrastRatio(color, FOREGROUNDS.light);
 
   return dark >= light ? "dark" : "light";
+}
+
+const channels = (color) =>
+  [1, 3, 5].map((start) => Number.parseInt(color.slice(start, start + 2), 16));
+
+// Mixes two #rrggbb colors in sRGB, as CSS color-mix() does, with weight percent of the first.
+export function mixColors(first, second, weight) {
+  const other = channels(second);
+  const mixed = channels(first).map((value, index) => {
+    const channel = Math.round((value * weight + other[index] * (100 - weight)) / 100);
+
+    return channel.toString(16).padStart(2, "0");
+  });
+
+  return `#${mixed.join("")}`;
+}
+
+// The first mix from weight toward the text that is readable on the color.
+function readableMix(text, color, weight) {
+  for (let step = weight; step < 100; step += 2) {
+    const mixed = mixColors(text, color, step);
+
+    if (contrastRatio(mixed, color) >= MINIMUM_CONTRAST) {
+      return mixed;
+    }
+  }
+
+  return text;
+}
+
+// Text colors for a page in the chosen color: its tone, and text, secondary, muted, and border
+// colors that keep secondary and muted text readable on mid-tones and saturated colors too.
+export function foregroundColors(color) {
+  const tone = foregroundFor(color);
+  const token = FOREGROUNDS[tone];
+  const text = contrastRatio(token, color) >= MINIMUM_CONTRAST ? token : STRONGEST[tone];
+
+  return {
+    tone,
+    text,
+    secondary: readableMix(text, color, SECONDARY_WEIGHT),
+    muted: readableMix(text, color, MUTED_WEIGHT),
+    border: mixColors(text, color, 20),
+  };
 }
 
 // Returns the stored image, or undefined when the value is not one Customize wrote.

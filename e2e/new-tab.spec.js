@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { contrastRatio, foregroundColors } from "../src/lib/background.js";
 
 const PREFERENCES_KEY = "helium-tab";
 const BACKGROUND_IMAGE_KEY = "helium-tab-background";
@@ -1194,4 +1195,29 @@ test("dragging the custom color previews live and syncs once the picker closes",
 
   expect(writes).toHaveLength(baseline + 1);
   expect(writes.at(-1)[PREFERENCES_KEY]).toMatchObject({ backgroundColor: "#f0f0f0" });
+});
+
+// Reads an element's computed color as #rrggbb.
+function hexColor(locator) {
+  return locator.evaluate((element) => {
+    const channels = getComputedStyle(element).color.match(/\d+/g).slice(0, 3);
+
+    return `#${channels.map((value) => Number(value).toString(16).padStart(2, "0")).join("")}`;
+  });
+}
+
+test("secondary and muted text over a mid-tone color stay readable", async ({ page }) => {
+  const color = "#808080";
+  const expected = foregroundColors(color);
+
+  await savePreferences(page, { background: "color", backgroundColor: color });
+  await page.reload();
+
+  const date = await hexColor(page.locator("#date"));
+  const hint = await hexColor(page.locator(".keyboard-hint"));
+
+  expect(date).toBe(expected.secondary);
+  expect(hint).toBe(expected.muted);
+  expect(contrastRatio(date, color)).toBeGreaterThanOrEqual(4.5);
+  expect(contrastRatio(hint, color)).toBeGreaterThanOrEqual(4.5);
 });

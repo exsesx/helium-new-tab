@@ -73,6 +73,16 @@
   --scrim-glow: 35%;
 }
 
+/* Over a chosen color, text colors come from that color so they stay readable on mid-tones
+   and saturated colors; see foregroundColors. Toggles and errors appear only in Customize,
+   which keeps the appearance's own surface and tokens. */
+:root[data-background="color"]:not([data-background-image]) :is(main, footer) {
+  --text: var(--custom-text);
+  --secondary: var(--custom-secondary);
+  --muted: var(--custom-muted);
+  --border: var(--custom-border);
+}
+
 * {
   box-sizing: border-box;
 }

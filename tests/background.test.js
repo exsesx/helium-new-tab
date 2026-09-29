@@ -2,6 +2,9 @@ import { expect, test } from "bun:test";
 import {
   BACKGROUND_COLORS,
   BACKGROUND_IMAGE_KEY,
+  contrastRatio,
+  foregroundColors,
+  mixColors,
   loadBackgroundImage,
   foregroundFor,
   MAX_IMAGE_LENGTH,
@@ -101,4 +104,49 @@ test("loads a stored image and discards a corrupt one", () => {
   expect(loadBackgroundImage()).toBeUndefined();
 
   delete globalThis.localStorage;
+});
+
+test("mixes colors in sRGB as CSS color-mix() does", () => {
+  expect(mixColors("#000000", "#ffffff", 50)).toBe("#808080");
+  expect(mixColors("#ff0000", "#0000ff", 100)).toBe("#ff0000");
+  expect(mixColors("#ff0000", "#0000ff", 0)).toBe("#0000ff");
+});
+
+test("text over any chosen color stays readable, secondary and muted text included", () => {
+  const presets = BACKGROUND_COLORS.map(([color]) => color);
+  const darkest = presets.toSorted((a, b) => relativeLuminance(a) - relativeLuminance(b))[0];
+  const lightest = presets.toSorted((a, b) => relativeLuminance(b) - relativeLuminance(a))[0];
+
+  for (const color of [
+    "#808080",
+    "#ff0000",
+    "#3366ff",
+    "#767676",
+    darkest,
+    lightest,
+    "#fafafa",
+    "#0a0a0a",
+  ]) {
+    const colors = foregroundColors(color);
+
+    for (const key of ["text", "secondary", "muted"]) {
+      expect(contrastRatio(colors[key], color), `${key} on ${color}`).toBeGreaterThanOrEqual(4.5);
+    }
+  }
+});
+
+test("mid-tones get the strongest text of their tone", () => {
+  expect(foregroundColors("#808080")).toMatchObject({ tone: "dark", text: "#000000" });
+  expect(foregroundColors("#0a0a0a")).toMatchObject({ tone: "light", text: "#e3e5e5" });
+});
+
+test("pastels keep the default hierarchy of text, secondary, and muted", () => {
+  for (const [color] of BACKGROUND_COLORS) {
+    const colors = foregroundColors(color);
+    const contrast = (key) => contrastRatio(colors[key], color);
+
+    expect(colors.text).toBe("#292b2b");
+    expect(contrast("text")).toBeGreaterThan(contrast("secondary"));
+    expect(contrast("secondary")).toBeGreaterThan(contrast("muted"));
+  }
 });
