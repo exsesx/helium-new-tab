@@ -62,6 +62,7 @@ export function createSettings({
     ["show-seconds", "showSeconds"],
     ["show-date", "showDate"],
     ["type-to-search", "typeToSearch"],
+    ["show-pinned-sites", "showPinnedSites"],
     ["show-service-icons", "showServiceIcons"],
     ...["ui", "mono", "clock", "date", "search"].map((key) => [`${key}-font`, `${key}Font`]),
   ];
@@ -70,6 +71,7 @@ export function createSettings({
   const usesDarkBackground = (preferences) => preferences.theme !== "light";
   const showsClock = (preferences) => preferences.showClock;
   const showsDate = (preferences) => preferences.showDate;
+  const showsPinnedSites = (preferences) => preferences.showPinnedSites;
 
   const dependencies = [
     ["background", usesDarkBackground],
@@ -79,6 +81,7 @@ export function createSettings({
     ["clock-custom-font", showsClock],
     ["date-font", showsDate],
     ["date-custom-font", showsDate],
+    ["pinned-site-controls", showsPinnedSites],
   ];
 
   // Render each custom name in its own font, so a missing font is visible while typing.

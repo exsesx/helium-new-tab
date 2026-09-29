@@ -19,13 +19,13 @@ import {
   onSyncedChange,
   readSynced,
 } from "./lib/sync.js";
-import { applyAppearance } from "./lib/preferences.js";
+import { applyAppearance, loadPinnedSites } from "./lib/preferences.js";
 
 const $ = (id) => document.getElementById(id);
 
 // bootstrap.js runs first and has already validated and applied these.
 let preferences = window.__heliumTabPreferences;
-let pinned = window.__heliumTabSites;
+let pinned = window.__heliumTabSites ?? loadPinnedSites();
 delete window.__heliumTabPreferences;
 delete window.__heliumTabSites;
 
@@ -138,7 +138,7 @@ function updatePreference(key, value) {
     applyPreferences();
   }
 
-  if (key === "showServiceIcons") {
+  if (key === "showServiceIcons" || key === "showPinnedSites") {
     renderSites();
   }
 
@@ -174,13 +174,15 @@ function applyExternal(value) {
     return false;
   }
 
-  const iconsChanged = next.showServiceIcons !== preferences.showServiceIcons;
+  const rowChanged =
+    next.showServiceIcons !== preferences.showServiceIcons ||
+    next.showPinnedSites !== preferences.showPinnedSites;
 
   preferences = next;
   void updateLanguage(true);
   settings?.refresh();
 
-  if (iconsChanged) {
+  if (rowChanged) {
     renderSites();
   }
 
@@ -219,7 +221,8 @@ void readSynced().then((value) => {
   }
 });
 
-// Pinned sites. bootstrap.js has already drawn them with letter tiles.
+// Pinned sites. bootstrap.js has already drawn them with letter tiles when they are on. While
+// they are off, the list is kept and synced but the row stays empty.
 function showsSiteFavicons() {
   return preferences.showServiceIcons && serviceIconsSupported();
 }
@@ -229,7 +232,7 @@ function renderSites() {
   const links = [...row.querySelectorAll("a")];
   const focused = links.indexOf(document.activeElement);
 
-  renderPinnedSites(row, pinned.sites);
+  renderPinnedSites(row, preferences.showPinnedSites ? pinned.sites : []);
 
   // Keep keyboard focus in the row when another tab or device changes it.
   if (focused !== -1) {

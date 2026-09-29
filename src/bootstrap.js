@@ -3,7 +3,8 @@ import { renderPinnedSites } from "./lib/site-tiles.js";
 import { resolveLanguage, translate } from "./i18n/languages.js";
 
 const preferences = loadPreferences();
-const pinned = loadPinnedSites();
+// With pinned sites off, startup reads only the flag; app.js loads the kept list later.
+const pinned = preferences.showPinnedSites ? loadPinnedSites() : undefined;
 
 // The build embeds only the page's own short messages from each translation catalog.
 const selection = resolveLanguage(preferences.language, navigator.languages);
@@ -16,8 +17,8 @@ window.__heliumTabPreferences = preferences;
 window.__heliumTabSites = pinned;
 
 // Draw pinned sites as soon as the parser adds their row, before its first paint, so the page
-// never shifts. Without sites the row stays hidden and takes no space.
-if (pinned.sites.length > 0) {
+// never shifts. Without sites, or while they are off, the row stays hidden and takes no space.
+if (pinned?.sites.length > 0) {
   const observer = new MutationObserver(() => {
     const row = document.getElementById("pinned-sites");
 

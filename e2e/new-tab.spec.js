@@ -412,8 +412,9 @@ test("a middle click on the submit button opens a new tab", async ({ page, conte
 
 const SITES_KEY = "helium-tab-sites";
 
-async function savePinnedSites(page, sites) {
-  await page.goto("/");
+// Pinned sites are off by default, so seeding turns them on unless told otherwise.
+async function savePinnedSites(page, sites, preferences = { showPinnedSites: true }) {
+  await savePreferences(page, preferences);
   await page.evaluate(
     ([key, value]) => localStorage.setItem(key, JSON.stringify({ sites: value })),
     [SITES_KEY, sites],
@@ -425,10 +426,51 @@ function pinnedLinks(page) {
 }
 
 test("shows no pinned sites row until a site is pinned", async ({ page }) => {
-  await page.goto("/");
+  await savePinnedSites(page, []);
+  await page.reload();
 
   await expect(page.locator("#pinned-sites")).toBeHidden();
   await expect(page.locator("#pinned-sites a")).toHaveCount(0);
+});
+
+test("pinned sites are off by default and keep their list while off", async ({ page }) => {
+  // Note what bootstrap.js handed over before app.js takes it.
+  await page.addInitScript(() => {
+    document.addEventListener("readystatechange", () => {
+      window.bootstrapSites ??= typeof window.__heliumTabSites;
+    });
+  });
+
+  await savePinnedSites(page, [{ url: "https://github.com/", title: "github.com" }], {});
+  await page.reload();
+
+  await expect(page.locator("html")).toHaveAttribute("data-show-pinned-sites", "false");
+  await expect(page.locator("#pinned-sites")).toBeHidden();
+  await expect(page.locator("#pinned-sites a")).toHaveCount(0);
+  expect(await page.evaluate(() => window.bootstrapSites)).toBe("undefined");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  const toggle = page.getByRole("switch", { name: "Show pinned sites" });
+
+  await expect(toggle).not.toBeChecked();
+  await expect(page.getByLabel("Name for github.com")).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Remove github.com" })).toBeDisabled();
+  await expect(page.getByLabel("Site address")).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Add site" })).toBeDisabled();
+
+  await toggle.check();
+
+  await expect(pinnedLinks(page)).toHaveText(["Ggithub.com"]);
+  await expect(page.getByLabel("Site address")).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Remove github.com" })).toBeEnabled();
+
+  await toggle.uncheck();
+
+  await expect(page.locator("#pinned-sites")).toBeHidden();
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
+
+  expect(saved.sites).toEqual([{ url: "https://github.com/", title: "github.com" }]);
 });
 
 test("pinned sites are on the page from its first paint without shifting it", async ({ page }) => {
@@ -489,6 +531,7 @@ test("pinned sites sit below the clock and date, last on the page", async ({ pag
 test("adds, renames, reorders, and removes pinned sites in Customize", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("switch", { name: "Show pinned sites" }).check();
   const address = page.getByLabel("Site address");
   const add = page.getByRole("button", { name: "Add site" });
 
@@ -563,7 +606,9 @@ test("pinned sites persist and follow changes from another tab", async ({ contex
   await first.goto("/");
   await second.goto("/");
 
+  // The switch reaches the other tab too, as other preferences do.
   await first.getByRole("button", { name: "Customize" }).click();
+  await first.getByRole("switch", { name: "Show pinned sites" }).check();
   await first.getByLabel("Site address").fill("example.com");
   await first.getByLabel("Site address").press("Enter");
 

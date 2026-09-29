@@ -981,6 +981,10 @@ input[type="checkbox"]:checked:before {
   display: none;
 }
 
+:root[data-show-pinned-sites="false"] .pinned-sites {
+  display: none;
+}
+
 .pinned-settings {
   padding-top: 12px;
   border-top: 1px solid var(--border);
@@ -999,6 +1003,18 @@ input[type="checkbox"]:checked:before {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
+}
+
+.pinned-site-controls {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+/* Disabled controls dim themselves; dim the tiles and labels beside them to match. */
+.pinned-site-controls:disabled :is(.site-icon, label) {
+  opacity: 0.5;
 }
 
 .pinned-site-list {

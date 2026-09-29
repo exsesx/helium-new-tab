@@ -33,4 +33,5 @@ export function applyAppearance(preferences) {
   root.dataset.background = preferences.background;
   root.dataset.showClock = String(preferences.showClock);
   root.dataset.showDate = String(preferences.showDate);
+  root.dataset.showPinnedSites = String(preferences.showPinnedSites);
 }

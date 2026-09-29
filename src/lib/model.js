@@ -15,6 +15,7 @@ export const defaults = {
   showDate: true,
   showServiceIcons: false,
   typeToSearch: true,
+  showPinnedSites: false,
   uiFont: "system",
   monoFont: "system",
   uiCustomFont: "",
@@ -54,7 +55,13 @@ export function readPreferences(value) {
     result.timeFormat = value.timeFormat;
   }
 
-  for (const key of ["showSeconds", "showDate", "showServiceIcons", "typeToSearch"]) {
+  for (const key of [
+    "showSeconds",
+    "showDate",
+    "showServiceIcons",
+    "typeToSearch",
+    "showPinnedSites",
+  ]) {
     if (typeof value[key] === "boolean") {
       result[key] = value[key];
     }

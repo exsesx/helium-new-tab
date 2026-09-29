@@ -82,6 +82,12 @@ test("global fonts cascade unless a component overrides them", () => {
   expect(resolvedFonts(preferences).clock).toBe(fonts.mono);
 });
 
+test("pinned sites are off unless turned on", () => {
+  expect(readPreferences(null).showPinnedSites).toBe(false);
+  expect(readPreferences({ showPinnedSites: true }).showPinnedSites).toBe(true);
+  expect(readPreferences({ showPinnedSites: "true" }).showPinnedSites).toBe(false);
+});
+
 test("keeps a valid dark background style", () => {
   expect(readPreferences(null).background).toBe("blend");
   expect(readPreferences({ background: "helium" }).background).toBe("helium");
