@@ -46,14 +46,14 @@ const TRANSLATION_TARGETS = [
 ];
 
 // Fills in the text, labels, and placeholders marked with data-i18n attributes. Text that is
-// already right is left alone, so translating the page again changes nothing.
+// already right is left alone, so translating the page again changes nothing. Pinned-site
+// controls name their site through data-site.
 export function translate(root, message) {
   for (const [attribute, target] of TRANSLATION_TARGETS) {
     for (const element of root.querySelectorAll(`[${attribute}]`)) {
-      const text = message(element.getAttribute(attribute))?.replace(
-        "{font}",
-        element.dataset.fontExample ?? "Inter",
-      );
+      const text = message(element.getAttribute(attribute))
+        ?.replace("{font}", element.dataset.fontExample ?? "Inter")
+        .replace("{site}", element.dataset.site ?? "");
 
       if (text === undefined) {
         continue;
