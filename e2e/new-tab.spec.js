@@ -946,15 +946,98 @@ test("the scrim over an image follows the appearance", async ({ page }) => {
   expect(layers).toMatch(/^radial-gradient\(/);
 });
 
+// The surfaces that frost over a chosen color or image: search, hint, Customize, and any tiles.
+function frostedSurfaces(page) {
+  return page.evaluate(() => {
+    const selectors = [
+      "#search-form",
+      ".keyboard-hint",
+      "#open-settings",
+      "#pinned-sites .site-icon",
+    ];
+
+    return selectors
+      .filter((selector) => document.querySelector(selector))
+      .map((selector) => {
+        const style = getComputedStyle(document.querySelector(selector));
+
+        return { selector, background: style.backgroundColor, filter: style.backdropFilter };
+      });
+  });
+}
+
+const isTranslucent = (color) => /\/ 0\.\d+\)$|rgba\(.*, 0\.\d+\)$/.test(color);
+
+test("controls over a chosen color are frosted glass, and stay opaque by default", async ({
+  page,
+}) => {
+  const sites = [{ url: "https://example.com/", title: "Example" }];
+
+  await savePinnedSites(page, sites, {
+    showPinnedSites: true,
+    background: "color",
+    backgroundColor: "#c9f5b2",
+  });
+  await page.reload();
+
+  for (const surface of await frostedSurfaces(page)) {
+    expect(surface.filter, surface.selector).toBe("blur(20px) saturate(1.2)");
+    expect(isTranslucent(surface.background), surface.selector).toBe(true);
+  }
+
+  // Focus makes the search field's glass more opaque, not a different color.
+  const resting = (await frostedSurfaces(page))[0].background;
+  await page.locator("#search").focus();
+  const focused = (await frostedSurfaces(page))[0].background;
+
+  expect(focused).not.toBe(resting);
+  expect(focused.replace(/ \/ [\d.]+\)$/, "")).toBe(resting.replace(/ \/ [\d.]+\)$/, ""));
+
+  // The default background keeps the opaque surfaces.
+  await savePinnedSites(page, sites);
+  await page.reload();
+
+  const search = (await frostedSurfaces(page))[0];
+
+  expect(search.filter).toBe("none");
+  expect(search.background).toBe("rgb(235, 235, 235)");
+});
+
+test("reduced transparency keeps the controls over an image opaque", async ({ page }) => {
+  const client = await page.context().newCDPSession(page);
+
+  await client.send("Emulation.setEmulatedMedia", {
+    features: [{ name: "prefers-reduced-transparency", value: "reduce" }],
+  });
+  await page.emulateMedia({ colorScheme: "light" });
+  await saveBackgroundImage(page);
+  await page.reload();
+
+  expect(
+    await page.evaluate(() => matchMedia("(prefers-reduced-transparency: reduce)").matches),
+  ).toBe(true);
+
+  // The glass is the search field's own surface, #ebebeb, with nothing showing through.
+  for (const surface of await frostedSurfaces(page)) {
+    expect(surface.filter, surface.selector).toBe("none");
+    expect(isTranslucent(surface.background), surface.selector).toBe(false);
+  }
+
+  const [search] = await frostedSurfaces(page);
+
+  expect(search.background).toBe("color(srgb 0.921569 0.921569 0.921569)");
+});
+
 test("pinned tiles over a chosen color follow its text, not the appearance", async ({ page }) => {
   const sites = [{ url: "https://example.com/", title: "Example" }];
 
-  // The tile's background, and the colors of its light and dark pairs, all as rgb().
+  // The tile's background, and its light and dark pairs as frosted glass, as computed colors.
   const tileColors = () =>
     page.locator("#pinned-sites .site-icon").evaluate((icon) => {
       const probe = document.createElement("span");
-      const rgb = (color) => {
-        probe.style.color = color;
+      const opacity = getComputedStyle(icon).getPropertyValue("--frost-opacity");
+      const frosted = (tone) => {
+        probe.style.color = `color-mix(in srgb, ${tone} ${opacity}, transparent)`;
 
         return getComputedStyle(probe).color;
       };
@@ -963,8 +1046,8 @@ test("pinned tiles over a chosen color follow its text, not the appearance", asy
 
       const colors = {
         tile: getComputedStyle(icon).backgroundColor,
-        light: rgb(icon.style.getPropertyValue("--tone")),
-        dark: rgb(icon.style.getPropertyValue("--tone-dark")),
+        light: frosted(icon.style.getPropertyValue("--tone")),
+        dark: frosted(icon.style.getPropertyValue("--tone-dark")),
       };
 
       probe.remove();

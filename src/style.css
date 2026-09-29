@@ -496,7 +496,6 @@ h1 {
   .site-icon:not(.has-favicon) {
   --tile-bg: var(--tone);
   --tile-text: var(--tone-text);
-  --tile-hover-bg: color-mix(in srgb, var(--tone), #000 6%);
 }
 
 :root[data-foreground="light"]:not([data-background-image])
@@ -504,21 +503,6 @@ h1 {
   .site-icon:not(.has-favicon) {
   --tile-bg: var(--tone-dark);
   --tile-text: var(--tone-dark-text);
-  --tile-hover-bg: color-mix(in srgb, var(--tone-dark), #fff 7%);
-}
-
-:root[data-foreground="dark"]:not([data-background-image]) .pinned-sites .site-icon.has-favicon {
-  --tile-hover-bg: color-mix(in srgb, var(--search-bg), #000 6%);
-}
-
-:root[data-foreground="light"]:not([data-background-image]) .pinned-sites .site-icon.has-favicon {
-  --tile-hover-bg: color-mix(in srgb, var(--search-bg), var(--text) 12%);
-}
-
-/* A chosen color can match a tile's pastel, and an image can match anything, so tiles on them
-   keep a hairline edge. */
-:root:is([data-background="color"], [data-background-image]) .pinned-sites .site-icon {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 14%, transparent);
 }
 
 /* Labels over an image use the full text color, so busy areas do not swallow them. */
@@ -594,6 +578,89 @@ kbd {
 
 .settings-button circle {
   fill: var(--bg);
+}
+
+/* Over a chosen color or image, the page's controls are frosted glass: a translucent version of
+   the search field's surface that blurs what is behind it, with a hairline edge. Hover and focus
+   make the glass more opaque instead of changing its color. */
+:root:is([data-background="color"], [data-background-image]) :is(main, footer) {
+  --frost-opacity: 70%;
+  --frost-raised-opacity: 85%;
+  --frost: color-mix(in srgb, var(--search-bg) var(--frost-opacity), transparent);
+  --frost-raised: color-mix(in srgb, var(--search-bg) var(--frost-raised-opacity), transparent);
+  --frost-edge: color-mix(in srgb, var(--text) 12%, transparent);
+  --frost-filter: blur(20px) saturate(1.2);
+}
+
+/* The field's 2px border is its focus ring, so its hairline is an inset outline instead. */
+:root:is([data-background="color"], [data-background-image]) #search-form {
+  background: var(--frost);
+  outline: 1px solid var(--frost-edge);
+  outline-offset: -1px;
+  backdrop-filter: var(--frost-filter);
+}
+
+:root:is([data-background="color"], [data-background-image]) #search-form:focus-within {
+  background: var(--frost-raised);
+}
+
+:root:is([data-background="color"], [data-background-image]) :is(.keyboard-hint, .settings-button) {
+  background: var(--frost);
+  box-shadow: inset 0 0 0 1px var(--frost-edge);
+  backdrop-filter: var(--frost-filter);
+}
+
+/* The hint becomes a pill as tall as the Customize button beside it. */
+:root:is([data-background="color"], [data-background-image]) .keyboard-hint {
+  padding: 8px 12px 8px 8px;
+  border-radius: 9px;
+}
+
+:root:is([data-background="color"], [data-background-image]) kbd {
+  background: transparent;
+  border-color: var(--frost-edge);
+}
+
+:root:is([data-background="color"], [data-background-image]) .settings-button:hover {
+  background: var(--frost-raised);
+}
+
+/* The icon's knobs cover the lines behind them in the glass's own color. */
+:root:is([data-background="color"], [data-background-image]) .settings-button circle {
+  fill: var(--search-bg);
+}
+
+:root:is([data-background="color"], [data-background-image]) .pinned-sites .site-icon {
+  background: color-mix(in srgb, var(--tile-bg) var(--frost-opacity), transparent);
+  box-shadow: inset 0 0 0 1px var(--frost-edge);
+  backdrop-filter: var(--frost-filter);
+}
+
+:root:is([data-background="color"], [data-background-image]) .pinned-site:hover .site-icon {
+  background: color-mix(in srgb, var(--tile-bg) var(--frost-raised-opacity), transparent);
+}
+
+/* Without transparency the glass is the surface it stands for, and hover and focus shift its
+   color as they do by default. */
+@media (prefers-reduced-transparency: reduce) {
+  :root:is([data-background="color"], [data-background-image]) :is(main, footer) {
+    --frost-opacity: 100%;
+    --frost-raised-opacity: 100%;
+    --frost-filter: none;
+  }
+
+  :root:is([data-background="color"], [data-background-image]) #search-form:focus-within {
+    background: var(--search-focus-bg);
+  }
+
+  :root:is([data-background="color"], [data-background-image]) .settings-button:hover {
+    background: var(--tint);
+  }
+
+  /* Tiles may use the other appearance's pair here, so hover mixes in the page's text color. */
+  :root:is([data-background="color"], [data-background-image]) .pinned-site:hover .site-icon {
+    background: color-mix(in srgb, var(--tile-bg), var(--text) 8%);
+  }
 }
 
 dialog {
