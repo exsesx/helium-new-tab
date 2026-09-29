@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const PREFERENCES_KEY = "helium-tab";
+const BACKGROUND_IMAGE_KEY = "helium-tab-background";
 
 // Keep navigations local: answer every remote request with an empty page.
 test.beforeEach(async ({ page }) => {
@@ -679,3 +680,259 @@ for (const [name, options] of [
     await expect(page).toHaveURL("/");
   });
 }
+
+// Draws a small two-tone image in the page, as a stand-in for a photo.
+function drawTestImage(page, type = "image/png") {
+  return page.evaluate((type) => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = 64;
+    canvas.height = 40;
+    context.fillStyle = "#1d3b6e";
+    context.fillRect(0, 0, 64, 40);
+    context.fillStyle = "#f3d36b";
+    context.fillRect(32, 0, 32, 40);
+
+    return canvas.toDataURL(type);
+  }, type);
+}
+
+async function chooseTestImage(page) {
+  const dataUrl = await drawTestImage(page);
+  const buffer = Buffer.from(dataUrl.split(",")[1], "base64");
+
+  await page.locator("#background-file").setInputFiles({
+    name: "photo.png",
+    mimeType: "image/png",
+    buffer,
+  });
+}
+
+async function saveBackgroundImage(page) {
+  await page.goto("/");
+
+  const dataUrl = await drawTestImage(page, "image/webp");
+  const image = { dataUrl, averageColor: "#88876c", updatedAt: Date.now() };
+
+  await page.evaluate(
+    ([key, value]) => localStorage.setItem(key, JSON.stringify(value)),
+    [BACKGROUND_IMAGE_KEY, image],
+  );
+}
+
+const pageBackground = (page) =>
+  page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+
+test("choosing a preset color paints it at once and after a reload", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Color" }).check();
+  await page.getByRole("radio", { name: "Sky" }).click();
+
+  await expect(page.getByRole("radio", { name: "Sky" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.locator("html")).toHaveAttribute("data-background", "color");
+  expect(await pageBackground(page)).toBe("rgb(215, 233, 240)");
+
+  // Arrow keys move through the presets like radios.
+  await page.keyboard.press("ArrowRight");
+
+  await expect(page.getByRole("radio", { name: "Aqua" })).toBeFocused();
+  await expect(page.getByRole("radio", { name: "Aqua" })).toHaveAttribute("aria-checked", "true");
+
+  await page.reload();
+
+  expect(await pageBackground(page)).toBe("rgb(169, 242, 235)");
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  expect(saved).toMatchObject({ background: "color", backgroundColor: "#a9f2eb" });
+});
+
+test("a chosen color is on the page from its first paint", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.paintedColors = [];
+
+    function record() {
+      window.paintedColors.push(getComputedStyle(document.documentElement).backgroundColor);
+
+      if (window.paintedColors.length < 5) {
+        requestAnimationFrame(record);
+      }
+    }
+
+    requestAnimationFrame(record);
+  });
+
+  await savePreferences(page, { background: "color", backgroundColor: "#fbe58a" });
+  await page.reload();
+  await page.waitForFunction(() => window.paintedColors.length >= 5);
+
+  const frames = await page.evaluate(() => window.paintedColors);
+
+  expect(new Set(frames)).toEqual(new Set(["rgb(251, 229, 138)"]));
+});
+
+test("text over a chosen color follows the color, not the appearance", async ({ page }) => {
+  const clockColor = () =>
+    page.locator("h1").evaluate((element) => getComputedStyle(element).color);
+
+  // A pastel in a dark appearance keeps dark text.
+  await page.emulateMedia({ colorScheme: "dark" });
+  await savePreferences(page, { background: "color", backgroundColor: "#dbe4ff" });
+  await page.reload();
+
+  await expect(page.locator("html")).toHaveAttribute("data-foreground", "dark");
+  expect(await clockColor()).toBe("rgb(41, 43, 43)");
+
+  // A dark color in a light appearance gets light text.
+  await page.emulateMedia({ colorScheme: "light" });
+  await savePreferences(page, { background: "color", backgroundColor: "#1e2a4a" });
+  await page.reload();
+
+  await expect(page.locator("html")).toHaveAttribute("data-foreground", "light");
+  expect(await clockColor()).toBe("rgb(227, 229, 229)");
+});
+
+test("the custom color tile applies any color", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Color" }).check();
+  await page.getByLabel("Custom color").fill("#123456");
+
+  await expect(page.locator("html")).toHaveAttribute("data-foreground", "light");
+  await expect(page.locator(".custom-swatch")).toHaveClass(/is-selected/);
+  await expect(page.getByRole("radio", { checked: true, name: "Blue" })).toHaveCount(0);
+
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  expect(saved).toMatchObject({ background: "color", backgroundColor: "#123456" });
+});
+
+test("choosing an image paints it and keeps it on this device", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+  await chooseTestImage(page);
+
+  await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+  await expect(page.locator("#background-preview")).toBeVisible();
+
+  const stored = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    BACKGROUND_IMAGE_KEY,
+  );
+  expect(stored).toEqual({
+    dataUrl: expect.stringMatching(/^data:image\/webp;base64,/),
+    averageColor: expect.stringMatching(/^#[0-9a-f]{6}$/),
+    updatedAt: expect.any(Number),
+  });
+
+  // The synced preferences never name the image.
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  expect(saved?.background ?? "blend").toBe("blend");
+
+  await page.reload();
+
+  const image = await page.evaluate(
+    () => getComputedStyle(document.documentElement).backgroundImage,
+  );
+  expect(image).toMatch(/^url\("data:image\/webp;base64,/);
+  expect(await pageBackground(page)).toBe("rgba(0, 0, 0, 0)");
+});
+
+test("an unsupported file is refused with a message", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+  await page.locator("#background-file").setInputFiles({
+    name: "notes.txt",
+    mimeType: "text/plain",
+    buffer: Buffer.from("not an image"),
+  });
+
+  await expect(page.locator("#background-image-message")).toHaveText(
+    "Choose a PNG, JPEG, WebP, GIF, or AVIF image.",
+  );
+  await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+});
+
+test("Remove restores the default background", async ({ page }) => {
+  await saveBackgroundImage(page);
+  await page.reload();
+
+  await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  await expect(page.getByRole("radio", { name: "Image" })).toBeChecked();
+
+  await page.getByRole("button", { name: "Remove image" }).click();
+
+  await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+  await expect(page.getByRole("radio", { name: "Default" })).toBeChecked();
+  await expect.poll(() => pageBackground(page)).toBe("rgb(255, 255, 255)");
+
+  const stored = await page.evaluate((key) => localStorage.getItem(key), BACKGROUND_IMAGE_KEY);
+  expect(stored).toBeNull();
+});
+
+test("another mode replaces the image until Image is chosen again", async ({ page }) => {
+  await saveBackgroundImage(page);
+  await page.reload();
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Color" }).check();
+
+  await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+  await expect(page.locator("html")).toHaveAttribute("data-background", "color");
+
+  await page.getByRole("radio", { name: "Image" }).check();
+
+  await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+});
+
+test("removing the image in one tab repaints the others", async ({ context }) => {
+  const first = await context.newPage();
+  await saveBackgroundImage(first);
+  await first.reload();
+  const second = await context.newPage();
+  await second.goto("/");
+
+  await expect(second.locator("html")).toHaveAttribute("data-background-image", "");
+
+  await first.getByRole("button", { name: "Customize" }).click();
+  await first.getByRole("button", { name: "Remove image" }).click();
+
+  await expect(second.locator("html")).not.toHaveAttribute("data-background-image");
+});
+
+test("the scrim over an image follows the appearance", async ({ page }) => {
+  const scrim = () =>
+    page.evaluate(() => getComputedStyle(document.body, "::before").backgroundColor);
+  const clockColor = () =>
+    page.locator("h1").evaluate((element) => getComputedStyle(element).color);
+
+  await saveBackgroundImage(page);
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.reload();
+
+  expect(await scrim()).toBe("color(srgb 1 1 1 / 0.35)");
+  expect(await clockColor()).toBe("rgb(41, 43, 43)");
+
+  await page.emulateMedia({ colorScheme: "dark" });
+
+  expect(await scrim()).toMatch(/^color\(srgb 0\.11\d* 0\.12\d* 0\.12\d* \/ 0\.35\)$/);
+  expect(await clockColor()).toBe("rgb(227, 229, 229)");
+});
