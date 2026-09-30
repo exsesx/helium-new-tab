@@ -138,6 +138,63 @@ test("addresses count in their percent-encoded form", () => {
   expect(pinnedSitesBytes(cyrillic)).toBe(pinnedSitesBytes(ascii));
 });
 
+test("the item is measured as Chromium serializes it", () => {
+  const empty = `helium-tab-sites{"sites":[],"changedAt":9007199254740991.0,"changedBy":"${"x".repeat(64)}"}`;
+
+  expect(pinnedSitesBytes([])).toBe(empty.length);
+});
+
+test("characters count by the bytes Chromium writes for them", () => {
+  const bytes = (title) => pinnedSitesBytes([{ url: "https://a.com/", title }]);
+  const plain = bytes("a");
+
+  // Chromium escapes < and the line and paragraph separators as six-byte \uXXXX sequences.
+  // It leaves > alone, but the estimate counts it the same way to stay on the safe side.
+  for (const escaped of ["<", ">", "\u2028", "\u2029"]) {
+    expect(bytes(escaped) - plain).toBe(5);
+  }
+
+  expect(bytes("é") - plain).toBe(1);
+  expect(bytes("日") - plain).toBe(2);
+  expect(bytes("🌍") - plain).toBe(3);
+});
+
+test("names Chromium escapes count at their escaped size up to the exact limit", () => {
+  const sites = ["a", "b", "c"].map((letter) => longSite(`${letter}.example.com`, 1800));
+  const title = "<".repeat(SITE_TITLE_LIMIT);
+  const withPath = (length) => [...sites, { ...longSite("d.example.com", length), title }];
+  const room = PINNED_SITES_BYTES - pinnedSitesBytes(withPath(0));
+
+  expect(pinnedSitesBytes(withPath(room))).toBe(PINNED_SITES_BYTES);
+  expect(addPinnedSite(sites, longAddress("d.example.com", room), title).sites).toHaveLength(4);
+  expect(addPinnedSite(sites, longAddress("d.example.com", room + 1), title)).toEqual({
+    error: "size",
+  });
+});
+
+test("four long addresses named with forty < each no longer all fit", () => {
+  // Helium's chrome.storage.sync rejected this list when the estimate ignored Chromium's escapes.
+  const title = "<".repeat(SITE_TITLE_LIMIT);
+  let sites = [];
+  let result;
+
+  for (const letter of ["a", "b", "c", "d"]) {
+    result = addPinnedSite(sites, longAddress(`${letter}.example.com`, 1800), title);
+
+    if (result.error) {
+      break;
+    }
+
+    sites = result.sites;
+  }
+
+  const rejected = [...sites, { ...longSite("d.example.com", 1800), title }];
+
+  expect(result).toEqual({ error: "size" });
+  expect(sites).toHaveLength(3);
+  expect(pinnedSitesBytes(rejected)).toBeGreaterThan(8192);
+});
+
 test("a list already too large for sync can still take shorter names", () => {
   const sites = ["a", "b", "c", "d"].map((letter) => longSite(`${letter}.example.com`, 2000));
 
