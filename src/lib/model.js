@@ -28,6 +28,32 @@ export const defaults = {
   searchCustomFont: "",
 };
 
+const fontSources = ["system", "custom"];
+const componentFonts = ["inherit", "ui", "mono", "custom"];
+
+// Every accepted value of the preferences that pick one of a fixed set of choices.
+const ALLOWED = {
+  background: ["blend", "helium"],
+  theme: ["system", "light", "dark"],
+  timeFormat: ["auto", "12h", "24h"],
+  uiFont: fontSources,
+  monoFont: fontSources,
+  clockFont: componentFonts,
+  dateFont: componentFonts,
+  searchFont: componentFonts,
+};
+
+// When and on which device a synced item last changed; see createChangeOrder.
+function readChangeOrder(value, result) {
+  if (Number.isFinite(value.changedAt)) {
+    result.changedAt = value.changedAt;
+  }
+
+  if (typeof value.changedBy === "string") {
+    result.changedBy = value.changedBy.slice(0, 64);
+  }
+}
+
 export function readPreferences(value) {
   const result = structuredClone(defaults);
 
@@ -35,24 +61,18 @@ export function readPreferences(value) {
     return result;
   }
 
-  if (["blend", "helium"].includes(value.background)) {
-    result.background = value.background;
+  for (const [key, choices] of Object.entries(ALLOWED)) {
+    if (choices.includes(value[key])) {
+      result[key] = value[key];
+    }
   }
 
   if (Object.hasOwn(languages, value.language)) {
     result.language = value.language;
   }
 
-  if (["system", "light", "dark"].includes(value.theme)) {
-    result.theme = value.theme;
-  }
-
   if (typeof value.showClock === "boolean") {
     result.showClock = value.showClock;
-  }
-
-  if (["auto", "12h", "24h"].includes(value.timeFormat)) {
-    result.timeFormat = value.timeFormat;
   }
 
   for (const key of [
@@ -67,26 +87,7 @@ export function readPreferences(value) {
     }
   }
 
-  for (const key of ["uiFont", "monoFont"]) {
-    if (["system", "custom"].includes(value[key])) {
-      result[key] = value[key];
-    }
-  }
-
-  for (const key of ["clockFont", "dateFont", "searchFont"]) {
-    if (["inherit", "ui", "mono", "custom"].includes(value[key])) {
-      result[key] = value[key];
-    }
-  }
-
-  // When and on which device these preferences last changed; see createChangeOrder.
-  if (Number.isFinite(value.changedAt)) {
-    result.changedAt = value.changedAt;
-  }
-
-  if (typeof value.changedBy === "string") {
-    result.changedBy = value.changedBy.slice(0, 64);
-  }
+  readChangeOrder(value, result);
 
   for (const key of [
     "uiCustomFont",
@@ -167,14 +168,7 @@ export function readPinnedSites(value) {
     }
   }
 
-  // Ordered like preferences; see createChangeOrder.
-  if (Number.isFinite(value.changedAt)) {
-    result.changedAt = value.changedAt;
-  }
-
-  if (typeof value.changedBy === "string") {
-    result.changedBy = value.changedBy.slice(0, 64);
-  }
+  readChangeOrder(value, result);
 
   return result;
 }
