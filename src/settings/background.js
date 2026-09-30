@@ -5,7 +5,6 @@ import {
   removeBackgroundImage,
   saveBackgroundImage,
   screenPixels,
-  withdrawBackgroundImage,
 } from "../lib/background-photo.js";
 import { BACKGROUND_COLORS, loadBackgroundImage } from "../lib/background.js";
 import { createChoices } from "./choices.js";
@@ -108,33 +107,27 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
     showMessage();
   }
 
-  // Saves an imported or restored image, unless a newer choice came first. One made while it was
-  // being saved takes it back out, unless yet another image replaced it meanwhile.
-  async function keepImage(result, token) {
-    if (!choices.isCurrent(token)) {
-      return;
-    }
-
-    try {
-      await saveBackgroundImage(result);
-    } catch {
-      if (choices.isCurrent(token)) {
-        showMessage(IMAGE_ERRORS.storage);
-      }
-
-      return;
-    }
-
-    if (!choices.isCurrent(token)) {
-      await withdrawBackgroundImage(result.placeholder.updatedAt);
-
-      return;
-    }
-
-    image = result.placeholder;
+  // This device's image is now the one a choice saved.
+  function adoptImage(placeholder) {
+    image = placeholder;
     replacedImage = undefined;
     choosingImage = false;
     showMessage();
+  }
+
+  // Saves an imported or restored image, unless a newer choice comes first. The save commits
+  // only while its choice is the latest, and Customize adopts the image in that same step, so
+  // reading the stored image again never mistakes it for another tab's.
+  async function keepImage(result, token) {
+    const isCurrent = () => choices.isCurrent(token);
+
+    try {
+      await saveBackgroundImage(result, { isCurrent, onCommit: adoptImage });
+    } catch {
+      if (isCurrent()) {
+        showMessage(IMAGE_ERRORS.storage);
+      }
+    }
   }
 
   function sync() {

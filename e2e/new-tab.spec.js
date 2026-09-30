@@ -756,7 +756,9 @@ async function saveBackgroundImage(
           request.onsuccess = () => {
             const transaction = request.result.transaction("background", "readwrite");
 
-            transaction.objectStore("background").put(window.seededImage, "image");
+            transaction
+              .objectStore("background")
+              .put(window.seededImage, `image:${window.seededImage.updatedAt}`);
             transaction.oncomplete = () => {
               request.result.close();
               resolve();
@@ -783,10 +785,11 @@ function storedImage(page) {
 
         request.onerror = () => reject(request.error);
         request.onsuccess = () => {
+          const time = JSON.parse(localStorage.getItem("helium-tab-background"))?.updatedAt;
           const get = request.result
             .transaction("background")
             .objectStore("background")
-            .get("image");
+            .get(`image:${time}`);
 
           get.onsuccess = async () => {
             request.result.close();
@@ -1239,7 +1242,7 @@ async function saveLargeImage(page, placeholderShape) {
       request.onsuccess = () => {
         const transaction = request.result.transaction("background", "readwrite");
 
-        transaction.objectStore("background").put({ blob, updatedAt }, "image");
+        transaction.objectStore("background").put({ blob, updatedAt }, `image:${updatedAt}`);
         transaction.oncomplete = () => {
           request.result.close();
           resolve();
@@ -1270,10 +1273,11 @@ const storedRendition = (page) =>
         const request = indexedDB.open("helium-tab", 1);
 
         request.onsuccess = () => {
+          const time = JSON.parse(localStorage.getItem("helium-tab-background"))?.updatedAt;
           const get = request.result
             .transaction("background")
             .objectStore("background")
-            .get("image");
+            .get(`image:${time}`);
 
           get.onsuccess = () => {
             const rendition = get.result?.rendition;
@@ -1401,8 +1405,12 @@ test("an unsupported file is refused with a message", async ({ page }) => {
   await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
 });
 
-// Whether IndexedDB holds a full image, even before anything created the database.
-const hasFullImage = (page) =>
+// Whether IndexedDB holds any full image, even before anything created the database.
+const hasFullImage = async (page) => (await storedRecords(page)).length > 0;
+
+// The times of the full images IndexedDB holds, oldest first, even before anything created the
+// database.
+const storedRecords = (page) =>
   page.evaluate(
     () =>
       new Promise((resolve) => {
@@ -1410,14 +1418,11 @@ const hasFullImage = (page) =>
 
         request.onupgradeneeded = () => request.result.createObjectStore("background");
         request.onsuccess = () => {
-          const get = request.result
-            .transaction("background")
-            .objectStore("background")
-            .get("image");
+          const all = request.result.transaction("background").objectStore("background").getAll();
 
-          get.onsuccess = () => {
+          all.onsuccess = () => {
             request.result.close();
-            resolve(Boolean(get.result));
+            resolve(all.result.map((record) => record.updatedAt).sort((a, b) => a - b));
           };
         };
       }),
@@ -1554,30 +1559,6 @@ test("a pending import does not override a removal in another tab", async ({ con
   expect(await hasFullImage(page)).toBe(false);
 });
 
-// The times of the images IndexedDB holds: the one in use, and any staged replacement.
-const storedRecords = (page) =>
-  page.evaluate(
-    () =>
-      new Promise((resolve) => {
-        const request = indexedDB.open("helium-tab", 1);
-
-        request.onupgradeneeded = () => request.result.createObjectStore("background");
-        request.onsuccess = () => {
-          const store = request.result.transaction("background").objectStore("background");
-          const image = store.get("image");
-          const staged = store.get("staged");
-
-          staged.onsuccess = () => {
-            request.result.close();
-            resolve({
-              image: image.result?.updatedAt ?? null,
-              staged: staged.result?.updatedAt ?? null,
-            });
-          };
-        };
-      }),
-  );
-
 test("a replacement that cannot be saved keeps the previous image whole", async ({ context }) => {
   const page = await context.newPage();
 
@@ -1617,9 +1598,9 @@ test("a replacement that cannot be saved keeps the previous image whole", async 
       "There is not enough space on this device to keep this image.",
     );
 
-    // The previous placeholder and full image are still a pair, and nothing is left staged.
+    // The previous placeholder and full image are still a pair, and nothing else is left.
     expect(await storedPlaceholder(page), name).toEqual(previous);
-    expect(await storedRecords(page), name).toEqual({ image: previous.updatedAt, staged: null });
+    expect(await storedRecords(page), name).toEqual([previous.updatedAt]);
     await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
   }
 
@@ -1630,6 +1611,304 @@ test("a replacement that cannot be saved keeps the previous image whole", async 
   expect(await paintedPhoto(reopened)).toMatchObject({ source: "blob:" });
   await reopened.getByRole("button", { name: "Customize" }).click();
   await expect(reopened.locator("#background-image-message")).toBeEmpty();
+});
+
+// Holds a save at its storage boundaries: after its full image is written (before the
+// placeholder commits it), and after the commit while the photo decodes. It can also make the
+// next placeholder write fail as a full local storage does.
+async function holdStorage(page) {
+  await page.addInitScript(() => {
+    window.storageHolds = { writes: 0, decodes: 0, failPlaceholder: 0 };
+    window.storageReleases = { writes: [], decodes: [] };
+
+    const put = IDBObjectStore.prototype.put;
+
+    IDBObjectStore.prototype.put = function (value, key) {
+      if (String(key).startsWith("image:") && value?.blob) {
+        this.transaction.writesImage = true;
+      }
+
+      return put.call(this, value, key);
+    };
+
+    const listen = IDBTransaction.prototype.addEventListener;
+
+    IDBTransaction.prototype.addEventListener = function (type, listener, options) {
+      if (type === "complete" && this.writesImage && window.storageHolds.writes > 0) {
+        window.storageHolds.writes--;
+
+        return listen.call(
+          this,
+          type,
+          (event) => window.storageReleases.writes.push(() => listener(event)),
+          options,
+        );
+      }
+
+      return listen.call(this, type, listener, options);
+    };
+
+    const decode = HTMLImageElement.prototype.decode;
+
+    HTMLImageElement.prototype.decode = function () {
+      if (this.classList.contains("background-photo") && window.storageHolds.decodes > 0) {
+        window.storageHolds.decodes--;
+
+        return new Promise((resolve, reject) =>
+          window.storageReleases.decodes.push(() => decode.call(this).then(resolve, reject)),
+        );
+      }
+
+      return decode.call(this);
+    };
+
+    const setItem = Storage.prototype.setItem;
+
+    Storage.prototype.setItem = function (key, value) {
+      if (key === "helium-tab-background" && window.storageHolds.failPlaceholder > 0) {
+        window.storageHolds.failPlaceholder--;
+
+        throw new DOMException("The quota has been exceeded.", "QuotaExceededError");
+      }
+
+      return setItem.call(this, key, value);
+    };
+  });
+}
+
+const holdNext = (page, holds) =>
+  page.evaluate((holds) => Object.assign(window.storageHolds, holds), holds);
+
+const waitForHeld = (page, kind) =>
+  page.waitForFunction((kind) => window.storageReleases[kind].length > 0, kind);
+
+const releaseHeld = (page, kind) =>
+  page.evaluate((kind) => window.storageReleases[kind].shift()(), kind);
+
+// Waits until nothing is held and the page's queued storage work has had time to finish.
+async function settleStorage(page) {
+  await page.waitForTimeout(400);
+}
+
+// What a page shows and what both stores hold.
+async function imageState(page) {
+  return {
+    placeholder: (await storedPlaceholder(page))?.averageColor ?? null,
+    records: (await storedRecords(page)).length,
+    shown: await page.evaluate(() => "backgroundImage" in document.documentElement.dataset),
+    photos: await page.locator(".background-photo").count(),
+  };
+}
+
+test("Remove made while a save waits to commit leaves no image anywhere", async ({ context }) => {
+  const page = await context.newPage();
+
+  await holdStorage(page);
+  await saveBackgroundImage(page, "#1d3b6e");
+  await page.reload();
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  await holdNext(page, { writes: 1 });
+  await chooseHeldImage(page, "#204060", { hold: false });
+  await waitForHeld(page, "writes");
+  await page.getByRole("button", { name: "Remove image" }).click();
+  await releaseHeld(page, "writes");
+  await settleStorage(page);
+
+  const empty = { placeholder: null, records: 0, shown: false, photos: 0 };
+
+  expect(await imageState(page)).toEqual(empty);
+  await expect(page.getByRole("radio", { name: "Default" })).toBeChecked();
+
+  const reopened = await context.newPage();
+
+  await reopened.goto("/");
+  expect(await imageState(reopened)).toEqual(empty);
+});
+
+test("a failed save in one tab never deletes another tab's newer image", async ({ context }) => {
+  const [first, second] = [await context.newPage(), await context.newPage()];
+
+  for (const page of [first, second]) {
+    await holdStorage(page);
+    await page.goto("/");
+    await page.getByRole("button", { name: "Customize" }).click();
+    await page.getByRole("radio", { name: "Image" }).check();
+  }
+
+  // Both tabs have written their full images, and neither has committed yet.
+  await holdNext(first, { writes: 1 });
+  await chooseHeldImage(first, "#204060", { hold: false });
+  await waitForHeld(first, "writes");
+  await holdNext(second, { writes: 1 });
+  await chooseHeldImage(second, "#c0a040", { hold: false });
+  await waitForHeld(second, "writes");
+
+  // The first tab's placeholder cannot be written; the second then commits.
+  await holdNext(first, { failPlaceholder: 1 });
+  await releaseHeld(first, "writes");
+  await expect(first.locator("#background-image-message")).toHaveText(
+    "There is not enough space on this device to keep this image.",
+  );
+  await releaseHeld(second, "writes");
+  await settleStorage(second);
+
+  expect(await imageState(second)).toEqual({
+    placeholder: "#c0a040",
+    records: 1,
+    shown: true,
+    photos: 1,
+  });
+
+  const reopened = await context.newPage();
+
+  await reopened.goto("/");
+  expect(await paintedPhoto(reopened)).toMatchObject({ source: "blob:" });
+  expect((await storedPlaceholder(reopened)).averageColor).toBe("#c0a040");
+});
+
+test("an image kept by an earlier build survives a failed replacement", async ({ context }) => {
+  const page = await context.newPage();
+
+  await holdStorage(page);
+  await saveBackgroundImage(page, "#1d3b6e");
+
+  // Earlier builds kept the full image under one shared key.
+  const previous = await storedPlaceholder(page);
+
+  await page.evaluate(
+    (time) =>
+      new Promise((resolve) => {
+        const request = indexedDB.open("helium-tab", 1);
+
+        request.onsuccess = () => {
+          const transaction = request.result.transaction("background", "readwrite");
+          const store = transaction.objectStore("background");
+          const record = store.get(`image:${time}`);
+
+          record.onsuccess = () => {
+            store.delete(`image:${time}`);
+            store.put(record.result, "image");
+          };
+          transaction.oncomplete = () => {
+            request.result.close();
+            resolve();
+          };
+        };
+      }),
+    previous.updatedAt,
+  );
+  await page.reload();
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  await holdNext(page, { failPlaceholder: 1 });
+  await chooseHeldImage(page, "#c0a040", { hold: false });
+  await expect(page.locator("#background-image-message")).toHaveText(
+    "There is not enough space on this device to keep this image.",
+  );
+
+  const reopened = await context.newPage();
+
+  await reopened.goto("/");
+  expect(await paintedPhoto(reopened)).toMatchObject({ source: "blob:" });
+  expect(await storedPlaceholder(reopened)).toEqual(previous);
+
+  // Once shown, it moves to its own record.
+  await expect.poll(() => storedRecords(reopened)).toEqual([previous.updatedAt]);
+  await expect
+    .poll(() =>
+      reopened.evaluate(
+        () =>
+          new Promise((resolve) => {
+            const request = indexedDB.open("helium-tab", 1);
+
+            request.onsuccess = () => {
+              const keys = request.result
+                .transaction("background")
+                .objectStore("background")
+                .getAllKeys();
+
+              keys.onsuccess = () => {
+                request.result.close();
+                resolve(keys.result);
+              };
+            };
+          }),
+      ),
+    )
+    .toEqual([`image:${previous.updatedAt}`]);
+});
+
+test("Default chosen while a save waits never leaves that image for the next tab", async ({
+  context,
+}) => {
+  const page = await context.newPage();
+
+  await holdStorage(page);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  // Before the commit: the save is abandoned.
+  await page.getByRole("radio", { name: "Image" }).check();
+  await holdNext(page, { writes: 1, decodes: 1 });
+  await chooseHeldImage(page, "#204060", { hold: false });
+  await waitForHeld(page, "writes");
+  await page.getByRole("radio", { name: "Default" }).check();
+  await releaseHeld(page, "writes");
+  await settleStorage(page);
+  expect(await imageState(page)).toEqual({
+    placeholder: null,
+    records: 0,
+    shown: false,
+    photos: 0,
+  });
+
+  // After the commit, while the photo decodes: Default removes it, and the tab closes at once.
+  await page.getByRole("radio", { name: "Image" }).check();
+  await holdNext(page, { writes: 0, decodes: 1 });
+  await chooseHeldImage(page, "#c0a040", { hold: false });
+  await waitForHeld(page, "decodes");
+  await page.getByRole("radio", { name: "Default" }).check();
+  await page.close();
+
+  const reopened = await context.newPage();
+
+  await reopened.goto("/");
+  await expect(reopened.locator("html")).not.toHaveAttribute("data-background-image");
+  expect(await storedPlaceholder(reopened)).toBeNull();
+  await reopened.getByRole("button", { name: "Customize" }).click();
+  await expect(reopened.getByRole("radio", { name: "Default" })).toBeChecked();
+});
+
+test("a refresh while its own save decodes keeps the saved image", async ({ context }) => {
+  const [page, other] = [await context.newPage(), await context.newPage()];
+
+  await holdStorage(page);
+  await page.goto("/");
+  await other.goto("/");
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+
+  // The image is committed and its photo is decoding when another tab changes a preference,
+  // which refreshes Customize here.
+  await holdNext(page, { decodes: 1 });
+  await chooseHeldImage(page, "#204060", { hold: false });
+  await waitForHeld(page, "decodes");
+  await other.evaluate(
+    (key) => localStorage.setItem(key, JSON.stringify({ showSeconds: true })),
+    PREFERENCES_KEY,
+  );
+  await expect(page.locator("#clock")).toHaveText(/:\d{2}:\d{2}/);
+  await releaseHeld(page, "decodes");
+  await settleStorage(page);
+
+  expect(await imageState(page)).toEqual({
+    placeholder: "#204060",
+    records: 1,
+    shown: true,
+    photos: 1,
+  });
+  await expect(page.getByRole("radio", { name: "Image" })).toBeChecked();
 });
 
 test("Remove restores the default background and clears both stores", async ({ page }) => {
