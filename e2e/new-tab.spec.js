@@ -286,6 +286,31 @@ test("a late startup sync read does not revert another device's newer change", a
   expect(synced.theme).toBe("light");
 });
 
+test("a late startup sync read loses to a sync event that confirms the current value", async ({
+  page,
+}) => {
+  const current = { theme: "light", changedAt: 2, changedBy: "another-device" };
+
+  await delaySyncReads(page, OLDER_SYNCED_PREFERENCES);
+  await savePreferences(page, current);
+  await page.reload();
+
+  // Sync now holds what this tab already shows, which is newer than the pending snapshot.
+  await sendSyncChange(page, PREFERENCES_KEY, current);
+  await releaseSyncReads(page);
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  const synced = await page.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
+
+  expect(saved.theme).toBe("light");
+  expect(synced.theme).toBe("light");
+});
+
 test("switches the interface language", async ({ page }) => {
   await page.goto("/");
 
@@ -817,6 +842,36 @@ test("a late startup sync read does not revert sites another device pinned", asy
 
   await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);
 
+  await releaseSyncReads(page);
+
+  await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
+  const synced = await page.evaluate((key) => window.syncData[key], SITES_KEY);
+
+  expect(saved.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+  expect(synced.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+});
+
+test("a late startup sync read loses to a sync event that confirms the current sites", async ({
+  page,
+}) => {
+  const current = {
+    sites: [{ url: "https://example.com/", title: "example.com" }],
+    changedAt: 2,
+    changedBy: "another-device",
+  };
+
+  await delaySyncReads(page, OLDER_SYNCED_SITES);
+  await savePinnedSites(page, []);
+  await page.evaluate(
+    ([key, value]) => localStorage.setItem(key, JSON.stringify(value)),
+    [SITES_KEY, current],
+  );
+  await page.reload();
+
+  // Sync now holds what this tab already shows, which is newer than the pending snapshot.
+  await sendSyncChange(page, SITES_KEY, current);
   await releaseSyncReads(page);
 
   await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);

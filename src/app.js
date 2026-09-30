@@ -48,7 +48,8 @@ const syncWriter = createSyncWriter(() => preferences);
 const changeOrder = createChangeOrder(device, preferences);
 const sitesWriter = createSyncWriter(() => pinned, PINNED_SITES_KEY);
 const sitesOrder = createChangeOrder(device, pinned);
-// Changes this tab made or took from another tab or device; see readSyncedSnapshot.
+// Changes this tab made, and current copies it received from another tab or device, even
+// copies of what it already shows; see readSyncedSnapshot.
 let preferenceChanges = 0;
 let siteChanges = 0;
 let activeLocale;
@@ -176,6 +177,9 @@ function applyExternal(value) {
     return false;
   }
 
+  // A current copy is at least as new as a pending startup read, even when it changes nothing.
+  preferenceChanges++;
+
   const next = readPreferences(value);
 
   if (JSON.stringify(next) === JSON.stringify(preferences)) {
@@ -203,9 +207,7 @@ window.addEventListener("storage", (event) => {
   }
 
   try {
-    if (applyExternal(JSON.parse(event.newValue))) {
-      preferenceChanges++;
-    }
+    applyExternal(JSON.parse(event.newValue));
   } catch {
     /* Ignore malformed external data. */
   }
@@ -215,7 +217,6 @@ onSyncedChange((value) => {
   const merged = mergeSynced(value, preferences);
 
   if (merged && applyExternal(merged)) {
-    preferenceChanges++;
     saveLocal();
   }
 });
@@ -278,6 +279,9 @@ function applyExternalSites(value) {
     return false;
   }
 
+  // A current copy is at least as new as a pending startup read, even when it changes nothing.
+  siteChanges++;
+
   const next = readPinnedSites(value);
 
   if (JSON.stringify(next) === JSON.stringify(pinned)) {
@@ -297,9 +301,7 @@ window.addEventListener("storage", (event) => {
   }
 
   try {
-    if (applyExternalSites(JSON.parse(event.newValue))) {
-      siteChanges++;
-    }
+    applyExternalSites(JSON.parse(event.newValue));
   } catch {
     /* Ignore malformed external data. */
   }
@@ -307,7 +309,6 @@ window.addEventListener("storage", (event) => {
 
 onSyncedChange((value) => {
   if (value && typeof value === "object" && applyExternalSites(value)) {
-    siteChanges++;
     saveLocal(PINNED_SITES_KEY, pinned);
   }
 }, PINNED_SITES_KEY);
