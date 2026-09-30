@@ -58,9 +58,9 @@ warnings, and no slower first paint.
   a few kilobytes; a chosen color syncs with the other preferences.
 - Paint the background with the first paint, so a new tab never flashes the default first. An
   image paints as a blurred thumbnail at once, and the full image fades in once it has loaded.
-  Text and controls follow the brightness of the chosen color or photo, whatever the
-  appearance. Photos show as they are, with a soft halo behind the text; only a mid-tone photo
-  gets a faint overlay.
+  Text and controls follow the chosen color, or the parts of the photo behind the content,
+  whatever the appearance. Photos show as they are, with a soft halo behind the text, a
+  stronger one where no text color reads everywhere, and a faint overlay only as a last resort.
 - Nothing is downloaded, and no new permission shows an install warning.
 
 ## Considering

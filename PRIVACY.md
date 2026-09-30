@@ -11,7 +11,7 @@ telemetry, or backend. It does not collect or transmit browsing history.
 
 A background color you choose syncs with the other preferences. A background image you choose
 stays on this device: the full image in the extension's IndexedDB storage, kept as it is or
-resized there, and a tiny blurred preview of it with its average color in local storage, so a
+resized there, and a tiny blurred preview of it with its average colors in local storage, so a
 new tab can paint it at once. The image is never synced or uploaded, and **Remove image** deletes
 both.
 
