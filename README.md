@@ -27,8 +27,8 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   this device at full quality. Both are painted with the first frame: an image starts as a
   1280 px preview of itself and fades to a copy scaled to the screen once it has loaded. Images
   chosen with an earlier version get the new preview on their own. Text follows the color, or
-  the part of the photo behind the clock and search field, and photos show untoned, with a
-  soft halo behind the text.
+  the part of the photo behind the clock and search field in the window's current shape, and
+  photos show untoned, with a soft halo behind the text.
 - Optional clock and date, with 12-hour or 24-hour time and optional seconds.
 - 37 interface languages, with localized dates and times.
 - Custom installed fonts for the interface, clock, date, and search field.

@@ -1,6 +1,7 @@
 // Turns a chosen image file into a background: the full image, kept at full quality, a rendition
 // fitted to the screen, and a placeholder for the first paint. Everything happens on this device.
 import {
+  CROP_ASPECTS,
   imageForeground,
   MAX_IMAGE_SIDE,
   MAX_THUMBNAIL_LENGTH,
@@ -73,9 +74,10 @@ export function coveredRegion(image, view, band) {
   };
 }
 
-// The parts of an image behind the content in a window of this size.
-export function contentRegions(image, view) {
-  return CONTENT_BANDS.map((band) => coveredRegion(image, view, band));
+// The parts of an image behind the content in a window of this size, given as bands of
+// fractions of the window, the usual layout by default.
+export function contentRegions(image, view, bands = CONTENT_BANDS) {
+  return bands.map((band) => coveredRegion(image, view, band));
 }
 
 export function thumbnailSize(width, height, side = THUMBNAIL_ENCODINGS[0].side) {
@@ -136,6 +138,12 @@ async function decode(file) {
   }
 }
 
+// The colors of an image behind the content in a window of this size. The content's place in the
+// window is given as bands of fractions of it, the usual layout by default.
+export function sampleBands(bitmap, view, bands = CONTENT_BANDS) {
+  return contentRegions(bitmap, view, bands).map((region) => sampleColor(bitmap, region));
+}
+
 // The average color of a region of the bitmap, given as fractions of it.
 function sampleColor(bitmap, region = WHOLE_IMAGE) {
   const canvas = new OffscreenCanvas(SAMPLE_SIDE, SAMPLE_SIDE);
@@ -193,11 +201,12 @@ async function encodeThumbnail(bitmap, color) {
 // The placeholder that stands in for an image at first paint. The text set is chosen for a
 // window of the given size.
 async function createPlaceholder(bitmap, color, view, { width, height, updatedAt }) {
-  const bands = contentRegions(bitmap, view).map((region) => sampleColor(bitmap, region));
+  const bands = sampleBands(bitmap, view);
 
   return {
     averageColor: color,
     bands,
+    crops: CROP_ASPECTS.map((aspect) => sampleBands(bitmap, { width: aspect, height: 1 })),
     thumbnail: await encodeThumbnail(bitmap, color),
     width,
     height,

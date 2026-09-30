@@ -60,8 +60,8 @@ warnings, and no slower first paint.
   image paints at once as a 1280 px preview that is cheap to draw, and a copy scaled to the
   screen fades in over it once it has loaded and been drawn, with nothing else on the page
   changing. Previews from an earlier version are made again from the kept image.
-  Text and controls follow the chosen color, or the parts of the photo behind the content,
-  whatever the appearance. Photos show as they are, with a soft halo behind the text, a
+  Text and controls follow the chosen color, or the parts of the photo behind the content in
+  the window's current shape, whatever the appearance. Photos show as they are, with a soft halo behind the text, a
   stronger one where no text color reads everywhere, and a faint overlay only as a last resort.
 - Nothing is downloaded, and no new permission shows an install warning.
 

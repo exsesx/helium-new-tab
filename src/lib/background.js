@@ -9,9 +9,13 @@ export const MAX_IMAGE_SIDE = 5120;
 // A placeholder's thumbnail is about 30 to 150 KB as a data URL; anything larger is not one
 // Customize wrote.
 export const MAX_THUMBNAIL_LENGTH = 256 * 1024;
-// Placeholders written before this version have a smaller thumbnail and are made again from the
-// full image once it has loaded.
-export const PLACEHOLDER_VERSION = 2;
+// Placeholders written before this version are made again from the full image once it has
+// loaded: version 1 had a smaller thumbnail, and version 2 no text set per window shape.
+export const PLACEHOLDER_VERSION = 3;
+// Window shapes, width over height, that a placeholder keeps the bands behind the content for,
+// since a covering image shows a different part of itself in each. The page starts with the
+// closest one and follows the actual window once it has painted.
+export const CROP_ASPECTS = [21 / 9, 16 / 9, 3 / 2, 4 / 3, 1, 3 / 4, 9 / 16];
 const TONES = ["light", "dark"];
 export const DEFAULT_BACKGROUND_COLOR = "#dbe4ff";
 
@@ -143,8 +147,13 @@ export function readBackgroundImage(value) {
   const hasSize = [width, height].every(
     (side) => Number.isInteger(side) && side > 0 && side <= MAX_IMAGE_SIDE,
   );
-  const hasBands =
-    Array.isArray(bands) && bands.length === CONTENT_BAND_COUNT && bands.every(isHexColor);
+  const isBandPair = (pair) =>
+    Array.isArray(pair) && pair.length === CONTENT_BAND_COUNT && pair.every(isHexColor);
+  const hasBands = isBandPair(bands);
+  const { crops } = value;
+  const hasCrops =
+    Array.isArray(crops) && crops.length === CROP_ASPECTS.length && crops.every(isBandPair);
+  const lowerBands = (pair) => pair.map((band) => band.toLowerCase());
   const isValid =
     hasThumbnail &&
     hasSize &&
@@ -159,7 +168,9 @@ export function readBackgroundImage(value) {
 
   return {
     averageColor: averageColor.toLowerCase(),
-    bands: bands.map((band) => band.toLowerCase()),
+    bands: lowerBands(bands),
+    // Placeholders from before the bands were kept per window shape use one pair for all.
+    crops: hasCrops ? crops.map(lowerBands) : CROP_ASPECTS.map(() => lowerBands(bands)),
     thumbnail,
     width,
     height,
@@ -250,9 +261,34 @@ export function imageForeground(bands) {
   return { tone, ...imageLegibility(bands, tone) };
 }
 
-// Paints the placeholder over the synced background: the photo's average color and a small
-// thumbnail, under the text set chosen when the photo was. background-photo.js paints the full
-// image over it.
+// The bands behind the content that the placeholder kept for the window shape closest to this
+// one.
+export function bandsForAspect(image, aspect) {
+  const distance = (index) => Math.abs(Math.log(CROP_ASPECTS[index] / aspect));
+  const closest = CROP_ASPECTS.reduce(
+    (best, candidate, index) => (distance(index) < distance(best) ? index : best),
+    0,
+  );
+
+  return image.crops[closest];
+}
+
+// Sets the text set, halo, and overlay for a photo with these colors behind the content.
+export function applyImageForeground(bands) {
+  const root = document.documentElement;
+  const { tone, halo, overlay } = imageForeground(bands);
+
+  root.style.setProperty(
+    "--image-overlay",
+    `color-mix(in srgb, ${OVERLAY_COLORS[tone]} ${overlay}%, transparent)`,
+  );
+  root.dataset.imageForeground = tone;
+  root.dataset.imageHalo = halo;
+}
+
+// Paints the placeholder over the synced background: the photo's average color and a thumbnail,
+// under the text set for the part of the photo this window shows behind the content.
+// background-photo.js paints the full image over it.
 export function applyBackgroundImage(image) {
   const root = document.documentElement;
 
@@ -268,17 +304,9 @@ export function applyBackgroundImage(image) {
     return;
   }
 
-  const tone = image.foreground;
-  const { halo, overlay } = imageLegibility(image.bands, tone);
-
   root.style.setProperty("--image-thumbnail", `url("${image.thumbnail}")`);
   root.style.setProperty("--image-bg", image.averageColor);
-  root.style.setProperty(
-    "--image-overlay",
-    `color-mix(in srgb, ${OVERLAY_COLORS[tone]} ${overlay}%, transparent)`,
-  );
-  root.dataset.imageForeground = tone;
-  root.dataset.imageHalo = halo;
+  applyImageForeground(bandsForAspect(image, innerWidth / innerHeight));
   root.dataset.backgroundImage = "";
 }
 

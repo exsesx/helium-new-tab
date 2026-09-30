@@ -5,7 +5,11 @@ import {
   loadBackgroundImage,
   loadOutdatedImage,
 } from "./lib/background.js";
-import { paintBackgroundPhoto, updateBackgroundImage } from "./lib/background-photo.js";
+import {
+  followWindowShape,
+  paintBackgroundPhoto,
+  updateBackgroundImage,
+} from "./lib/background-photo.js";
 import { createClock } from "./lib/clock.js";
 import { readPinnedSites, readPreferences } from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
@@ -235,6 +239,18 @@ if (outdatedImageTime !== undefined) {
     .then((image) => image && paintPhoto(image))
     .catch(() => {});
 }
+
+// A covering photo shows a different part of itself when the window changes shape, including
+// when the page is zoomed, so the text set follows it.
+const WINDOW_SHAPE_DELAY = 150;
+let windowShapeTimer;
+
+window.addEventListener("resize", () => {
+  clearTimeout(windowShapeTimer);
+  windowShapeTimer = setTimeout(() => {
+    void followWindowShape(loadBackgroundImage()).catch(() => {});
+  }, WINDOW_SHAPE_DELAY);
+});
 
 // Another tab on this device chose or removed its background image. It writes the placeholder
 // last, so the full image is already in IndexedDB.

@@ -721,7 +721,7 @@ async function chooseTestImage(page) {
 async function saveBackgroundImage(
   page,
   averageColor = "#88876c",
-  { full = true, bands = [averageColor, averageColor], version = 2 } = {},
+  { full = true, bands = [averageColor, averageColor], version = 3 } = {},
 ) {
   await page.goto("/");
 
@@ -960,7 +960,8 @@ test("choosing an image keeps it in full and paints its placeholder first", asyn
     height: 40,
     updatedAt: expect.any(Number),
     foreground: expect.stringMatching(/^(light|dark)$/),
-    version: 2,
+    crops: expect.any(Array),
+    version: 3,
   });
   expect(placeholder.thumbnail.length).toBeLessThan(2048);
   expect(await storedImage(page)).toMatchObject({ type: "image/webp", width: 64, height: 40 });
@@ -1297,7 +1298,7 @@ test("an older placeholder is made again from the full image, without choosing i
   });
 
   await page.reload();
-  await expect.poll(async () => (await storedPlaceholder(page)).version).toBe(2);
+  await expect.poll(async () => (await storedPlaceholder(page)).version).toBe(3);
 
   const placeholder = await storedPlaceholder(page);
   const thumbnail = await page.evaluate(async (source) => {
@@ -1325,7 +1326,7 @@ test("a placeholder too old to paint is made again, and the image shows", async 
   await saveLargeImage(page, { averageColor: "#88876c", foreground: "light" });
 
   await page.reload();
-  await expect.poll(async () => (await storedPlaceholder(page))?.version).toBe(2);
+  await expect.poll(async () => (await storedPlaceholder(page))?.version).toBe(3);
   await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
   expect(await paintedPhoto(page)).toMatchObject({ source: "blob:" });
 
@@ -1346,7 +1347,7 @@ test("a rendition fitted to the screen is painted, and made again for a larger s
     averageColor: "#88876c",
     bands: ["#1d3b6e", "#1d3b6e"],
     foreground: "light",
-    version: 2,
+    version: 3,
   });
   const screen = await page.evaluate(() => [screen.width, screen.height, devicePixelRatio]);
 
@@ -1790,6 +1791,165 @@ test("a photo no set reads on everywhere gets strong halos, and an overlay only 
   expect(extreme.overlay).toBeLessThanOrEqual(15);
   expect((await photoPage(page)).overlay).toMatch(new RegExp(` / ${extreme.overlay / 100}\\)$`));
 });
+
+// Stripe fixtures whose covering crop changes the colors behind the content: a landscape photo
+// with a narrow white column, and a portrait one with a white row, both on black.
+const STRIPES = {
+  landscape: { width: 3000, height: 1000, stripe: [1400, 0, 200, 1000] },
+  portrait: { width: 1000, height: 3000, stripe: [0, 1400, 1000, 200] },
+};
+
+async function chooseStripes(page, name) {
+  const { width, height, stripe } = STRIPES[name];
+  const dataUrl = await page.evaluate(
+    ([width, height, stripe]) => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      canvas.width = width;
+      canvas.height = height;
+      context.fillStyle = "#000000";
+      context.fillRect(0, 0, width, height);
+      context.fillStyle = "#ffffff";
+      context.fillRect(...stripe);
+
+      return canvas.toDataURL("image/png");
+    },
+    [width, height, stripe],
+  );
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+  await page.locator("#background-file").setInputFiles({
+    name: `${name}.png`,
+    mimeType: "image/png",
+    buffer: Buffer.from(dataUrl.split(",")[1], "base64"),
+  });
+  await expect(page.locator(".background-photo")).toHaveCount(1);
+  await page.keyboard.press("Escape");
+}
+
+// The text set on the page, and the contrast of its primary, secondary, and muted text against
+// the color that fills the parts behind the content in these fixtures.
+function textOverStripes(page) {
+  return page.evaluate(() => {
+    const tone = document.documentElement.dataset.imageForeground;
+    const style = getComputedStyle(document.querySelector("main"));
+    const behind = tone === "dark" ? [255, 255, 255] : [0, 0, 0];
+    const channels = (color) => {
+      const probe = document.createElement("span");
+
+      probe.style.color = color;
+      document.body.append(probe);
+
+      const values = getComputedStyle(probe).color.match(/\d+/g).map(Number);
+
+      probe.remove();
+
+      return values.slice(0, 3);
+    };
+    const luminance = (rgb) => {
+      const [red, green, blue] = rgb.map((channel) => {
+        const value = channel / 255;
+
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+
+      return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+    };
+    const contrast = (color) => {
+      const [light, dark] = [luminance(channels(color)), luminance(behind)].sort((a, b) => b - a);
+
+      return (light + 0.05) / (dark + 0.05);
+    };
+
+    return {
+      tone,
+      contrasts: ["--text", "--secondary", "--muted"].map((name) =>
+        contrast(style.getPropertyValue(name).trim()),
+      ),
+    };
+  });
+}
+
+// The text set in the first frame the page paints.
+async function firstPaintTone(page) {
+  await page.addInitScript(() => {
+    requestAnimationFrame(() => {
+      window.firstTone = document.documentElement.dataset.imageForeground;
+    });
+  });
+  await page.reload();
+  await page.waitForFunction(() => window.firstTone !== undefined);
+
+  return page.evaluate(() => window.firstTone);
+}
+
+for (const [name, expected] of [
+  ["landscape", { wide: "light", narrow: "dark" }],
+  ["portrait", { wide: "dark", narrow: "light" }],
+]) {
+  test(`text over a ${name} photo follows the part this window shows`, async ({ page }) => {
+    const expectReadable = async (tone, label) => {
+      const text = await textOverStripes(page);
+
+      expect(text.tone, label).toBe(tone);
+
+      for (const contrast of text.contrasts) {
+        expect(contrast, label).toBeGreaterThanOrEqual(4.5);
+      }
+    };
+
+    // Chosen in a wide window.
+    await page.setViewportSize({ width: 1400, height: 600 });
+    await page.goto("/");
+    await chooseStripes(page, name);
+    await expectReadable(expected.wide, "wide");
+
+    // A narrow window shows another part: the text set follows once it has been resized, and
+    // from the first paint after a reload.
+    await page.setViewportSize({ width: 400, height: 712 });
+    await expect(page.locator("html")).toHaveAttribute("data-image-foreground", expected.narrow);
+    await expectReadable(expected.narrow, "narrow");
+    expect(await firstPaintTone(page), "narrow first paint").toBe(expected.narrow);
+
+    // A low window, and a wide one zoomed to 200%, show the same part as the wide window.
+    await page.setViewportSize({ width: 1400, height: 360 });
+    await expect(page.locator("html")).toHaveAttribute("data-image-foreground", expected.wide);
+    expect(await firstPaintTone(page), "low first paint").toBe(expected.wide);
+
+    const session = await page.context().newCDPSession(page);
+
+    await session.send("Emulation.setDeviceMetricsOverride", {
+      width: 700,
+      height: 300,
+      deviceScaleFactor: 2,
+      mobile: false,
+    });
+    expect(await firstPaintTone(page), "zoomed first paint").toBe(expected.wide);
+    await expectReadable(expected.wide, "zoomed");
+    await session.send("Emulation.clearDeviceMetricsOverride");
+
+    // Without the clock and date, and with the pinned row, the same parts decide.
+    await page.evaluate(
+      ([key, sitesKey]) => {
+        localStorage.setItem(
+          key,
+          JSON.stringify({ showClock: false, showDate: false, showPinnedSites: true }),
+        );
+        localStorage.setItem(
+          sitesKey,
+          JSON.stringify({ sites: [{ url: "https://example.com/", title: "Example" }] }),
+        );
+      },
+      [PREFERENCES_KEY, "helium-tab-sites"],
+    );
+    await page.setViewportSize({ width: 400, height: 712 });
+    expect(await firstPaintTone(page), "pinned row first paint").toBe(expected.narrow);
+    await expect(page.locator("#pinned-sites")).toBeVisible();
+    await expectReadable(expected.narrow, "pinned row");
+  });
+}
 
 test("the text set follows the part of the photo behind the content, not its average", async ({
   page,

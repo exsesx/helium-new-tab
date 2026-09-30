@@ -3,6 +3,7 @@
 // it has decoded.
 import {
   applyBackgroundImage,
+  applyImageForeground,
   BACKGROUND_IMAGE_KEY,
   loadBackgroundImage,
   PLACEHOLDER_VERSION,
@@ -24,6 +25,8 @@ let writes = Promise.resolve();
 // The photo on the page, and a count that lets a newer paint cancel an older one.
 let photo;
 let paints = 0;
+// The decoded thumbnail the text set is sampled from when the window changes shape.
+let cropSource;
 // "none", "loading", "shown", or "missing" when the placeholder has no full image to show.
 let status = "none";
 
@@ -394,4 +397,31 @@ export async function updateBackgroundImage(placeholder) {
 
     return undefined;
   });
+}
+
+// Chooses the text set again for the part of the photo this window shows behind the content,
+// sampled from the placeholder's thumbnail. The first paint used the closest window shape the
+// placeholder kept; see bandsForAspect.
+export async function followWindowShape(placeholder) {
+  if (!placeholder) {
+    return;
+  }
+
+  if (cropSource?.updatedAt !== placeholder.updatedAt) {
+    const thumbnail = new Image();
+
+    thumbnail.src = placeholder.thumbnail;
+    await thumbnail.decode();
+    cropSource = { updatedAt: placeholder.updatedAt, bitmap: await createImageBitmap(thumbnail) };
+  }
+
+  const { bitmap } = cropSource;
+  const { sampleBands } = await import("./background-image.js");
+
+  // Another image may have replaced this one meanwhile.
+  if (document.documentElement.dataset.backgroundImage === undefined) {
+    return;
+  }
+
+  applyImageForeground(sampleBands(bitmap, { width: innerWidth, height: innerHeight }));
 }

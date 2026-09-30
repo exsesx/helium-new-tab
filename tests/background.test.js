@@ -2,7 +2,9 @@ import { expect, test } from "bun:test";
 import {
   BACKGROUND_COLORS,
   BACKGROUND_IMAGE_KEY,
+  bandsForAspect,
   contrastRatio,
+  CROP_ASPECTS,
   foregroundColors,
   mixColors,
   loadBackgroundImage,
@@ -19,6 +21,16 @@ import { readPreferences } from "../src/lib/model.js";
 const validImage = {
   averageColor: "#336699",
   bands: ["#1e2a3a", "#2a3a4a"],
+  // Wide windows show dark bands, narrow ones a white stripe.
+  crops: [
+    ["#101010", "#101010"],
+    ["#1e2a3a", "#2a3a4a"],
+    ["#303030", "#303030"],
+    ["#505050", "#505050"],
+    ["#808080", "#808080"],
+    ["#e0e0e0", "#e0e0e0"],
+    ["#ffffff", "#ffffff"],
+  ],
   thumbnail: "data:image/webp;base64,UklGRhYAAABXRUJQ",
   width: 5120,
   height: 2880,
@@ -149,10 +161,38 @@ test("keeps a placeholder too old to paint so it can be made again from the full
   delete globalThis.localStorage;
 });
 
+test("placeholders keep the bands for each window shape, or one pair for all from before", () => {
+  // A placeholder from before the bands were kept per window shape.
+  const { crops, ...single } = validImage;
+
+  expect(readBackgroundImage(single).crops).toEqual(CROP_ASPECTS.map(() => validImage.bands));
+
+  // Crops that do not cover every shape are ignored the same way.
+  expect(readBackgroundImage({ ...validImage, crops: crops.slice(1) }).crops).toEqual(
+    CROP_ASPECTS.map(() => validImage.bands),
+  );
+  expect(
+    readBackgroundImage({ ...validImage, crops: [...crops.slice(1), ["#fff"]] }).crops,
+  ).toEqual(CROP_ASPECTS.map(() => validImage.bands));
+});
+
+test("the first paint uses the bands of the closest window shape", () => {
+  // 21:9, 16:9, 3:2, 4:3, 1:1, 3:4, and 9:16.
+  expect(bandsForAspect(validImage, 2560 / 1080)).toEqual(["#101010", "#101010"]);
+  expect(bandsForAspect(validImage, 1920 / 1080)).toEqual(["#1e2a3a", "#2a3a4a"]);
+  expect(bandsForAspect(validImage, 1440 / 900)).toEqual(["#303030", "#303030"]);
+  expect(bandsForAspect(validImage, 1000 / 1000)).toEqual(["#808080", "#808080"]);
+  expect(bandsForAspect(validImage, 390 / 844)).toEqual(["#ffffff", "#ffffff"]);
+
+  // A low window is wider than any kept shape; a very tall one narrower.
+  expect(bandsForAspect(validImage, 1440 / 300)).toEqual(["#101010", "#101010"]);
+  expect(bandsForAspect(validImage, 300 / 1440)).toEqual(["#ffffff", "#ffffff"]);
+});
+
 test("placeholders from before versions were numbered read as the first version", () => {
   const { version, ...unnumbered } = validImage;
 
-  expect(version).toBe(2);
+  expect(version).toBe(3);
   expect(readBackgroundImage(unnumbered)).toEqual({ ...validImage, version: 1 });
   expect(readBackgroundImage({ ...validImage, version: "2" }).version).toBe(1);
 });
