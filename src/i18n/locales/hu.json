@@ -58,6 +58,7 @@
   "addSite": "Webhely hozzáadása",
   "siteAddressError": "Adj meg egy webhelycímet, például example.com.",
   "siteDuplicateError": "Ez a webhely már ki van tűzve.",
+  "siteSizeError": "A kitűzött webhelyek túl nagyok lennének a szinkronizáláshoz. Használj rövidebb címet vagy nevet.",
   "siteNameFor": "{site} neve",
   "moveSiteUp": "{site} mozgatása feljebb",
   "moveSiteDown": "{site} mozgatása lejjebb",

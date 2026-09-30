@@ -58,6 +58,7 @@
   "addSite": "Adaugă site",
   "siteAddressError": "Introdu adresa unui site, de exemplu example.com.",
   "siteDuplicateError": "Acest site este deja fixat.",
+  "siteSizeError": "Site-urile fixate ar fi prea mari pentru sincronizare. Folosește o adresă sau un nume mai scurt.",
   "siteNameFor": "Nume pentru {site}",
   "moveSiteUp": "Mută {site} mai sus",
   "moveSiteDown": "Mută {site} mai jos",

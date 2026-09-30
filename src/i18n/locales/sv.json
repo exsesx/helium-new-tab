@@ -58,6 +58,7 @@
   "addSite": "Lägg till webbplats",
   "siteAddressError": "Ange en webbplatsadress, till exempel example.com.",
   "siteDuplicateError": "Webbplatsen är redan fäst.",
+  "siteSizeError": "De fästa webbplatserna skulle bli för stora för att synkroniseras. Använd en kortare adress eller ett kortare namn.",
   "siteNameFor": "Namn för {site}",
   "moveSiteUp": "Flytta upp {site}",
   "moveSiteDown": "Flytta ned {site}",

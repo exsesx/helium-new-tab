@@ -58,6 +58,7 @@
   "addSite": "添加网站",
   "siteAddressError": "请输入网站地址，例如 example.com。",
   "siteDuplicateError": "此网站已固定。",
+  "siteSizeError": "固定的网站将过大而无法同步。请使用更短的地址或名称。",
   "siteNameFor": "{site} 的名称",
   "moveSiteUp": "上移 {site}",
   "moveSiteDown": "下移 {site}",

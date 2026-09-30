@@ -58,6 +58,7 @@
   "addSite": "Додати сайт",
   "siteAddressError": "Введи адресу сайту, наприклад example.com.",
   "siteDuplicateError": "Цей сайт уже закріплено.",
+  "siteSizeError": "Закріплені сайти стануть завеликими для синхронізації. Використай коротшу адресу чи назву.",
   "siteNameFor": "Назва для {site}",
   "moveSiteUp": "Перемістити {site} вгору",
   "moveSiteDown": "Перемістити {site} вниз",

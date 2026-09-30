@@ -58,6 +58,7 @@
   "addSite": "Dodaj sajt",
   "siteAddressError": "Unesite adresu veb-sajta, npr. example.com.",
   "siteDuplicateError": "Ovaj sajt je već zakačen.",
+  "siteSizeError": "Zakačeni sajtovi bili bi preveliki za sinhronizaciju. Koristite kraću adresu ili naziv.",
   "siteNameFor": "Naziv za {site}",
   "moveSiteUp": "Pomeri {site} gore",
   "moveSiteDown": "Pomeri {site} dole",

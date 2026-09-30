@@ -58,6 +58,7 @@
   "addSite": "Website hinzufügen",
   "siteAddressError": "Gib eine Website-Adresse ein, z. B. example.com.",
   "siteDuplicateError": "Diese Website ist bereits angeheftet.",
+  "siteSizeError": "Deine angehefteten Websites wären zu groß für die Synchronisierung. Verwende eine kürzere Adresse oder einen kürzeren Namen.",
   "siteNameFor": "Name für {site}",
   "moveSiteUp": "{site} nach oben verschieben",
   "moveSiteDown": "{site} nach unten verschieben",

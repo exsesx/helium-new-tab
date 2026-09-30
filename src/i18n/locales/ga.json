@@ -58,6 +58,7 @@
   "addSite": "Cuir suíomh leis",
   "siteAddressError": "Cuir isteach seoladh suímh, mar shampla example.com.",
   "siteDuplicateError": "Tá an suíomh seo greamaithe cheana.",
+  "siteSizeError": "Bheadh na suíomhanna greamaithe rómhór le sioncronú. Úsáid seoladh nó ainm níos giorra.",
   "siteNameFor": "Ainm do {site}",
   "moveSiteUp": "Bog {site} suas",
   "moveSiteDown": "Bog {site} síos",

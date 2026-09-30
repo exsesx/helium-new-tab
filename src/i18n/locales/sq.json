@@ -58,6 +58,7 @@
   "addSite": "Shto sajt",
   "siteAddressError": "Shkruani adresën e një sajti, p.sh. example.com.",
   "siteDuplicateError": "Ky sajt është fiksuar tashmë.",
+  "siteSizeError": "Sajtet e fiksuara do të ishin shumë të mëdha për t’u sinkronizuar. Përdorni një adresë ose emër më të shkurtër.",
   "siteNameFor": "Emri për {site}",
   "moveSiteUp": "Zhvendos {site} lart",
   "moveSiteDown": "Zhvendos {site} poshtë",

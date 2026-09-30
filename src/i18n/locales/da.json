@@ -58,6 +58,7 @@
   "addSite": "Tilføj websted",
   "siteAddressError": "Angiv en webstedsadresse, f.eks. example.com.",
   "siteDuplicateError": "Webstedet er allerede fastgjort.",
+  "siteSizeError": "De fastgjorte websteder ville blive for store til at synkronisere. Brug en kortere adresse eller et kortere navn.",
   "siteNameFor": "Navn til {site}",
   "moveSiteUp": "Flyt {site} op",
   "moveSiteDown": "Flyt {site} ned",

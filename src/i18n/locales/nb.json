@@ -58,6 +58,7 @@
   "addSite": "Legg til nettsted",
   "siteAddressError": "Skriv inn en nettstedsadresse, for eksempel example.com.",
   "siteDuplicateError": "Dette nettstedet er allerede festet.",
+  "siteSizeError": "De festede nettstedene ville blitt for store til å synkronisere. Bruk en kortere adresse eller et kortere navn.",
   "siteNameFor": "Navn på {site}",
   "moveSiteUp": "Flytt {site} opp",
   "moveSiteDown": "Flytt {site} ned",

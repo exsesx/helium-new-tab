@@ -58,6 +58,7 @@
   "addSite": "Lisää sivusto",
   "siteAddressError": "Anna verkkosivuston osoite, esimerkiksi example.com.",
   "siteDuplicateError": "Tämä sivusto on jo kiinnitetty.",
+  "siteSizeError": "Kiinnitetyt sivustot olisivat liian suuria synkronoitaviksi. Käytä lyhyempää osoitetta tai nimeä.",
   "siteNameFor": "Sivuston {site} nimi",
   "moveSiteUp": "Siirrä {site} ylös",
   "moveSiteDown": "Siirrä {site} alas",

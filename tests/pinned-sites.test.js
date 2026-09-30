@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
 import { translate } from "../src/i18n/languages.js";
 import {
+  PINNED_SITES_BYTES,
   PINNED_SITES_LIMIT,
   readPinnedSites,
   SITE_TITLE_LIMIT,
@@ -10,6 +11,7 @@ import {
 import {
   addPinnedSite,
   movePinnedSite,
+  pinnedSitesBytes,
   removePinnedSite,
   renamePinnedSite,
 } from "../src/lib/pinned-sites.js";
@@ -61,8 +63,11 @@ test("stops adding at the limit", () => {
 test("renames, moves, and removes sites without changing the original list", () => {
   const sites = [site("a.com"), site("b.com"), site("c.com")];
 
-  expect(renamePinnedSite(sites, 1, "  Bee  ")[1]).toEqual({ url: "https://b.com/", title: "Bee" });
-  expect(renamePinnedSite(sites, 1, "   ")[1].title).toBe("b.com");
+  expect(renamePinnedSite(sites, 1, "  Bee  ").sites[1]).toEqual({
+    url: "https://b.com/",
+    title: "Bee",
+  });
+  expect(renamePinnedSite(sites, 1, "   ").sites[1].title).toBe("b.com");
 
   const moved = movePinnedSite(sites, 2, -1);
 
@@ -73,6 +78,81 @@ test("renames, moves, and removes sites without changing the original list", () 
   expect(removePinnedSite(sites, 0).map(({ title }) => title)).toEqual(["b.com", "c.com"]);
   expect(removePinnedSite([site("a.com")], 0)).toEqual([]);
   expect(sites.map(({ title }) => title)).toEqual(["a.com", "b.com", "c.com"]);
+});
+
+// A site whose address has a path of the given length.
+const longSite = (host, length) => ({ url: `https://${host}/${"a".repeat(length)}`, title: host });
+const longAddress = (host, length) => longSite(host, length).url;
+
+test("adding stops at the last address that fits in one synced item", () => {
+  const sites = ["a", "b", "c"].map((letter) => longSite(`${letter}.example.com`, 1800));
+  const shortest = pinnedSitesBytes([...sites, longSite("d.example.com", 0)]);
+  const room = PINNED_SITES_BYTES - shortest;
+
+  expect(addPinnedSite(sites, longAddress("d.example.com", room)).sites).toHaveLength(4);
+  expect(pinnedSitesBytes([...sites, longSite("d.example.com", room)])).toBe(PINNED_SITES_BYTES);
+  expect(addPinnedSite(sites, longAddress("d.example.com", room + 1))).toEqual({
+    error: "size",
+  });
+});
+
+test("the longest allowed addresses fill the synced item before the site limit", () => {
+  let sites = [];
+  let result;
+
+  for (let index = 0; index < PINNED_SITES_LIMIT; index++) {
+    result = addPinnedSite(sites, longAddress(`${index}.example.com`, 2000));
+
+    if (result.error) {
+      break;
+    }
+
+    sites = result.sites;
+  }
+
+  expect(result).toEqual({ error: "size" });
+  expect(sites).toHaveLength(3);
+  expect(pinnedSitesBytes(sites)).toBeLessThanOrEqual(PINNED_SITES_BYTES);
+});
+
+test("names count by their encoded bytes, not their characters", () => {
+  const others = ["b", "c", "d", "e"].map((letter) => longSite(`${letter}.example.com`, 1400));
+  const plainName = "n".repeat(SITE_TITLE_LIMIT);
+  const wideName = "🌍".repeat(SITE_TITLE_LIMIT);
+  const shortest = pinnedSitesBytes([
+    { ...longSite("a.example.com", 0), title: plainName },
+    ...others,
+  ]);
+  const sites = [longSite("a.example.com", PINNED_SITES_BYTES - shortest), ...others];
+
+  expect(renamePinnedSite(sites, 0, plainName).sites[0].title).toBe(plainName);
+  expect(renamePinnedSite(sites, 0, wideName)).toEqual({ error: "size" });
+  expect(renamePinnedSite(sites, 0, "Кириллица").sites[0].title).toBe("Кириллица");
+});
+
+test("addresses count in their percent-encoded form", () => {
+  const cyrillic = addPinnedSite([], `example.com/${"п".repeat(100)}`).sites;
+  const ascii = addPinnedSite([], `example.com/${"a".repeat(600)}`).sites;
+
+  expect(cyrillic[0].url).toStartWith("https://example.com/%D0%BF%D0%BF");
+  expect(pinnedSitesBytes(cyrillic)).toBe(pinnedSitesBytes(ascii));
+});
+
+test("a list already too large for sync can still take shorter names", () => {
+  const sites = ["a", "b", "c", "d"].map((letter) => longSite(`${letter}.example.com`, 2000));
+
+  expect(pinnedSitesBytes(sites)).toBeGreaterThan(PINNED_SITES_BYTES);
+  expect(renamePinnedSite(sites, 0, "A").sites[0].title).toBe("A");
+  expect(renamePinnedSite(sites, 0, "n".repeat(SITE_TITLE_LIMIT))).toEqual({ error: "size" });
+});
+
+test("stored lists are read whole even when they are too large for sync", () => {
+  const sites = Array.from({ length: PINNED_SITES_LIMIT }, (_, index) =>
+    longSite(`${index}.example.com`, 2000),
+  );
+
+  expect(pinnedSitesBytes(sites)).toBeGreaterThan(PINNED_SITES_BYTES);
+  expect(readPinnedSites({ sites }).sites).toEqual(sites);
 });
 
 test("reads stored sites defensively", () => {

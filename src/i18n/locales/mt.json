@@ -58,6 +58,7 @@
   "addSite": "Żid sit",
   "siteAddressError": "Daħħal indirizz ta’ sit web, bħal example.com.",
   "siteDuplicateError": "Dan is-sit diġà ppinjat.",
+  "siteSizeError": "Is-siti ppinjati jkunu kbar wisq biex jiġu sinkronizzati. Uża indirizz jew isem iqsar.",
   "siteNameFor": "Isem għal {site}",
   "moveSiteUp": "Ċaqlaq {site} ’il fuq",
   "moveSiteDown": "Ċaqlaq {site} ’l isfel",

@@ -58,6 +58,7 @@
   "addSite": "Website toevoegen",
   "siteAddressError": "Voer een websiteadres in, zoals example.com.",
   "siteDuplicateError": "Deze website is al vastgezet.",
+  "siteSizeError": "Je vastgezette websites zouden te groot worden om te synchroniseren. Gebruik een korter adres of een kortere naam.",
   "siteNameFor": "Naam voor {site}",
   "moveSiteUp": "{site} omhoog verplaatsen",
   "moveSiteDown": "{site} omlaag verplaatsen",

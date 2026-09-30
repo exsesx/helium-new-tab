@@ -58,6 +58,7 @@
   "addSite": "Pridať web",
   "siteAddressError": "Zadajte adresu webu, napríklad example.com.",
   "siteDuplicateError": "Tento web je už pripnutý.",
+  "siteSizeError": "Pripnuté weby by boli príliš veľké na synchronizáciu. Použite kratšiu adresu alebo názov.",
   "siteNameFor": "Názov pre {site}",
   "moveSiteUp": "Posunúť {site} nahor",
   "moveSiteDown": "Posunúť {site} nadol",

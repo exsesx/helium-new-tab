@@ -58,6 +58,7 @@
   "addSite": "Aggiungi sito",
   "siteAddressError": "Inserisci l’indirizzo di un sito web, ad esempio example.com.",
   "siteDuplicateError": "Questo sito è già fissato.",
+  "siteSizeError": "I siti fissati sarebbero troppo grandi da sincronizzare. Usa un indirizzo o un nome più breve.",
   "siteNameFor": "Nome per {site}",
   "moveSiteUp": "Sposta {site} su",
   "moveSiteDown": "Sposta {site} giù",

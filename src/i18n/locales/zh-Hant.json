@@ -58,6 +58,7 @@
   "addSite": "新增網站",
   "siteAddressError": "請輸入網站網址，例如 example.com。",
   "siteDuplicateError": "此網站已釘選。",
+  "siteSizeError": "釘選的網站將過大而無法同步。請使用較短的網址或名稱。",
   "siteNameFor": "{site} 的名稱",
   "moveSiteUp": "上移 {site}",
   "moveSiteDown": "下移 {site}",

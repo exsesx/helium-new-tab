@@ -58,6 +58,7 @@
   "addSite": "Ajouter le site",
   "siteAddressError": "Saisissez l’adresse d’un site web, par exemple example.com.",
   "siteDuplicateError": "Ce site est déjà épinglé.",
+  "siteSizeError": "Les sites épinglés seraient trop volumineux pour être synchronisés. Utilisez une adresse ou un nom plus court.",
   "siteNameFor": "Nom de {site}",
   "moveSiteUp": "Monter {site}",
   "moveSiteDown": "Descendre {site}",

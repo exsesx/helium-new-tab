@@ -58,6 +58,7 @@
   "addSite": "Bæta við síðu",
   "siteAddressError": "Sláðu inn veffang, til dæmis example.com.",
   "siteDuplicateError": "Þessi síða er þegar fest.",
+  "siteSizeError": "Festar síður yrðu of stórar til að samstilla. Notaðu styttra veffang eða heiti.",
   "siteNameFor": "Heiti fyrir {site}",
   "moveSiteUp": "Færa {site} upp",
   "moveSiteDown": "Færa {site} niður",

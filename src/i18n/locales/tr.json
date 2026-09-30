@@ -58,6 +58,7 @@
   "addSite": "Site ekle",
   "siteAddressError": "example.com gibi bir web sitesi adresi girin.",
   "siteDuplicateError": "Bu site zaten sabitlenmiş.",
+  "siteSizeError": "Sabitlenmiş siteler eşitlenemeyecek kadar büyük olur. Daha kısa bir adres veya ad kullanın.",
   "siteNameFor": "{site} için ad",
   "moveSiteUp": "{site} sitesini yukarı taşı",
   "moveSiteDown": "{site} sitesini aşağı taşı",

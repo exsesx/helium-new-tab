@@ -58,6 +58,7 @@
   "addSite": "사이트 추가",
   "siteAddressError": "example.com과 같은 웹사이트 주소를 입력하세요.",
   "siteDuplicateError": "이미 고정된 사이트입니다.",
+  "siteSizeError": "고정된 사이트가 너무 커서 동기화할 수 없게 됩니다. 더 짧은 주소나 이름을 사용하세요.",
   "siteNameFor": "{site} 이름",
   "moveSiteUp": "{site} 위로 이동",
   "moveSiteDown": "{site} 아래로 이동",

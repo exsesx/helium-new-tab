@@ -58,6 +58,7 @@
   "addSite": "Pridėti svetainę",
   "siteAddressError": "Įveskite svetainės adresą, pavyzdžiui, example.com.",
   "siteDuplicateError": "Ši svetainė jau prisegta.",
+  "siteSizeError": "Prisegtų svetainių sąrašas būtų per didelis sinchronizuoti. Naudokite trumpesnį adresą arba pavadinimą.",
   "siteNameFor": "{site} pavadinimas",
   "moveSiteUp": "Perkelti {site} aukštyn",
   "moveSiteDown": "Perkelti {site} žemyn",

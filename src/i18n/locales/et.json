@@ -58,6 +58,7 @@
   "addSite": "Lisa sait",
   "siteAddressError": "Sisesta veebisaidi aadress, näiteks example.com.",
   "siteDuplicateError": "See sait on juba kinnitatud.",
+  "siteSizeError": "Kinnitatud saidid oleksid sünkroonimiseks liiga suured. Kasuta lühemat aadressi või nime.",
   "siteNameFor": "Saidi {site} nimi",
   "moveSiteUp": "Liiguta {site} üles",
   "moveSiteDown": "Liiguta {site} alla",

@@ -58,6 +58,7 @@
   "addSite": "Add site",
   "siteAddressError": "Enter a website address, such as example.com.",
   "siteDuplicateError": "This site is already pinned.",
+  "siteSizeError": "Your pinned sites would be too large to sync. Use a shorter address or name.",
   "siteNameFor": "Name for {site}",
   "moveSiteUp": "Move {site} up",
   "moveSiteDown": "Move {site} down",

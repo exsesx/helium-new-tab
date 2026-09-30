@@ -782,6 +782,45 @@ test("adding stops at eight pinned sites", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Add site" })).toBeEnabled();
 });
 
+test("adding and renaming stop when the list would be too large to sync", async ({ page }) => {
+  // Four long addresses already take more than one synced item holds.
+  const sites = ["a", "b", "c", "d"].map((letter) => ({
+    url: `https://${letter}.example.com/${"a".repeat(1900)}`,
+    title: `${letter}.example.com`,
+  }));
+  const tooLarge = "Your pinned sites would be too large to sync. Use a shorter address or name.";
+
+  await savePinnedSites(page, sites);
+  await page.reload();
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  const address = page.getByLabel("Site address");
+  await address.fill("e.example.com");
+  await address.press("Enter");
+
+  await expect(page.getByText(tooLarge)).toBeVisible();
+  await expect(address).toHaveAttribute("aria-invalid", "true");
+  await expect(pinnedLinks(page)).toHaveCount(4);
+
+  await address.fill("");
+
+  await expect(page.getByText(tooLarge)).toBeHidden();
+
+  // A longer name is refused and the saved one stays; a shorter one still fits.
+  const name = page.getByLabel("Name for a.example.com");
+  await name.fill("A much longer name for this site");
+  await name.press("Enter");
+
+  await expect(page.getByText(tooLarge)).toBeVisible();
+  await expect(name).toHaveValue("a.example.com");
+  await expect(address).not.toHaveAttribute("aria-invalid");
+
+  await name.fill("A");
+  await name.press("Enter");
+
+  await expect(pinnedLinks(page).first()).toHaveAccessibleName("A");
+});
+
 test("a plain click on a pinned site opens it in this tab", async ({ page }) => {
   await savePinnedSites(page, [{ url: "https://example.com/", title: "Example" }]);
   await page.reload();

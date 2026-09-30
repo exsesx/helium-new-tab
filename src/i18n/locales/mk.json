@@ -58,6 +58,7 @@
   "addSite": "Додај сајт",
   "siteAddressError": "Внесете адреса на веб-сајт, на пример example.com.",
   "siteDuplicateError": "Овој сајт е веќе закачен.",
+  "siteSizeError": "Закачените сајтови би биле преголеми за синхронизација. Користете пократка адреса или име.",
   "siteNameFor": "Име за {site}",
   "moveSiteUp": "Премести го {site} нагоре",
   "moveSiteDown": "Премести го {site} надолу",

@@ -58,6 +58,7 @@
   "addSite": "Dodaj stranicu",
   "siteAddressError": "Unesite adresu web-stranice, npr. example.com.",
   "siteDuplicateError": "Ova stranica je već prikačena.",
+  "siteSizeError": "Prikačene stranice bile bi prevelike za sinhronizaciju. Koristite kraću adresu ili naziv.",
   "siteNameFor": "Naziv za {site}",
   "moveSiteUp": "Pomjeri {site} gore",
   "moveSiteDown": "Pomjeri {site} dolje",

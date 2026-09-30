@@ -58,6 +58,7 @@
   "addSite": "Dodaj witrynę",
   "siteAddressError": "Wpisz adres witryny, np. example.com.",
   "siteDuplicateError": "Ta witryna jest już przypięta.",
+  "siteSizeError": "Przypięte witryny byłyby za duże do synchronizacji. Użyj krótszego adresu lub nazwy.",
   "siteNameFor": "Nazwa dla {site}",
   "moveSiteUp": "Przenieś {site} w górę",
   "moveSiteDown": "Przenieś {site} w dół",

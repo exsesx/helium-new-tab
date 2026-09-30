@@ -58,6 +58,7 @@
   "addSite": "Pievienot vietni",
   "siteAddressError": "Ievadiet vietnes adresi, piemēram, example.com.",
   "siteDuplicateError": "Šī vietne jau ir piesprausta.",
+  "siteSizeError": "Piespraustās vietnes būtu pārāk lielas sinhronizēšanai. Izmantojiet īsāku adresi vai nosaukumu.",
   "siteNameFor": "{site} nosaukums",
   "moveSiteUp": "Pārvietot {site} uz augšu",
   "moveSiteDown": "Pārvietot {site} uz leju",
