@@ -149,10 +149,12 @@ test("characters count by the bytes Chromium writes for them", () => {
   const plain = bytes("a");
 
   // Chromium escapes < and the line and paragraph separators as six-byte \uXXXX sequences.
-  // It leaves > alone, but the estimate counts it the same way to stay on the safe side.
-  for (const escaped of ["<", ">", "\u2028", "\u2029"]) {
+  for (const escaped of ["<", "\u2028", "\u2029"]) {
     expect(bytes(escaped) - plain).toBe(5);
   }
+
+  // It writes > as it is, like JSON.stringify.
+  expect(bytes(">") - plain).toBe(0);
 
   expect(bytes("é") - plain).toBe(1);
   expect(bytes("日") - plain).toBe(2);

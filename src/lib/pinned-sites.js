@@ -10,11 +10,10 @@ import {
 const encoder = new TextEncoder();
 // The widest change stamp readPinnedSites keeps, so a list that fits now still fits once stamped.
 const WIDEST_STAMP = { changedAt: Number.MAX_SAFE_INTEGER, changedBy: "x".repeat(64) };
-// Chromium's JSON writer, which measures sync items, escapes these where JSON.stringify does not.
-// It leaves > as it is; counting > as escaped too only errs toward refusing a change.
+// Chromium's JSON writer, which measures sync items, escapes these where JSON.stringify does not
+// (base/json/string_escape.cc, as of Chromium 154).
 const CHROMIUM_ESCAPES = {
   "<": "\\u003C",
-  ">": "\\u003E",
   "\u2028": "\\u2028",
   "\u2029": "\\u2029",
 };
@@ -25,7 +24,7 @@ const DOUBLE_SUFFIX = ".0";
 // writes, serialized the way Chromium does it.
 export function pinnedSitesBytes(sites) {
   const json = JSON.stringify({ sites, ...WIDEST_STAMP }).replace(
-    /[<>\u2028\u2029]/g,
+    /[<\u2028\u2029]/g,
     (char) => CHROMIUM_ESCAPES[char],
   );
 
