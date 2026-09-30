@@ -7,14 +7,13 @@ import {
   siteHost,
   siteUrl,
 } from "../src/lib/model.js";
-import { pastels } from "../src/lib/palette.js";
 import {
   addPinnedSite,
   movePinnedSite,
   removePinnedSite,
   renamePinnedSite,
 } from "../src/lib/pinned-sites.js";
-import { siteLetter, siteTone } from "../src/lib/site-tiles.js";
+import { pastels, siteLetter, siteTone } from "../src/lib/site-tiles.js";
 
 const site = (host, title = host) => ({ url: `https://${host}/`, title });
 

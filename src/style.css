@@ -392,7 +392,7 @@ h1 {
   color: var(--text);
 }
 
-/* Letter tiles take their site's pastel; see site-tiles.js and palette.js. Hover shifts a
+/* Letter tiles take their site's pastel; see site-tiles.js. Hover shifts a
    tile's own surface, darker on light pages and lighter on dark ones, so neither state ever
    matches the page. */
 .site-icon {
