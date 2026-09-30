@@ -1400,6 +1400,159 @@ test("an unsupported file is refused with a message", async ({ page }) => {
   await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
 });
 
+// Whether IndexedDB holds a full image, even before anything created the database.
+const hasFullImage = (page) =>
+  page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        const request = indexedDB.open("helium-tab", 1);
+
+        request.onupgradeneeded = () => request.result.createObjectStore("background");
+        request.onsuccess = () => {
+          const get = request.result
+            .transaction("background")
+            .objectStore("background")
+            .get("image");
+
+          get.onsuccess = () => {
+            request.result.close();
+            resolve(Boolean(get.result));
+          };
+        };
+      }),
+  );
+
+// Holds the next imports' decoding until the test releases them, one at a time.
+async function holdImports(page) {
+  await page.addInitScript(() => {
+    const decode = window.createImageBitmap.bind(window);
+
+    window.heldImports = 0;
+    window.releases = [];
+    window.createImageBitmap = (source, ...rest) => {
+      if (!(source instanceof File) || window.heldImports === 0) {
+        return decode(source, ...rest);
+      }
+
+      window.heldImports--;
+
+      return new Promise((resolve) => window.releases.push(() => resolve(decode(source, ...rest))));
+    };
+  });
+}
+
+// Chooses a one-color image file, holding its decoding when asked.
+async function chooseHeldImage(page, color, { hold = true } = {}) {
+  const dataUrl = await page.evaluate((color) => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = 64;
+    canvas.height = 40;
+    context.fillStyle = color;
+    context.fillRect(0, 0, 64, 40);
+
+    return canvas.toDataURL("image/png");
+  }, color);
+
+  await page.evaluate((hold) => (window.heldImports = hold ? 1 : 0), hold);
+  await page.locator("#background-file").setInputFiles({
+    name: `${color.slice(1)}.png`,
+    mimeType: "image/png",
+    buffer: Buffer.from(dataUrl.split(",")[1], "base64"),
+  });
+
+  if (hold) {
+    await page.waitForFunction(() => window.releases.length > 0);
+  }
+}
+
+// Lets the oldest held import finish, and gives it time to save if it still would.
+async function releaseImport(page) {
+  await page.evaluate(() => window.releases.shift()());
+  await page.waitForTimeout(500);
+}
+
+test("a pending import does not override Default or Color chosen after it", async ({ page }) => {
+  await holdImports(page);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  for (const choose of [
+    () => page.getByRole("radio", { name: "Default" }).check(),
+    () => page.getByRole("radio", { name: "Color" }).check(),
+  ]) {
+    await page.getByRole("radio", { name: "Image" }).check();
+    await chooseHeldImage(page, "#204060");
+    await choose();
+    await releaseImport(page);
+
+    await expect(page.getByRole("radio", { name: "Image" })).not.toBeChecked();
+    await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+    await expect(page.locator("label.image-button")).not.toHaveAttribute("aria-busy");
+    expect(await storedPlaceholder(page)).toBeNull();
+    expect(await hasFullImage(page)).toBe(false);
+  }
+
+  // The last choice was Color.
+  await expect(page.getByRole("radio", { name: "Color" })).toBeChecked();
+  await expect(page.locator("html")).toHaveAttribute("data-background", "color");
+});
+
+test("a pending import does not override Remove chosen after it", async ({ page }) => {
+  await holdImports(page);
+  await saveBackgroundImage(page, "#1d3b6e");
+  await page.reload();
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  await chooseHeldImage(page, "#204060");
+  await page.getByRole("button", { name: "Remove image" }).click();
+  await releaseImport(page);
+
+  await expect(page.getByRole("radio", { name: "Default" })).toBeChecked();
+  await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+  expect(await storedPlaceholder(page)).toBeNull();
+  expect(await hasFullImage(page)).toBe(false);
+});
+
+test("a second import wins over a first one that finishes later", async ({ page }) => {
+  await holdImports(page);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+
+  await chooseHeldImage(page, "#204060");
+  await chooseHeldImage(page, "#c0a040", { hold: false });
+  await expect.poll(async () => (await storedPlaceholder(page))?.averageColor).toBe("#c0a040");
+  await releaseImport(page);
+
+  expect((await storedPlaceholder(page)).averageColor).toBe("#c0a040");
+  await expect(page.getByRole("radio", { name: "Image" })).toBeChecked();
+  await expect(page.locator("label.image-button")).not.toHaveAttribute("aria-busy");
+});
+
+test("a pending import does not override a removal in another tab", async ({ context }) => {
+  const page = await context.newPage();
+  const other = await context.newPage();
+
+  await holdImports(page);
+  await saveBackgroundImage(page, "#1d3b6e");
+  await page.reload();
+  await other.goto("/");
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  await chooseHeldImage(page, "#204060");
+  await other.getByRole("button", { name: "Customize" }).click();
+  await other.getByRole("button", { name: "Remove image" }).click();
+  await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+  await releaseImport(page);
+
+  await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+  await expect(page.getByRole("radio", { name: "Default" })).toBeChecked();
+  expect(await storedPlaceholder(page)).toBeNull();
+  expect(await hasFullImage(page)).toBe(false);
+});
+
 test("Remove restores the default background and clears both stores", async ({ page }) => {
   await saveBackgroundImage(page);
   await page.reload();

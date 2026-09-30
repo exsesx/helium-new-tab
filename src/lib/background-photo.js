@@ -4,6 +4,7 @@
 import {
   applyBackgroundImage,
   BACKGROUND_IMAGE_KEY,
+  loadBackgroundImage,
   PLACEHOLDER_VERSION,
   renditionSize,
 } from "./background.js";
@@ -221,6 +222,17 @@ export function removeBackgroundImage() {
   void paintBackgroundPhoto(undefined);
 
   return deleteStoredImage().catch(() => {});
+}
+
+// Removes the image chosen at updatedAt, unless another one replaced it meanwhile.
+export function withdrawBackgroundImage(updatedAt) {
+  const stored = loadBackgroundImage();
+
+  if (stored?.updatedAt !== updatedAt) {
+    return Promise.resolve();
+  }
+
+  return removeBackgroundImage();
 }
 
 // Writes an updated placeholder, unless another choice replaced the image meanwhile.

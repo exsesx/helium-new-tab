@@ -5,8 +5,10 @@ import {
   removeBackgroundImage,
   saveBackgroundImage,
   screenPixels,
+  withdrawBackgroundImage,
 } from "../lib/background-photo.js";
 import { BACKGROUND_COLORS, loadBackgroundImage } from "../lib/background.js";
+import { createChoices } from "./choices.js";
 
 const DARK_BACKGROUNDS = ["blend", "helium"];
 
@@ -28,6 +30,9 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
   const preview = find("background-preview");
   const removeButton = find("remove-background-image");
   const message = find("background-image-message");
+  const imageButton = fileInput.closest(".image-button");
+  // Every mode, color, Remove, import, and change from elsewhere is a new choice; see choices.js.
+  const choices = createChoices();
 
   // This device's image placeholder, while the panel is open.
   let image;
@@ -62,6 +67,21 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
     return preferences.background === "color" ? "color" : "default";
   }
 
+  function setBusy(busy) {
+    if (busy) {
+      imageButton.setAttribute("aria-busy", "true");
+    } else {
+      imageButton.removeAttribute("aria-busy");
+    }
+  }
+
+  // Starts a choice. A busy import it supersedes no longer owns the button's busy state.
+  function beginChoice() {
+    setBusy(false);
+
+    return choices.begin();
+  }
+
   function showMessage(key) {
     if (key) {
       message.dataset.i18n = key;
@@ -88,11 +108,25 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
     showMessage();
   }
 
-  async function keepImage(result) {
+  // Saves an imported or restored image, unless a newer choice came first. One made while it was
+  // being saved takes it back out, unless yet another image replaced it meanwhile.
+  async function keepImage(result, token) {
+    if (!choices.isCurrent(token)) {
+      return;
+    }
+
     try {
       await saveBackgroundImage(result);
     } catch {
-      showMessage(IMAGE_ERRORS.storage);
+      if (choices.isCurrent(token)) {
+        showMessage(IMAGE_ERRORS.storage);
+      }
+
+      return;
+    }
+
+    if (!choices.isCurrent(token)) {
+      await withdrawBackgroundImage(result.placeholder.updatedAt);
 
       return;
     }
@@ -163,6 +197,8 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
   }
 
   async function chooseMode(mode) {
+    const token = beginChoice();
+
     switch (mode) {
       case "default":
         replaceImage();
@@ -177,8 +213,12 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
       case "image": {
         const replaced = await replacedImage;
 
+        if (!choices.isCurrent(token)) {
+          break;
+        }
+
         if (replaced) {
-          await keepImage(replaced);
+          await keepImage(replaced, token);
         } else {
           choosingImage = true;
         }
@@ -189,6 +229,7 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
   }
 
   function chooseColor(color, settled = true) {
+    beginChoice();
     replaceImage();
     onChange("backgroundColor", color, settled);
   }
@@ -201,6 +242,7 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
   }
 
   find("background").addEventListener("change", async (event) => {
+    beginChoice();
     await onChange("background", event.target.value);
     onUpdate();
   });
@@ -263,23 +305,32 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
       return;
     }
 
+    const token = beginChoice();
+
     showMessage();
-    fileInput.closest(".image-button").setAttribute("aria-busy", "true");
+    setBusy(true);
 
     try {
-      await keepImage(await importBackgroundImage(file, undefined, screenPixels()));
+      // A newer choice made while the file decodes discards the result without saving it.
+      await keepImage(await importBackgroundImage(file, undefined, screenPixels()), token);
     } catch (error) {
       const code = error?.code;
 
-      showMessage(Object.hasOwn(IMAGE_ERRORS, code) ? IMAGE_ERRORS[code] : "imageReadError");
-    } finally {
-      fileInput.closest(".image-button").removeAttribute("aria-busy");
+      if (choices.isCurrent(token)) {
+        showMessage(Object.hasOwn(IMAGE_ERRORS, code) ? IMAGE_ERRORS[code] : "imageReadError");
+      }
     }
 
+    if (!choices.isCurrent(token)) {
+      return;
+    }
+
+    setBusy(false);
     onUpdate();
   });
 
   removeButton.addEventListener("click", () => {
+    beginChoice();
     void removeBackgroundImage();
     image = undefined;
     replacedImage = undefined;
@@ -294,13 +345,21 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
   return {
     sync,
 
-    // Reads this device's image again, such as when another tab changed it.
+    // Reads this device's image again, such as when another tab changed it. A different image is
+    // a newer choice than any still pending here.
     load() {
-      image = loadBackgroundImage();
+      const stored = loadBackgroundImage();
+
+      if (stored?.updatedAt !== image?.updatedAt) {
+        beginChoice();
+      }
+
+      image = stored;
     },
 
     // Choices that wait for a file last only while the panel is open.
     reset() {
+      beginChoice();
       choosingImage = false;
       replacedImage = undefined;
       showMessage();
