@@ -110,6 +110,9 @@ export function readPreferences(value) {
 
 // Pinned sites keep one row tidy and their synced item small.
 export const PINNED_SITES_LIMIT = 8;
+// chrome.storage.sync takes 8,192 bytes per item, its key plus its JSON value. pinnedSitesBytes
+// follows Chromium's serializer; the margin covers anything that estimate still misses.
+export const PINNED_SITES_BYTES = 7680;
 export const SITE_TITLE_LIMIT = 40;
 export const SITE_URL_LIMIT = 2048;
 

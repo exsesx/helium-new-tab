@@ -51,9 +51,20 @@ export async function readSynced(key = PREFERENCES_KEY) {
   }
 }
 
+// Reads a synced item that can arrive late, such as at startup. `changes` counts this tab's
+// changes to the item: its own edits and those it takes from other tabs and other devices. When
+// that count moves while the read is pending, the snapshot is older than what the tab shows, so
+// it is stale.
+export async function readSyncedSnapshot(changes, key = PREFERENCES_KEY) {
+  const before = changes();
+  const value = await readSynced(key);
+
+  return { value, stale: changes() !== before };
+}
+
 // Debounces writes of the current value; flush() sends a pending write at once so closing the
-// tab cannot drop it.
-export function createSyncWriter(getValue, key = PREFERENCES_KEY) {
+// tab cannot drop it. onWrite learns whether each write reached sync.
+export function createSyncWriter(getValue, key = PREFERENCES_KEY, onWrite = () => {}) {
   let timer;
   let changed = false;
 
@@ -72,9 +83,12 @@ export function createSyncWriter(getValue, key = PREFERENCES_KEY) {
       return;
     }
 
-    area.set({ [key]: shared(getValue()) }).catch(() => {
-      // Local storage still has the change; sync retries on the next save.
-    });
+    // A rejected write, such as one over the item quota, leaves the change in local storage only;
+    // sync retries on the next save.
+    area.set({ [key]: shared(getValue()) }).then(
+      () => onWrite(true),
+      () => onWrite(false),
+    );
   }
 
   function write() {

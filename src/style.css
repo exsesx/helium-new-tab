@@ -614,6 +614,18 @@ h2 {
   height: 18px;
 }
 
+/* Says when a change is saved on this device but sync has not taken it. */
+.sync-status {
+  margin: -4px 0 14px;
+  color: var(--error);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sync-status:empty {
+  display: none;
+}
+
 .privacy-note {
   margin-bottom: 0;
   padding-top: 19px;

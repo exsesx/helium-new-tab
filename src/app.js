@@ -21,7 +21,7 @@ import {
   deviceId,
   mergeSynced,
   onSyncedChange,
-  readSynced,
+  readSyncedSnapshot,
 } from "./lib/sync.js";
 import { applyAppearance, loadPinnedSites } from "./lib/preferences.js";
 
@@ -44,10 +44,24 @@ const searchForm = createSearchForm({
   onError: () => notify(translator.text("searchError")),
 });
 const device = deviceId();
-const syncWriter = createSyncWriter(() => preferences);
+// Synced items whose latest write sync rejected, so their changes are only on this device.
+const unsyncedItems = new Set();
+const syncWriter = createSyncWriter(
+  () => preferences,
+  PREFERENCES_KEY,
+  (synced) => reportSync(PREFERENCES_KEY, synced),
+);
 const changeOrder = createChangeOrder(device, preferences);
-const sitesWriter = createSyncWriter(() => pinned, PINNED_SITES_KEY);
+const sitesWriter = createSyncWriter(
+  () => pinned,
+  PINNED_SITES_KEY,
+  (synced) => reportSync(PINNED_SITES_KEY, synced),
+);
 const sitesOrder = createChangeOrder(device, pinned);
+// Changes this tab made, and current copies it received from another tab or device, even
+// copies of what it already shows; see readSyncedSnapshot.
+let preferenceChanges = 0;
+let siteChanges = 0;
 let activeLocale;
 let toastTimer;
 
@@ -76,6 +90,17 @@ function save(key) {
   if (!key.endsWith("CustomFont")) {
     syncWriter.flush();
   }
+}
+
+// Customize says when a change is saved here but has not synced, and clears it once one does.
+function reportSync(key, synced) {
+  if (synced) {
+    unsyncedItems.delete(key);
+  } else {
+    unsyncedItems.add(key);
+  }
+
+  settings?.showSyncStatus();
 }
 
 window.addEventListener("pagehide", syncWriter.flush);
@@ -108,6 +133,7 @@ $("open-settings").addEventListener("click", async () => {
       settings = createSettings({
         getPreferences: () => preferences,
         getPinnedSites: () => pinned.sites,
+        hasUnsyncedChanges: () => unsyncedItems.size > 0,
         translator,
         languages,
         onChange(key, value) {
@@ -133,6 +159,7 @@ $("open-settings").addEventListener("click", async () => {
 function updatePreference(key, value) {
   preferences[key] = value;
   changeOrder.stamp(preferences);
+  preferenceChanges++;
 
   if (key === "language") {
     void updateLanguage();
@@ -171,6 +198,9 @@ function applyExternal(value) {
   if (!changeOrder.isCurrent(value)) {
     return false;
   }
+
+  // A current copy is at least as new as a pending startup read, even when it changes nothing.
+  preferenceChanges++;
 
   const next = readPreferences(value);
 
@@ -213,11 +243,12 @@ onSyncedChange((value) => {
   }
 });
 
-// Synced preferences win once they exist; otherwise this device seeds them.
-void readSynced().then((value) => {
+// Synced preferences win once they exist; otherwise this device seeds them. A snapshot that
+// arrives after a change in this tab is older than that change, so the tab's value seeds it.
+void readSyncedSnapshot(() => preferenceChanges).then(({ value, stale }) => {
   const merged = mergeSynced(value, preferences);
 
-  if (!merged) {
+  if (stale || !merged) {
     syncWriter.write();
     syncWriter.flush();
   } else if (applyExternal(merged)) {
@@ -256,6 +287,7 @@ if (showsSiteFavicons()) {
 function updatePinnedSites(sites) {
   pinned = { ...pinned, sites };
   sitesOrder.stamp(pinned);
+  siteChanges++;
   renderSites();
 
   saveLocal(PINNED_SITES_KEY, pinned);
@@ -268,6 +300,9 @@ function applyExternalSites(value) {
   if (!sitesOrder.isCurrent(value)) {
     return false;
   }
+
+  // A current copy is at least as new as a pending startup read, even when it changes nothing.
+  siteChanges++;
 
   const next = readPinnedSites(value);
 
@@ -301,15 +336,17 @@ onSyncedChange((value) => {
 }, PINNED_SITES_KEY);
 
 // Synced sites win once they exist. Only a list with sites seeds them, so a new device cannot
-// replace another device's list with an empty one before sync delivers it.
-void readSynced(PINNED_SITES_KEY).then((value) => {
-  if (value && typeof value === "object") {
-    if (applyExternalSites(value)) {
-      saveLocal(PINNED_SITES_KEY, pinned);
-    }
-  } else if (pinned.sites.length > 0) {
+// replace another device's list with an empty one before sync delivers it. A snapshot that
+// arrives after a change in this tab is older than that change, so the tab's list seeds it.
+void readSyncedSnapshot(() => siteChanges, PINNED_SITES_KEY).then(({ value, stale }) => {
+  const hasSyncedSites = Boolean(value) && typeof value === "object";
+  const seedsSync = stale || (!hasSyncedSites && pinned.sites.length > 0);
+
+  if (seedsSync) {
     sitesWriter.write();
     sitesWriter.flush();
+  } else if (hasSyncedSites && applyExternalSites(value)) {
+    saveLocal(PINNED_SITES_KEY, pinned);
   }
 });
 

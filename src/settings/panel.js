@@ -10,11 +10,12 @@ import { serviceIconsSupported } from "../lib/service-icons.js";
 import { showSiteFavicons } from "../lib/site-favicons.js";
 import { createSiteIcon } from "../lib/site-tiles.js";
 
-// Messages for the reasons addPinnedSite gives.
+// Messages for the reasons addPinnedSite and renamePinnedSite give.
 const SITE_ERRORS = {
   address: "siteAddressError",
   duplicate: "siteDuplicateError",
   full: "pinnedSitesFull",
+  size: "siteSizeError",
 };
 
 const SITE_MOVES = { up: -1, down: 1 };
@@ -31,6 +32,7 @@ const SITE_FOCUS_ORDER = {
 export function createSettings({
   getPreferences,
   getPinnedSites,
+  hasUnsyncedChanges,
   onChange,
   onPinnedSitesChange,
   translator,
@@ -157,12 +159,13 @@ export function createSettings({
     return item;
   }
 
-  function showSiteError(reason) {
+  // A refused rename keeps the saved name, so only the address field can be left invalid.
+  function showSiteError(reason, invalidField = siteAddress) {
     const key = SITE_ERRORS[reason];
 
     siteError.dataset.i18n = key;
     siteError.textContent = translator.text(key);
-    siteAddress.setAttribute("aria-invalid", "true");
+    invalidField?.setAttribute("aria-invalid", "true");
   }
 
   function clearSiteError() {
@@ -213,8 +216,16 @@ export function createSettings({
   function renameSite(input) {
     const index = siteIndex(input);
     const sites = getPinnedSites();
-    const next = renamePinnedSite(sites, index, input.value);
+    const result = renamePinnedSite(sites, index, input.value);
 
+    if (result.error) {
+      input.value = sites[index].title;
+      showSiteError(result.error, null);
+
+      return;
+    }
+
+    const next = result.sites;
     input.value = next[index].title;
 
     if (next[index].title === sites[index].title) {
@@ -290,6 +301,25 @@ export function createSettings({
 
   siteAddress.addEventListener("input", clearSiteError);
 
+  // Changes are saved on this device first; the status says when sync has not taken them yet.
+  function showSyncStatus() {
+    const status = find("sync-status");
+    const unsynced = hasUnsyncedChanges();
+
+    // Leave the live region alone unless its message comes or goes, so it is announced once.
+    if (unsynced === Boolean(status.dataset.i18n)) {
+      return;
+    }
+
+    if (unsynced) {
+      status.dataset.i18n = "syncError";
+      status.textContent = translator.text("syncError");
+    } else {
+      delete status.dataset.i18n;
+      status.textContent = "";
+    }
+  }
+
   function sync() {
     translator.apply(dialog);
 
@@ -316,6 +346,7 @@ export function createSettings({
     }
 
     renderSiteList();
+    showSyncStatus();
   }
 
   for (const [id, key] of fields) {
@@ -380,5 +411,7 @@ export function createSettings({
         sync();
       }
     },
+
+    showSyncStatus,
   };
 }

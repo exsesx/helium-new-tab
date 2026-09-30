@@ -1,8 +1,9 @@
 import { cp, mkdir, rm } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import { languages } from "../src/i18n/languages.js";
 import { compactCatalog } from "../src/lib/bangs.js";
 
-export const root = new URL("../", import.meta.url).pathname;
+export const root = fileURLToPath(new URL("../", import.meta.url));
 
 export async function build() {
   const english = await Bun.file(`${root}src/i18n/locales/en.json`).json();

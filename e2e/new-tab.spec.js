@@ -17,6 +17,70 @@ async function savePreferences(page, preferences) {
   );
 }
 
+// A slow chrome.storage.sync for a page or a whole context. Each read takes its snapshot when it
+// starts, like the real API, and answers once the page calls releaseSyncReads(). Writes over the
+// per-item quota are rejected, and so is every write while window.failSyncWrites is set. The
+// page's onChanged listeners are kept so a test can deliver another device's change.
+async function delaySyncReads(target, synced) {
+  await target.addInitScript((initial) => {
+    const { promise, resolve } = Promise.withResolvers();
+
+    window.syncData = structuredClone(initial);
+    window.syncListeners = [];
+    window.releaseSyncReads = resolve;
+    window.chrome ??= {};
+    window.chrome.storage = {
+      sync: {
+        async get(key) {
+          const value = structuredClone(window.syncData[key]);
+          await promise;
+
+          return { [key]: value };
+        },
+
+        async set(value) {
+          for (const [key, item] of Object.entries(value)) {
+            const bytes = new TextEncoder().encode(key + JSON.stringify(item)).length;
+
+            if (window.failSyncWrites || bytes > 8192) {
+              throw new Error("QUOTA_BYTES_PER_ITEM quota exceeded");
+            }
+          }
+
+          Object.assign(window.syncData, structuredClone(value));
+        },
+      },
+      onChanged: {
+        addListener(listener) {
+          window.syncListeners.push(listener);
+        },
+      },
+    };
+  }, synced);
+}
+
+// Stores a change from another device and reports it the way chrome.storage.onChanged does.
+async function sendSyncChange(page, key, value) {
+  await page.evaluate(
+    ([changedKey, newValue]) => {
+      window.syncData[changedKey] = newValue;
+
+      for (const listener of window.syncListeners) {
+        listener({ [changedKey]: { newValue } }, "sync");
+      }
+    },
+    [key, value],
+  );
+}
+
+// Answers the held reads and waits until the page has handled them.
+async function releaseSyncReads(page) {
+  await page.evaluate(async () => {
+    window.releaseSyncReads();
+    await new Promise((resolve) => setTimeout(resolve));
+  });
+}
+
 test("loads without errors or remote requests", async ({ page }) => {
   const errors = [];
   const remote = [];
@@ -152,6 +216,108 @@ test("changes from another tab apply while Customize is open and are not reverte
   const saved = await second.evaluate(() => JSON.parse(localStorage.getItem("helium-tab")));
 
   expect(saved).toMatchObject({ theme: "dark", showSeconds: true });
+});
+
+const OLDER_SYNCED_PREFERENCES = {
+  [PREFERENCES_KEY]: { theme: "dark", changedAt: 1, changedBy: "another-device" },
+};
+
+test("a late startup sync read does not revert a change made meanwhile", async ({ page }) => {
+  await delaySyncReads(page, OLDER_SYNCED_PREFERENCES);
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByLabel("Appearance").selectOption("light");
+  await releaseSyncReads(page);
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.getByLabel("Appearance")).toHaveValue("light");
+
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  const synced = await page.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
+
+  expect(saved.theme).toBe("light");
+  expect(synced.theme).toBe("light");
+});
+
+test("a late startup sync read does not revert another tab's newer change", async ({ context }) => {
+  await delaySyncReads(context, OLDER_SYNCED_PREFERENCES);
+  const first = await context.newPage();
+  const second = await context.newPage();
+  await first.goto("/");
+  await second.goto("/");
+
+  await second.getByRole("button", { name: "Customize" }).click();
+  await second.getByLabel("Appearance").selectOption("light");
+
+  await expect(first.locator("html")).toHaveAttribute("data-theme", "light");
+
+  await releaseSyncReads(first);
+
+  await expect(first.locator("html")).toHaveAttribute("data-theme", "light");
+
+  const saved = await first.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  const synced = await first.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
+
+  expect(saved.theme).toBe("light");
+  expect(synced.theme).toBe("light");
+});
+
+test("a late startup sync read does not revert another device's newer change", async ({ page }) => {
+  await delaySyncReads(page, OLDER_SYNCED_PREFERENCES);
+  await page.goto("/");
+
+  await sendSyncChange(page, PREFERENCES_KEY, {
+    theme: "light",
+    changedAt: 2,
+    changedBy: "another-device",
+  });
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  await releaseSyncReads(page);
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  const synced = await page.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
+
+  expect(saved.theme).toBe("light");
+  expect(synced.theme).toBe("light");
+});
+
+test("a late startup sync read loses to a sync event that confirms the current value", async ({
+  page,
+}) => {
+  const current = { theme: "light", changedAt: 2, changedBy: "another-device" };
+
+  await delaySyncReads(page, OLDER_SYNCED_PREFERENCES);
+  await savePreferences(page, current);
+  await page.reload();
+
+  // Sync now holds what this tab already shows, which is newer than the pending snapshot.
+  await sendSyncChange(page, PREFERENCES_KEY, current);
+  await releaseSyncReads(page);
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  const synced = await page.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
+
+  expect(saved.theme).toBe("light");
+  expect(synced.theme).toBe("light");
 });
 
 test("switches the interface language", async ({ page }) => {
@@ -619,6 +785,113 @@ test("pinned sites persist and follow changes from another tab", async ({ contex
   await expect(pinnedLinks(second)).toHaveText(["Eexample.com"]);
 });
 
+const OLDER_SYNCED_SITES = {
+  [SITES_KEY]: {
+    sites: [{ url: "https://github.com/", title: "github.com" }],
+    changedAt: 1,
+    changedBy: "another-device",
+  },
+};
+
+test("a late startup sync read does not revert sites pinned meanwhile", async ({ page }) => {
+  await delaySyncReads(page, OLDER_SYNCED_SITES);
+  await savePinnedSites(page, []);
+  await page.reload();
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByLabel("Site address").fill("example.com");
+  await page.getByLabel("Site address").press("Enter");
+  await releaseSyncReads(page);
+
+  await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);
+  await expect(page.getByLabel("Name for example.com")).toHaveValue("example.com");
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
+  const synced = await page.evaluate((key) => window.syncData[key], SITES_KEY);
+
+  expect(saved.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+  expect(synced.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+});
+
+test("a late startup sync read does not revert sites another tab pinned", async ({ context }) => {
+  await delaySyncReads(context, OLDER_SYNCED_SITES);
+  const first = await context.newPage();
+  const second = await context.newPage();
+  await savePinnedSites(first, []);
+  await first.reload();
+  await second.goto("/");
+
+  await second.getByRole("button", { name: "Customize" }).click();
+  await second.getByLabel("Site address").fill("example.com");
+  await second.getByLabel("Site address").press("Enter");
+
+  await expect(pinnedLinks(first)).toHaveText(["Eexample.com"]);
+
+  await releaseSyncReads(first);
+
+  await expect(pinnedLinks(first)).toHaveText(["Eexample.com"]);
+
+  const saved = await first.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
+  const synced = await first.evaluate((key) => window.syncData[key], SITES_KEY);
+
+  expect(saved.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+  expect(synced.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+});
+
+test("a late startup sync read does not revert sites another device pinned", async ({ page }) => {
+  await delaySyncReads(page, OLDER_SYNCED_SITES);
+  await savePinnedSites(page, []);
+  await page.reload();
+
+  await sendSyncChange(page, SITES_KEY, {
+    sites: [{ url: "https://example.com/", title: "example.com" }],
+    changedAt: 2,
+    changedBy: "another-device",
+  });
+
+  await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);
+
+  await releaseSyncReads(page);
+
+  await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
+  const synced = await page.evaluate((key) => window.syncData[key], SITES_KEY);
+
+  expect(saved.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+  expect(synced.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+});
+
+test("a late startup sync read loses to a sync event that confirms the current sites", async ({
+  page,
+}) => {
+  const current = {
+    sites: [{ url: "https://example.com/", title: "example.com" }],
+    changedAt: 2,
+    changedBy: "another-device",
+  };
+
+  await delaySyncReads(page, OLDER_SYNCED_SITES);
+  await savePinnedSites(page, []);
+  await page.evaluate(
+    ([key, value]) => localStorage.setItem(key, JSON.stringify(value)),
+    [SITES_KEY, current],
+  );
+  await page.reload();
+
+  // Sync now holds what this tab already shows, which is newer than the pending snapshot.
+  await sendSyncChange(page, SITES_KEY, current);
+  await releaseSyncReads(page);
+
+  await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
+  const synced = await page.evaluate((key) => window.syncData[key], SITES_KEY);
+
+  expect(saved.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+  expect(synced.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+});
+
 test("adding stops at eight pinned sites", async ({ page }) => {
   const sites = ["a", "b", "c", "d", "e", "f", "g"].map((letter) => ({
     url: `https://${letter}.example.com/`,
@@ -643,6 +916,121 @@ test("adding stops at eight pinned sites", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Add site" })).toBeEnabled();
 });
 
+test("adding and renaming stop when the list would be too large to sync", async ({ page }) => {
+  // Four long addresses already take more than one synced item holds.
+  const sites = ["a", "b", "c", "d"].map((letter) => ({
+    url: `https://${letter}.example.com/${"a".repeat(1900)}`,
+    title: `${letter}.example.com`,
+  }));
+  const tooLarge = "Your pinned sites would be too large to sync. Use a shorter address or name.";
+
+  await savePinnedSites(page, sites);
+  await page.reload();
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  const address = page.getByLabel("Site address");
+  await address.fill("e.example.com");
+  await address.press("Enter");
+
+  await expect(page.getByText(tooLarge)).toBeVisible();
+  await expect(address).toHaveAttribute("aria-invalid", "true");
+  await expect(pinnedLinks(page)).toHaveCount(4);
+
+  await address.fill("");
+
+  await expect(page.getByText(tooLarge)).toBeHidden();
+
+  // A longer name is refused and the saved one stays; a shorter one still fits.
+  const name = page.getByLabel("Name for a.example.com");
+  await name.fill("A much longer name for this site");
+  await name.press("Enter");
+
+  await expect(page.getByText(tooLarge)).toBeVisible();
+  await expect(name).toHaveValue("a.example.com");
+  await expect(address).not.toHaveAttribute("aria-invalid");
+
+  await name.fill("A");
+  await name.press("Enter");
+
+  await expect(pinnedLinks(page).first()).toHaveAccessibleName("A");
+});
+
+const NOT_SYNCED = "Saved on this device, but not synced to your other devices yet.";
+
+test("Customize says when a change is saved here but sync rejected it", async ({ page }) => {
+  await delaySyncReads(page, {});
+  await page.goto("/");
+  await releaseSyncReads(page);
+  await page.evaluate(() => {
+    window.failSyncWrites = true;
+  });
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  const status = page.locator("#sync-status");
+
+  await expect(status).toHaveRole("status");
+  await expect(status).toBeHidden();
+
+  await page.getByLabel("Appearance").selectOption("dark");
+
+  await expect(status).toBeVisible();
+  await expect(status).toHaveText(NOT_SYNCED);
+
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+
+  expect(saved.theme).toBe("dark");
+
+  // The next write that sync takes clears the message.
+  await page.evaluate(() => {
+    window.failSyncWrites = false;
+  });
+  await page.getByLabel("Appearance").selectOption("light");
+
+  await expect(status).toBeHidden();
+
+  const synced = await page.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
+
+  expect(synced.theme).toBe("light");
+});
+
+test("an older list too large for sync stays local until it is short enough", async ({ page }) => {
+  // Kept from before the size limit: four long addresses exceed one synced item.
+  const sites = ["a", "b", "c", "d"].map((letter) => ({
+    url: `https://${letter}.example.com/${"a".repeat(2000)}`,
+    title: `${letter}.example.com`,
+  }));
+
+  await delaySyncReads(page, {});
+  await savePinnedSites(page, sites);
+  await page.reload();
+  await releaseSyncReads(page);
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  const status = page.locator("#sync-status");
+
+  await expect(status).toHaveText(NOT_SYNCED);
+
+  // A shorter name is kept here, but the list is still too large to sync.
+  const name = page.getByLabel("Name for a.example.com");
+  await name.fill("A");
+  await name.press("Enter");
+
+  await expect(pinnedLinks(page).first()).toHaveAccessibleName("A");
+  await expect(status).toHaveText(NOT_SYNCED);
+  expect(await page.evaluate((key) => window.syncData[key], SITES_KEY)).toBeUndefined();
+
+  await page.getByRole("button", { name: "Remove b.example.com" }).click();
+
+  await expect(status).toBeHidden();
+
+  const synced = await page.evaluate((key) => window.syncData[key], SITES_KEY);
+
+  expect(synced.sites.map((site) => site.title)).toEqual(["A", "c.example.com", "d.example.com"]);
+});
+
 test("a plain click on a pinned site opens it in this tab", async ({ page }) => {
   await savePinnedSites(page, [{ url: "https://example.com/", title: "Example" }]);
   await page.reload();
@@ -653,29 +1041,69 @@ test("a plain click on a pinned site opens it in this tab", async ({ page }) => 
   expect((await request).url()).toBe("https://example.com/");
 });
 
-// Headless Chromium opens every new page in its own window, so these check only that the
-// link opens elsewhere. Browser-opened tabs cannot load routed remote pages, so the site is local.
-for (const [name, options] of [
-  ["a modified click", { modifiers: ["ControlOrMeta"] }],
-  ["a middle click", { button: "middle" }],
-  ["a Shift click", { modifiers: ["Shift"] }],
+// Pinned sites are real links, so the browser itself opens modified and middle clicks elsewhere;
+// the page calls no window.open. Headless Chromium does not always report those windows as pages,
+// so these tests record the link activation instead: an init script listens on window, after
+// any listener the page could add, and notes which link was activated, how, and whether anything
+// cancelled the browser's default action.
+for (const [name, options, expected] of [
+  [
+    "a modified click",
+    { modifiers: ["ControlOrMeta"] },
+    { type: "click", button: 0, tabKey: true },
+  ],
+  ["a middle click", { button: "middle" }, { type: "auxclick", button: 1, tabKey: false }],
+  ["a Shift click", { modifiers: ["Shift"] }, { type: "click", button: 0, shiftKey: true }],
 ]) {
-  test(`${name} on a pinned site opens it elsewhere and stays here`, async ({
-    page,
-    context,
-    baseURL,
-  }) => {
+  test(`${name} on a pinned site opens it elsewhere and stays here`, async ({ page, baseURL }) => {
     const url = new URL("/?pinned", baseURL);
+
+    await page.addInitScript(() => {
+      window.linkActivations = [];
+
+      for (const type of ["click", "auxclick"]) {
+        window.addEventListener(type, (event) => {
+          const link = event.target.closest?.("a");
+
+          if (link) {
+            window.linkActivations.push({
+              type,
+              href: link.href,
+              target: link.target,
+              button: event.button,
+              shiftKey: event.shiftKey,
+              tabKey: event.ctrlKey || event.metaKey,
+              defaultPrevented: event.defaultPrevented,
+            });
+          }
+        });
+      }
+    });
 
     await savePinnedSites(page, [{ url: url.href, title: "Preview" }]);
     await page.reload();
-
-    const opened = context.waitForEvent("page");
     await pinnedLinks(page).first().click(options);
 
-    const newPage = await opened;
-    await newPage.waitForURL(url.href);
+    await expect.poll(() => page.evaluate(() => window.linkActivations.length)).toBe(1);
 
+    const [activation] = await page.evaluate(() => window.linkActivations);
+
+    expect(activation).toMatchObject({
+      ...expected,
+      href: url.href,
+      target: "",
+      defaultPrevented: false,
+    });
+
+    // The click left this document in place: its URL and its record of the click are unchanged.
     await expect(page).toHaveURL("/");
+
+    const stillHere = await page.evaluate(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      return window.linkActivations.length;
+    });
+
+    expect(stillHere).toBe(1);
   });
 }

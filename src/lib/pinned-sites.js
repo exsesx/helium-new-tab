@@ -1,8 +1,39 @@
 import { searchDestination } from "./address.js";
-import { PINNED_SITES_LIMIT, siteTitle, siteUrl } from "./model.js";
+import {
+  PINNED_SITES_BYTES,
+  PINNED_SITES_KEY,
+  PINNED_SITES_LIMIT,
+  siteTitle,
+  siteUrl,
+} from "./model.js";
+
+const encoder = new TextEncoder();
+// The widest change stamp readPinnedSites keeps, so a list that fits now still fits once stamped.
+const WIDEST_STAMP = { changedAt: Number.MAX_SAFE_INTEGER, changedBy: "x".repeat(64) };
+// Chromium's JSON writer, which measures sync items, escapes these where JSON.stringify does not
+// (base/json/string_escape.cc, as of Chromium 154).
+const CHROMIUM_ESCAPES = {
+  "<": "\\u003C",
+  "\u2028": "\\u2028",
+  "\u2029": "\\u2029",
+};
+// Chromium also writes whole-number doubles such as changedAt with a trailing ".0".
+const DOUBLE_SUFFIX = ".0";
+
+// The bytes chrome.storage.sync counts for the item: its key and the JSON value createSyncWriter
+// writes, serialized the way Chromium does it.
+export function pinnedSitesBytes(sites) {
+  const json = JSON.stringify({ sites, ...WIDEST_STAMP }).replace(
+    /[<\u2028\u2029]/g,
+    (char) => CHROMIUM_ESCAPES[char],
+  );
+
+  return encoder.encode(PINNED_SITES_KEY + json + DOUBLE_SUFFIX).length;
+}
 
 // Pins what the search field would open as a website. Returns the new list, or the reason it
-// cannot: "full", "address" for text the search field would search for, or "duplicate".
+// cannot: "full", "address" for text the search field would search for, "duplicate", or "size"
+// when the list would no longer fit in one synced item.
 export function addPinnedSite(sites, address, title = "") {
   if (sites.length >= PINNED_SITES_LIMIT) {
     return { error: "full" };
@@ -18,14 +49,30 @@ export function addPinnedSite(sites, address, title = "") {
     return { error: "duplicate" };
   }
 
-  return { sites: [...sites, { url, title: siteTitle(title, url) }] };
+  const next = [...sites, { url, title: siteTitle(title, url) }];
+
+  if (pinnedSitesBytes(next) > PINNED_SITES_BYTES) {
+    return { error: "size" };
+  }
+
+  return { sites: next };
 }
 
-// An empty name falls back to the site's hostname.
+// An empty name falls back to the site's hostname. Returns the new list, or "size" when a longer
+// name would no longer fit in one synced item.
 export function renamePinnedSite(sites, index, title) {
-  return sites.map((site, position) =>
+  const next = sites.map((site, position) =>
     position === index ? { ...site, title: siteTitle(title, site.url) } : site,
   );
+  const bytes = pinnedSitesBytes(next);
+  // A list that is already too large, such as one kept from before this limit, can still shrink.
+  const outgrowsSync = bytes > PINNED_SITES_BYTES && bytes > pinnedSitesBytes(sites);
+
+  if (outgrowsSync) {
+    return { error: "size" };
+  }
+
+  return { sites: next };
 }
 
 // Swaps a site with its neighbor; moves past either end change nothing.
