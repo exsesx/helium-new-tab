@@ -6,9 +6,12 @@
 export const BACKGROUND_IMAGE_KEY = "helium-tab-background";
 // The longest side an image is kept at; larger ones are scaled down when they are chosen.
 export const MAX_IMAGE_SIDE = 5120;
-// A placeholder's thumbnail is about 40 to 65 KB as a data URL; anything larger is not one
+// A placeholder's thumbnail is about 30 to 150 KB as a data URL; anything larger is not one
 // Customize wrote.
-export const MAX_THUMBNAIL_LENGTH = 128 * 1024;
+export const MAX_THUMBNAIL_LENGTH = 256 * 1024;
+// Placeholders written before this version have a smaller thumbnail and are made again from the
+// full image once it has loaded.
+export const PLACEHOLDER_VERSION = 2;
 const TONES = ["light", "dark"];
 export const DEFAULT_BACKGROUND_COLOR = "#dbe4ff";
 
@@ -162,12 +165,26 @@ export function readBackgroundImage(value) {
     height,
     updatedAt,
     foreground,
+    // Placeholders from before versions were numbered are the first version.
+    version: Number.isInteger(value.version) ? value.version : 1,
   };
 }
 
-function parseBackgroundImage(stored) {
+// The time an image was chosen, from a stored placeholder of an older shape that can no longer be
+// painted, so its placeholder can be made again from the full image. Undefined otherwise.
+function outdatedImageTime(value) {
+  const isOutdated =
+    value &&
+    typeof value === "object" &&
+    !readBackgroundImage(value) &&
+    Number.isFinite(value.updatedAt);
+
+  return isOutdated ? value.updatedAt : undefined;
+}
+
+function parseStored(stored) {
   try {
-    return readBackgroundImage(JSON.parse(stored));
+    return JSON.parse(stored);
   } catch {
     return undefined;
   }
@@ -177,9 +194,16 @@ function parseBackgroundImage(stored) {
 export function loadBackgroundImage() {
   try {
     const stored = localStorage.getItem(BACKGROUND_IMAGE_KEY);
-    const image = stored === null ? undefined : parseBackgroundImage(stored);
 
-    if (stored !== null && !image) {
+    if (stored === null) {
+      return undefined;
+    }
+
+    const value = parseStored(stored);
+    const image = readBackgroundImage(value);
+
+    // Keep an outdated placeholder until app.js has made it again; see loadOutdatedImage.
+    if (!image && outdatedImageTime(value) === undefined) {
       localStorage.removeItem(BACKGROUND_IMAGE_KEY);
     }
 
@@ -256,4 +280,30 @@ export function applyBackgroundImage(image) {
   root.dataset.imageForeground = tone;
   root.dataset.imageHalo = halo;
   root.dataset.backgroundImage = "";
+}
+
+// The time of a stored placeholder that is too old to paint, or undefined without one.
+export function loadOutdatedImage() {
+  try {
+    const stored = localStorage.getItem(BACKGROUND_IMAGE_KEY);
+
+    return stored === null ? undefined : outdatedImageTime(parseStored(stored));
+  } catch {
+    return undefined;
+  }
+}
+
+// The size an image is painted at on a screen of this many device pixels: the smallest that still
+// covers it, so any window on the screen is covered too. Undefined when the image is no larger.
+export function renditionSize(image, screen) {
+  const scale = Math.max(screen.width / image.width, screen.height / image.height);
+
+  if (scale >= 1) {
+    return undefined;
+  }
+
+  return {
+    width: Math.ceil(image.width * scale),
+    height: Math.ceil(image.height * scale),
+  };
 }

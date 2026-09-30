@@ -6,10 +6,13 @@ import {
   foregroundColors,
   mixColors,
   loadBackgroundImage,
+  loadOutdatedImage,
   foregroundFor,
   readBackgroundImage,
   relativeLuminance,
   imageForeground,
+  PLACEHOLDER_VERSION,
+  renditionSize,
 } from "../src/lib/background.js";
 import { readPreferences } from "../src/lib/model.js";
 
@@ -21,6 +24,7 @@ const validImage = {
   height: 2880,
   updatedAt: 1_700_000_000_000,
   foreground: "light",
+  version: PLACEHOLDER_VERSION,
 };
 
 test("accepts a color background and validates its color", () => {
@@ -64,8 +68,8 @@ test("reads only placeholders that Customize could have written", () => {
     "#abcdef",
   );
 
-  // A 640 px thumbnail of a busy photo is about 65 KB as a data URL.
-  const busy = { ...validImage, thumbnail: `data:image/webp;base64,${"A".repeat(88_000)}` };
+  // A 1280 px thumbnail of a busy photo is about 150 KB as a data URL.
+  const busy = { ...validImage, thumbnail: `data:image/webp;base64,${"A".repeat(200_000)}` };
 
   expect(readBackgroundImage(busy)).toEqual(busy);
 
@@ -78,7 +82,7 @@ test("reads only placeholders that Customize could have written", () => {
     { ...validImage, thumbnail: "https://example.com/image.webp" },
     { ...validImage, thumbnail: "data:image/svg+xml;base64,PHN2Zz4=" },
     { ...validImage, thumbnail: 'data:image/webp;base64,AAAA");background:url("x' },
-    { ...validImage, thumbnail: `data:image/webp;base64,${"A".repeat(132_000)}` },
+    { ...validImage, thumbnail: `data:image/webp;base64,${"A".repeat(263_000)}` },
     { ...validImage, width: 0 },
     { ...validImage, height: 1.5 },
     { ...validImage, width: 20_000 },
@@ -105,18 +109,18 @@ function fakeLocalStorage(entries) {
   return items;
 }
 
-test("loads a stored placeholder and discards a corrupt or outdated one", () => {
+test("loads a stored placeholder and discards a corrupt one", () => {
   const stored = fakeLocalStorage({ [BACKGROUND_IMAGE_KEY]: JSON.stringify(validImage) });
 
   expect(loadBackgroundImage()).toEqual(validImage);
+  expect(loadOutdatedImage()).toBeUndefined();
   expect(stored.has(BACKGROUND_IMAGE_KEY)).toBe(true);
 
-  const outdated = { dataUrl: validImage.thumbnail, averageColor: "#336699", updatedAt: 1 };
-
-  for (const corrupt of ["{", JSON.stringify({ dataUrl: "x" }), JSON.stringify(outdated)]) {
+  for (const corrupt of ["{", JSON.stringify({ dataUrl: "x" }), "null"]) {
     const items = fakeLocalStorage({ [BACKGROUND_IMAGE_KEY]: corrupt });
 
     expect(loadBackgroundImage()).toBeUndefined();
+    expect(loadOutdatedImage()).toBeUndefined();
     expect(items.has(BACKGROUND_IMAGE_KEY)).toBe(false);
   }
 
@@ -125,6 +129,54 @@ test("loads a stored placeholder and discards a corrupt or outdated one", () => 
   expect(loadBackgroundImage()).toBeUndefined();
 
   delete globalThis.localStorage;
+});
+
+test("keeps a placeholder too old to paint so it can be made again from the full image", () => {
+  // Before the bands behind the content, and before the full image moved to IndexedDB.
+  const { bands, ...withoutBands } = validImage;
+  const beforeIndexedDb = { dataUrl: validImage.thumbnail, averageColor: "#336699", updatedAt: 1 };
+
+  for (const outdated of [withoutBands, beforeIndexedDb]) {
+    const items = fakeLocalStorage({ [BACKGROUND_IMAGE_KEY]: JSON.stringify(outdated) });
+
+    expect(loadBackgroundImage()).toBeUndefined();
+    expect(loadOutdatedImage()).toBe(outdated.updatedAt);
+    expect(items.has(BACKGROUND_IMAGE_KEY)).toBe(true);
+  }
+
+  expect(bands).toHaveLength(2);
+
+  delete globalThis.localStorage;
+});
+
+test("placeholders from before versions were numbered read as the first version", () => {
+  const { version, ...unnumbered } = validImage;
+
+  expect(version).toBe(2);
+  expect(readBackgroundImage(unnumbered)).toEqual({ ...validImage, version: 1 });
+  expect(readBackgroundImage({ ...validImage, version: "2" }).version).toBe(1);
+});
+
+test("a rendition is the smallest size of the image that covers the screen", () => {
+  const photo = { width: 5120, height: 2880 };
+
+  // A 16:10 laptop screen at 2x: the image's height decides.
+  expect(renditionSize(photo, { width: 3456, height: 2234 })).toEqual({
+    width: 3972,
+    height: 2234,
+  });
+
+  // A portrait screen needs the full height, with the width cropped.
+  expect(renditionSize(photo, { width: 1440, height: 2560 })).toEqual({
+    width: 4552,
+    height: 2560,
+  });
+
+  // A screen as large as the image, or larger, paints the image itself.
+  expect(renditionSize(photo, { width: 5120, height: 2880 })).toBeUndefined();
+  expect(
+    renditionSize({ width: 1600, height: 1600 }, { width: 3456, height: 2234 }),
+  ).toBeUndefined();
 });
 
 test("mixes colors in sRGB as CSS color-mix() does", () => {

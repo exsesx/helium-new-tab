@@ -3,8 +3,9 @@ import {
   applyBackgroundImage,
   BACKGROUND_IMAGE_KEY,
   loadBackgroundImage,
+  loadOutdatedImage,
 } from "./lib/background.js";
-import { paintBackgroundPhoto } from "./lib/background-photo.js";
+import { paintBackgroundPhoto, updateBackgroundImage } from "./lib/background-photo.js";
 import { createClock } from "./lib/clock.js";
 import { readPinnedSites, readPreferences } from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
@@ -212,12 +213,28 @@ function applyExternalPreferences(value) {
   }
 }
 
-// Shows the full image over the placeholder, and tells Customize whether it is missing.
+// Shows the full image over the placeholder, and tells Customize whether it is missing. Once it
+// shows, an outdated placeholder or a missing rendition is made again from it.
 function paintPhoto(image) {
-  void paintBackgroundPhoto(image).then(() => settings?.refresh());
+  void paintBackgroundPhoto(image).then(async (status) => {
+    settings?.refresh();
+
+    if (status === "shown" && (await updateBackgroundImage(image).catch(() => undefined))) {
+      settings?.refresh();
+    }
+  });
 }
 
 paintPhoto(backgroundImage);
+
+// A placeholder too old to paint is made again from the full image, which then shows.
+const outdatedImageTime = backgroundImage ? undefined : loadOutdatedImage();
+
+if (outdatedImageTime !== undefined) {
+  void updateBackgroundImage({ updatedAt: outdatedImageTime })
+    .then((image) => image && paintPhoto(image))
+    .catch(() => {});
+}
 
 // Another tab on this device chose or removed its background image. It writes the placeholder
 // last, so the full image is already in IndexedDB.

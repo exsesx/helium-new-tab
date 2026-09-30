@@ -1,6 +1,12 @@
-// Turns a chosen image file into a background: the full image, kept at full quality, and a small
-// placeholder for the first paint. Everything happens on this device.
-import { imageForeground, MAX_IMAGE_SIDE, MAX_THUMBNAIL_LENGTH } from "./background.js";
+// Turns a chosen image file into a background: the full image, kept at full quality, a rendition
+// fitted to the screen, and a placeholder for the first paint. Everything happens on this device.
+import {
+  imageForeground,
+  MAX_IMAGE_SIDE,
+  MAX_THUMBNAIL_LENGTH,
+  PLACEHOLDER_VERSION,
+  renditionSize,
+} from "./background.js";
 
 export const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/avif"];
 
@@ -13,14 +19,15 @@ const ENCODED_QUALITY = 0.92;
 // Files this large would take too long to decode.
 const MAX_FILE_SIZE = 64 * 1024 * 1024;
 
-// The placeholder's thumbnail: large enough that the browser's own scaling makes it a soft
-// version of the image, with no filter to paint, and close enough to it that the full image's
-// fade is hard to see. Busy photos that would not fit local storage's share are encoded smaller.
+// The placeholder's thumbnail: large enough that its upscale shows no steps at 2x on a laptop
+// screen, and close enough to the image that the full image's fade is hard to see. Busy photos
+// that would not fit local storage's share are encoded with less quality, then smaller.
 const THUMBNAIL_ENCODINGS = [
+  { side: 1280, quality: 0.85 },
+  { side: 1280, quality: 0.7 },
+  { side: 960, quality: 0.7 },
   { side: 640, quality: 0.7 },
   { side: 640, quality: 0.5 },
-  { side: 480, quality: 0.5 },
-  { side: 320, quality: 0.5 },
 ];
 // Tiny enough to average quickly, large enough to not be one pixel's color.
 const SAMPLE_SIDE = 16;
@@ -151,6 +158,9 @@ async function encode(bitmap, color, { width, height }, quality) {
   // Transparent areas show the same color the page paints under the image.
   context.fillStyle = color;
   context.fillRect(0, 0, width, height);
+  // The default low quality samples a large reduction without averaging, which leaves
+  // stair-stepped edges that the placeholder's upscale then magnifies.
+  context.imageSmoothingQuality = "high";
   context.drawImage(bitmap, 0, 0, width, height);
 
   const blob = await canvas.convertToBlob({ type: "image/webp", quality });
@@ -180,11 +190,41 @@ async function encodeThumbnail(bitmap, color) {
   return thumbnail;
 }
 
-// Returns the full image as a Blob and the placeholder that stands in for it at first paint. The
-// text set is chosen for a window of the given size, this one by default.
+// The placeholder that stands in for an image at first paint. The text set is chosen for a
+// window of the given size.
+async function createPlaceholder(bitmap, color, view, { width, height, updatedAt }) {
+  const bands = contentRegions(bitmap, view).map((region) => sampleColor(bitmap, region));
+
+  return {
+    averageColor: color,
+    bands,
+    thumbnail: await encodeThumbnail(bitmap, color),
+    width,
+    height,
+    updatedAt,
+    foreground: imageForeground(bands).tone,
+    version: PLACEHOLDER_VERSION,
+  };
+}
+
+// The image scaled to cover a screen, or undefined when the image is no larger.
+async function createRendition(bitmap, color, screen) {
+  const size = renditionSize(bitmap, screen);
+
+  if (!size) {
+    return undefined;
+  }
+
+  return { blob: await encode(bitmap, color, size, ENCODED_QUALITY), ...size };
+}
+
+// Returns the full image as a Blob, a rendition for a screen of the given device pixels, and the
+// placeholder that stands in for them at first paint. The text set is chosen for a window of the
+// given size, this one by default.
 export async function importBackgroundImage(
   file,
   view = { width: globalThis.innerWidth, height: globalThis.innerHeight },
+  screen = undefined,
 ) {
   if (!IMAGE_TYPES.includes(file.type)) {
     throw new BackgroundImageError("type");
@@ -199,26 +239,46 @@ export async function importBackgroundImage(
   try {
     const { width, height } = bitmap;
     const color = sampleColor(bitmap);
-    const bands = contentRegions({ width, height }, view).map((region) =>
-      sampleColor(bitmap, region),
-    );
     const kept = keepsOriginal({ type: file.type, size: file.size, width, height });
     const size = kept ? { width, height } : fitWithin(width, height, ENCODED_SIDE);
     const blob = kept ? file : await encode(bitmap, color, size, ENCODED_QUALITY);
-    const thumbnail = await encodeThumbnail(bitmap, color);
+    const rendition = screen ? await createRendition(bitmap, color, screen) : undefined;
+    const placeholder = await createPlaceholder(bitmap, color, view, {
+      ...size,
+      updatedAt: Date.now(),
+    });
 
-    return {
-      blob,
-      placeholder: {
-        averageColor: color,
-        bands,
-        thumbnail,
-        width: size.width,
-        height: size.height,
-        updatedAt: Date.now(),
-        foreground: imageForeground(bands).tone,
-      },
-    };
+    return { blob, rendition, placeholder };
+  } finally {
+    bitmap.close();
+  }
+}
+
+// Brings a kept image up to date from its full image: a placeholder written by an older version,
+// and a rendition for a screen larger than the one it was made for. Returns only what changed.
+export async function refreshBackgroundImage(
+  { blob, placeholder, updatePlaceholder, screen },
+  view = { width: globalThis.innerWidth, height: globalThis.innerHeight },
+) {
+  const bitmap = await decode(blob);
+
+  try {
+    const color = sampleColor(bitmap);
+    const result = {};
+
+    if (updatePlaceholder) {
+      result.placeholder = await createPlaceholder(bitmap, color, view, {
+        width: placeholder.width ?? bitmap.width,
+        height: placeholder.height ?? bitmap.height,
+        updatedAt: placeholder.updatedAt,
+      });
+    }
+
+    if (screen) {
+      result.rendition = await createRendition(bitmap, color, screen);
+    }
+
+    return result;
   } finally {
     bitmap.close();
   }

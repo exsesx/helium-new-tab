@@ -721,7 +721,7 @@ async function chooseTestImage(page) {
 async function saveBackgroundImage(
   page,
   averageColor = "#88876c",
-  { full = true, bands = [averageColor, averageColor] } = {},
+  { full = true, bands = [averageColor, averageColor], version = 2 } = {},
 ) {
   await page.goto("/");
 
@@ -734,6 +734,7 @@ async function saveBackgroundImage(
     height: 40,
     updatedAt: Date.now(),
     foreground: imageForeground(bands).tone,
+    version,
   };
 
   if (full) {
@@ -822,9 +823,12 @@ async function paintedPhoto(page) {
   const photo = page.locator(".background-photo");
 
   await expect(photo).toHaveCount(1);
-  await photo.evaluate((element) =>
-    Promise.all(element.getAnimations().map((animation) => animation.finished)),
-  );
+  // The fade starts two frames after the photo is added.
+  await page.waitForFunction(() => {
+    const element = document.querySelector(".background-photo");
+
+    return element.getAnimations().length === 0 && getComputedStyle(element).opacity === "1";
+  });
 
   return photo.evaluate((element) => ({
     source: element.src.slice(0, 5),
@@ -956,6 +960,7 @@ test("choosing an image keeps it in full and paints its placeholder first", asyn
     height: 40,
     updatedAt: expect.any(Number),
     foreground: expect.stringMatching(/^(light|dark)$/),
+    version: 2,
   });
   expect(placeholder.thumbnail.length).toBeLessThan(2048);
   expect(await storedImage(page)).toMatchObject({ type: "image/webp", width: 64, height: 40 });
@@ -1032,12 +1037,12 @@ async function choosePhoto(page, { noise = false } = {}) {
       context.putImageData(pixels, 0, 0);
     }
 
-    // How long a 640 px, quality 0.7 thumbnail of it would be as a data URL.
-    const thumbnail = new OffscreenCanvas(640, 400);
+    // How long a 1280 px, quality 0.85 thumbnail of it would be as a data URL.
+    const thumbnail = new OffscreenCanvas(1280, 800);
 
-    thumbnail.getContext("2d").drawImage(canvas, 0, 0, 640, 400);
+    thumbnail.getContext("2d").drawImage(canvas, 0, 0, 1280, 800);
     window.firstThumbnailBytes = thumbnail
-      .convertToBlob({ type: "image/webp", quality: 0.7 })
+      .convertToBlob({ type: "image/webp", quality: 0.85 })
       .then((blob) => blob.size);
 
     return canvas.toDataURL("image/jpeg", 0.95);
@@ -1066,25 +1071,25 @@ async function choosePhoto(page, { noise = false } = {}) {
   }, BACKGROUND_IMAGE_KEY);
 }
 
-test("a photo's placeholder is a 640 px thumbnail that fits local storage", async ({ page }) => {
+test("a photo's placeholder is a 1280 px thumbnail that fits local storage", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Customize" }).click();
   await page.getByRole("radio", { name: "Image" }).check();
 
-  // A photo gets a 640 px WebP thumbnail, tens of kilobytes as a data URL.
+  // A photo gets a 1280 px WebP thumbnail, tens of kilobytes as a data URL.
   const photo = await choosePhoto(page);
 
-  expect(photo).toMatchObject({ width: 640, height: 400 });
-  expect(photo.length).toBeLessThanOrEqual(128 * 1024);
+  expect(photo).toMatchObject({ width: 1280, height: 800 });
+  expect(photo.length).toBeLessThanOrEqual(256 * 1024);
 
-  // Noise that would not fit at quality 0.7 is encoded again, smaller, instead of being refused.
+  // Noise that would not fit at quality 0.85 is encoded again, smaller, instead of being refused.
   await page.getByRole("button", { name: "Remove image" }).click();
   await page.getByRole("radio", { name: "Image" }).check();
 
   const noise = await choosePhoto(page, { noise: true });
 
-  expect(noise.firstLength).toBeGreaterThan(128 * 1024);
-  expect(noise.length).toBeLessThanOrEqual(128 * 1024);
+  expect(noise.firstLength).toBeGreaterThan(256 * 1024);
+  expect(noise.length).toBeLessThanOrEqual(256 * 1024);
   expect(noise.width / noise.height).toBeCloseTo(2400 / 1500, 1);
 });
 
@@ -1124,7 +1129,7 @@ test("the page background falls back to the appearance's, never to none", async 
   expect(await backgrounds()).toEqual({ page: "rgb(30, 32, 32)", body: "rgb(30, 32, 32)" });
 });
 
-test("the full image fades in once decoded, and nothing else on the page changes", async ({
+test("the full image fades in once decoded and rastered, and nothing else changes", async ({
   page,
 }) => {
   await saveBackgroundImage(page, "#1d3b6e");
@@ -1146,7 +1151,6 @@ test("the full image fades in once decoded, and nothing else on the page changes
 
       observer.disconnect();
 
-      const [animation] = photo.getAnimations();
       const changes = [];
       const watcher = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
@@ -1160,17 +1164,37 @@ test("the full image fades in once decoded, and nothing else on the page changes
 
       window.swap = {
         decoded: photo.complete && photo.naturalWidth > 0,
-        timing: animation.effect.getTiming(),
-        keyframes: animation.effect.getKeyframes().map((keyframe) => keyframe.opacity),
+        opacity: getComputedStyle(photo).opacity,
+        frames: 0,
       };
-      animation.finished.then(() => {
-        changes.push(...watcher.takeRecords().map((mutation) => mutation.type));
-        watcher.disconnect();
+
+      // Count the frames until the fade starts; the photo waits transparent meanwhile.
+      const watch = () => {
+        const [animation] = photo.getAnimations();
+
+        if (!animation) {
+          window.swap.frames++;
+          requestAnimationFrame(watch);
+
+          return;
+        }
+
         Object.assign(window.swap, {
-          changes,
-          same: JSON.stringify(layers()) === JSON.stringify(before),
+          timing: animation.effect.getTiming(),
+          keyframes: animation.effect.getKeyframes().map((keyframe) => keyframe.opacity),
         });
-      });
+        animation.finished.then(() => {
+          changes.push(...watcher.takeRecords().map((mutation) => mutation.type));
+          watcher.disconnect();
+          Object.assign(window.swap, {
+            changes,
+            opacityAfter: getComputedStyle(photo).opacity,
+            same: JSON.stringify(layers()) === JSON.stringify(before),
+          });
+        });
+      };
+
+      watch();
     }).observe(document, { childList: true, subtree: true });
   });
   await page.reload();
@@ -1179,10 +1203,184 @@ test("the full image fades in once decoded, and nothing else on the page changes
   const swap = await page.evaluate(() => window.swap);
 
   expect(swap.decoded).toBe(true);
+  expect(swap.opacity).toBe("0");
+  expect(swap.frames).toBeGreaterThanOrEqual(2);
+  expect(swap.opacityAfter).toBe("1");
   expect(swap.timing).toMatchObject({ duration: 250, easing: "ease-in-out" });
   expect(swap.keyframes).toEqual(["0", "1"]);
   expect(swap.changes).toEqual([]);
   expect(swap.same).toBe(true);
+});
+
+// Stores a large image the way Customize does, with a placeholder of the given shape, and returns
+// the placeholder.
+async function saveLargeImage(page, placeholderShape) {
+  await page.goto("/");
+
+  const updatedAt = Date.now();
+
+  await page.evaluate(async (updatedAt) => {
+    const canvas = new OffscreenCanvas(3200, 2000);
+    const context = canvas.getContext("2d");
+
+    context.fillStyle = "#1d3b6e";
+    context.fillRect(0, 0, 3200, 2000);
+    context.fillStyle = "#f3d36b";
+    context.fillRect(1600, 0, 1600, 2000);
+
+    const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.9 });
+
+    await new Promise((resolve, reject) => {
+      const request = indexedDB.open("helium-tab", 1);
+
+      request.onupgradeneeded = () => request.result.createObjectStore("background");
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const transaction = request.result.transaction("background", "readwrite");
+
+        transaction.objectStore("background").put({ blob, updatedAt }, "image");
+        transaction.oncomplete = () => {
+          request.result.close();
+          resolve();
+        };
+      };
+    });
+  }, updatedAt);
+
+  const thumbnail = await drawTestImage(page, "image/webp");
+  const placeholder = { ...placeholderShape, thumbnail, width: 3200, height: 2000, updatedAt };
+
+  await page.evaluate(
+    ([key, value]) => localStorage.setItem(key, JSON.stringify(value)),
+    [BACKGROUND_IMAGE_KEY, placeholder],
+  );
+
+  return placeholder;
+}
+
+const storedPlaceholder = (page) =>
+  page.evaluate((key) => JSON.parse(localStorage.getItem(key)), BACKGROUND_IMAGE_KEY);
+
+// The stored rendition's size, or null without one.
+const storedRendition = (page) =>
+  page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        const request = indexedDB.open("helium-tab", 1);
+
+        request.onsuccess = () => {
+          const get = request.result
+            .transaction("background")
+            .objectStore("background")
+            .get("image");
+
+          get.onsuccess = () => {
+            const rendition = get.result?.rendition;
+
+            request.result.close();
+            resolve(rendition ? { width: rendition.width, height: rendition.height } : null);
+          };
+        };
+      }),
+  );
+
+test("an older placeholder is made again from the full image, without choosing it again", async ({
+  page,
+}) => {
+  const bands = ["#000000", "#000000"];
+
+  // The version with a small thumbnail, and bands that do not match the image.
+  const old = await saveLargeImage(page, {
+    averageColor: "#000000",
+    bands,
+    foreground: imageForeground(bands).tone,
+  });
+
+  await page.reload();
+  await expect.poll(async () => (await storedPlaceholder(page)).version).toBe(2);
+
+  const placeholder = await storedPlaceholder(page);
+  const thumbnail = await page.evaluate(async (source) => {
+    const image = new Image();
+
+    image.src = source;
+    await image.decode();
+
+    return [image.naturalWidth, image.naturalHeight];
+  }, placeholder.thumbnail);
+
+  // The same image, with a 1280 px thumbnail and the colors actually behind the content.
+  expect(placeholder.updatedAt).toBe(old.updatedAt);
+  expect(thumbnail).toEqual([1280, 800]);
+  expect(placeholder.bands).not.toEqual(bands);
+  expect(placeholder.averageColor).not.toBe("#000000");
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-image-foreground",
+    placeholder.foreground,
+  );
+});
+
+test("a placeholder too old to paint is made again, and the image shows", async ({ page }) => {
+  // From before the text set followed the bands behind the content: no bands, no version.
+  await saveLargeImage(page, { averageColor: "#88876c", foreground: "light" });
+
+  await page.reload();
+  await expect.poll(async () => (await storedPlaceholder(page))?.version).toBe(2);
+  await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+  expect(await paintedPhoto(page)).toMatchObject({ source: "blob:" });
+
+  // Without its full image, such a placeholder is discarded instead.
+  await page.evaluate(
+    ([key]) => localStorage.setItem(key, JSON.stringify({ averageColor: "#88876c", updatedAt: 1 })),
+    [BACKGROUND_IMAGE_KEY],
+  );
+  await page.reload();
+
+  await expect.poll(() => storedPlaceholder(page)).toBeNull();
+});
+
+test("a rendition fitted to the screen is painted, and made again for a larger screen", async ({
+  page,
+}) => {
+  await saveLargeImage(page, {
+    averageColor: "#88876c",
+    bands: ["#1d3b6e", "#1d3b6e"],
+    foreground: "light",
+    version: 2,
+  });
+  const screen = await page.evaluate(() => [screen.width, screen.height, devicePixelRatio]);
+
+  // The first load paints the full image and adds a rendition that covers this screen.
+  await page.reload();
+  expect(await paintedPhoto(page)).toMatchObject({ width: 3200, height: 2000 });
+  await expect.poll(() => storedRendition(page)).not.toBeNull();
+
+  const rendition = await storedRendition(page);
+
+  expect(rendition.width).toBeGreaterThanOrEqual(screen[0] * screen[2]);
+  expect(rendition.height).toBeGreaterThanOrEqual(screen[1] * screen[2]);
+  expect(rendition.width).toBeLessThan(3200);
+
+  // Later loads paint the rendition.
+  await page.reload();
+  expect(await paintedPhoto(page)).toMatchObject(rendition);
+
+  // On a screen with twice the pixels, the full image shows until a larger rendition is made.
+  const session = await page.context().newCDPSession(page);
+
+  await session.send("Emulation.setDeviceMetricsOverride", {
+    width: 1280,
+    height: 720,
+    deviceScaleFactor: 2,
+    mobile: false,
+    screenWidth: screen[0],
+    screenHeight: screen[1],
+  });
+  await page.reload();
+  expect(await paintedPhoto(page)).toMatchObject({ width: 3200, height: 2000 });
+  await expect
+    .poll(async () => (await storedRendition(page)).width)
+    .toBeGreaterThanOrEqual(screen[0] * 2);
 });
 
 test("an unsupported file is refused with a message", async ({ page }) => {

@@ -57,8 +57,9 @@ warnings, and no slower first paint.
 - Keep images on the device at full quality. They do not sync, because sync's per-item limit is
   a few kilobytes; a chosen color syncs with the other preferences.
 - Paint the background with the first paint, so a new tab never flashes the default first. An
-  image paints at once as a small, soft version of itself that is cheap to draw, and the full
-  image fades in over it once it has loaded, with nothing else on the page changing.
+  image paints at once as a 1280 px preview that is cheap to draw, and a copy scaled to the
+  screen fades in over it once it has loaded and been drawn, with nothing else on the page
+  changing. Previews from an earlier version are made again from the kept image.
   Text and controls follow the chosen color, or the parts of the photo behind the content,
   whatever the appearance. Photos show as they are, with a soft halo behind the text, a
   stronger one where no text color reads everywhere, and a faint overlay only as a last resort.

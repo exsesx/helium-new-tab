@@ -4,6 +4,7 @@ import {
   readStoredImage,
   removeBackgroundImage,
   saveBackgroundImage,
+  screenPixels,
 } from "../lib/background-photo.js";
 import { BACKGROUND_COLORS, loadBackgroundImage } from "../lib/background.js";
 
@@ -77,7 +78,7 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
       const placeholder = image;
 
       replacedImage = readStoredImage()
-        .then((record) => record && { blob: record.blob, placeholder })
+        .then((record) => record && { blob: record.blob, rendition: record.rendition, placeholder })
         .catch(() => undefined);
       image = undefined;
       void removeBackgroundImage();
@@ -266,7 +267,7 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
     fileInput.closest(".image-button").setAttribute("aria-busy", "true");
 
     try {
-      await keepImage(await importBackgroundImage(file));
+      await keepImage(await importBackgroundImage(file, undefined, screenPixels()));
     } catch (error) {
       const code = error?.code;
 
