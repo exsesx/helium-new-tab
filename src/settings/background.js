@@ -1,5 +1,6 @@
 import { importBackgroundImage } from "../lib/background-image.js";
 import {
+  backgroundPhotoStatus,
   readStoredImage,
   removeBackgroundImage,
   saveBackgroundImage,
@@ -147,6 +148,16 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
       preview.removeAttribute("src");
     } else if (preview.src !== image.thumbnail) {
       preview.src = image.thumbnail;
+    }
+
+    // Only the placeholder is left, such as after the browser cleared site data, so offer to
+    // choose the image again.
+    const isMissing = Boolean(image) && backgroundPhotoStatus() === "missing";
+
+    if (isMissing) {
+      showMessage("imageMissingError");
+    } else if (message.dataset.i18n === "imageMissingError") {
+      showMessage();
     }
   }
 

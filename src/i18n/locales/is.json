@@ -84,5 +84,6 @@
   "imageTypeError": "Veldu PNG-, JPEG-, WebP-, GIF- eða AVIF-mynd.",
   "imageSizeError": "Þessi mynd er of stór til að vista, jafnvel eftir smækkun. Prófaðu minni mynd.",
   "imageReadError": "Ekki tókst að opna þessa mynd. Prófaðu aðra skrá.",
-  "imageStorageError": "Ekki er nóg pláss á þessu tæki til að vista þessa mynd."
+  "imageStorageError": "Ekki er nóg pláss á þessu tæki til að vista þessa mynd.",
+  "imageMissingError": "Myndin í fullri stærð er ekki lengur á þessu tæki. Veldu hana aftur."
 }

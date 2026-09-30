@@ -84,5 +84,6 @@
   "imageTypeError": "Agħżel stampa PNG, JPEG, WebP, GIF jew AVIF.",
   "imageSizeError": "Din l-istampa kbira wisq biex tinżamm, anki wara li tiċċekken. Ipprova waħda iżgħar.",
   "imageReadError": "Din l-istampa ma setgħetx tinfetaħ. Ipprova fajl ieħor.",
-  "imageStorageError": "M’hemmx biżżejjed spazju fuq dan it-tagħmir biex tinżamm din l-istampa."
+  "imageStorageError": "M’hemmx biżżejjed spazju fuq dan it-tagħmir biex tinżamm din l-istampa.",
+  "imageMissingError": "L-istampa sħiħa m’għadhiex disponibbli fuq dan it-tagħmir. Erġa’ agħżilha."
 }

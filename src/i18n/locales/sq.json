@@ -84,5 +84,6 @@
   "imageTypeError": "Zgjidhni një imazh PNG, JPEG, WebP, GIF ose AVIF.",
   "imageSizeError": "Ky imazh është shumë i madh edhe pas zvogëlimit. Provoni një më të vogël.",
   "imageReadError": "Ky imazh nuk u hap dot. Provoni një skedar tjetër.",
-  "imageStorageError": "Nuk ka hapësirë të mjaftueshme në këtë pajisje për këtë imazh."
+  "imageStorageError": "Nuk ka hapësirë të mjaftueshme në këtë pajisje për këtë imazh.",
+  "imageMissingError": "Imazhi i plotë nuk është më i disponueshëm në këtë pajisje. Zgjidheni përsëri."
 }

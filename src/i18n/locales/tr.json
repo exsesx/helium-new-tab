@@ -84,5 +84,6 @@
   "imageTypeError": "PNG, JPEG, WebP, GIF veya AVIF görseli seçin.",
   "imageSizeError": "Bu görsel küçültüldükten sonra bile saklanamayacak kadar büyük. Daha küçük bir görsel deneyin.",
   "imageReadError": "Bu görsel açılamadı. Başka bir dosya deneyin.",
-  "imageStorageError": "Bu cihazda görseli saklamak için yeterli alan yok."
+  "imageStorageError": "Bu cihazda görseli saklamak için yeterli alan yok.",
+  "imageMissingError": "Görselin tamamı artık bu cihazda yok. Yeniden seçin."
 }

@@ -84,5 +84,6 @@
   "imageTypeError": "Velg et PNG-, JPEG-, WebP-, GIF- eller AVIF-bilde.",
   "imageSizeError": "Bildet er for stort til å lagres, selv etter forminsking. Prøv et mindre.",
   "imageReadError": "Bildet kunne ikke åpnes. Prøv en annen fil.",
-  "imageStorageError": "Det er ikke nok plass på denne enheten til å lagre bildet."
+  "imageStorageError": "Det er ikke nok plass på denne enheten til å lagre bildet.",
+  "imageMissingError": "Hele bildet finnes ikke lenger på denne enheten. Velg det på nytt."
 }

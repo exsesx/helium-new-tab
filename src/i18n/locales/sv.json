@@ -84,5 +84,6 @@
   "imageTypeError": "Välj en PNG-, JPEG-, WebP-, GIF- eller AVIF-bild.",
   "imageSizeError": "Bilden är för stor för att sparas, även förminskad. Prova en mindre.",
   "imageReadError": "Bilden kunde inte öppnas. Prova en annan fil.",
-  "imageStorageError": "Det finns inte tillräckligt med utrymme på enheten för att spara bilden."
+  "imageStorageError": "Det finns inte tillräckligt med utrymme på enheten för att spara bilden.",
+  "imageMissingError": "Hela bilden finns inte längre på den här enheten. Välj den igen."
 }

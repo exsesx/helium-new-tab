@@ -84,5 +84,6 @@
   "imageTypeError": "Alege o imagine PNG, JPEG, WebP, GIF sau AVIF.",
   "imageSizeError": "Imaginea este prea mare chiar și după micșorare. Încearcă una mai mică.",
   "imageReadError": "Imaginea nu s-a putut deschide. Încearcă alt fișier.",
-  "imageStorageError": "Nu există suficient spațiu pe acest dispozitiv pentru această imagine."
+  "imageStorageError": "Nu există suficient spațiu pe acest dispozitiv pentru această imagine.",
+  "imageMissingError": "Imaginea completă nu mai este disponibilă pe acest dispozitiv. Alege-o din nou."
 }

@@ -84,5 +84,6 @@
   "imageTypeError": "Wybierz obraz PNG, JPEG, WebP, GIF lub AVIF.",
   "imageSizeError": "Ten obraz jest za duży nawet po zmniejszeniu. Spróbuj mniejszego.",
   "imageReadError": "Nie udało się otworzyć tego obrazu. Spróbuj innego pliku.",
-  "imageStorageError": "Na tym urządzeniu brakuje miejsca na ten obraz."
+  "imageStorageError": "Na tym urządzeniu brakuje miejsca na ten obraz.",
+  "imageMissingError": "Pełny obraz nie jest już dostępny na tym urządzeniu. Wybierz go ponownie."
 }

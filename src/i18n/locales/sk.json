@@ -84,5 +84,6 @@
   "imageTypeError": "Vyberte obrázok vo formáte PNG, JPEG, WebP, GIF alebo AVIF.",
   "imageSizeError": "Obrázok je aj po zmenšení príliš veľký. Skúste menší.",
   "imageReadError": "Obrázok sa nepodarilo otvoriť. Skúste iný súbor.",
-  "imageStorageError": "V tomto zariadení nie je dosť miesta na uloženie obrázka."
+  "imageStorageError": "V tomto zariadení nie je dosť miesta na uloženie obrázka.",
+  "imageMissingError": "Celý obrázok už v tomto zariadení nie je k dispozícii. Vyberte ho znova."
 }

@@ -1065,6 +1065,22 @@ test("choosing an image in one tab shows it in full in the others", async ({ con
   expect(await paintedPhoto(second)).toMatchObject({ opacity: "1", width: 64, height: 40 });
 });
 
+test("without its full image, a placeholder stays and Customize asks for it again", async ({
+  page,
+}) => {
+  await saveBackgroundImage(page, "#88876c", { full: false });
+  await page.reload();
+
+  await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+  await page.getByRole("button", { name: "Customize" }).click();
+
+  await expect(page.locator("#background-image-message")).toHaveText(
+    "The full image is not available on this device anymore. Choose it again.",
+  );
+  await expect(page.locator(".background-photo")).toHaveCount(0);
+  await expect(page.getByText("Choose image…")).toBeVisible();
+});
+
 // The page over a photo: its text set, clock and search colors, and the overlay and its layers.
 function photoPage(page) {
   return page.evaluate(() => {

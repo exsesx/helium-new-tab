@@ -84,5 +84,6 @@
   "imageTypeError": "Kies een PNG-, JPEG-, WebP-, GIF- of AVIF-afbeelding.",
   "imageSizeError": "Deze afbeelding is zelfs verkleind te groot om te bewaren. Probeer een kleinere.",
   "imageReadError": "Deze afbeelding kon niet worden geopend. Probeer een ander bestand.",
-  "imageStorageError": "Er is niet genoeg ruimte op dit apparaat om deze afbeelding te bewaren."
+  "imageStorageError": "Er is niet genoeg ruimte op dit apparaat om deze afbeelding te bewaren.",
+  "imageMissingError": "De volledige afbeelding is niet meer beschikbaar op dit apparaat. Kies haar opnieuw."
 }

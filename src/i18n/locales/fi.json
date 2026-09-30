@@ -84,5 +84,6 @@
   "imageTypeError": "Valitse PNG-, JPEG-, WebP-, GIF- tai AVIF-kuva.",
   "imageSizeError": "Kuva on liian suuri tallennettavaksi pienennettynäkin. Kokeile pienempää.",
   "imageReadError": "Kuvaa ei voitu avata. Kokeile toista tiedostoa.",
-  "imageStorageError": "Laitteella ei ole tarpeeksi tilaa tämän kuvan tallentamiseen."
+  "imageStorageError": "Laitteella ei ole tarpeeksi tilaa tämän kuvan tallentamiseen.",
+  "imageMissingError": "Koko kuvaa ei enää ole tällä laitteella. Valitse se uudelleen."
 }

@@ -84,5 +84,6 @@
   "imageTypeError": "Vælg et PNG-, JPEG-, WebP-, GIF- eller AVIF-billede.",
   "imageSizeError": "Billedet er for stort til at gemme, selv efter formindskelse. Prøv et mindre.",
   "imageReadError": "Billedet kunne ikke åbnes. Prøv en anden fil.",
-  "imageStorageError": "Der er ikke plads nok på denne enhed til at gemme billedet."
+  "imageStorageError": "Der er ikke plads nok på denne enhed til at gemme billedet.",
+  "imageMissingError": "Hele billedet findes ikke længere på denne enhed. Vælg det igen."
 }

@@ -84,5 +84,6 @@
   "imageTypeError": "Izberite sliko PNG, JPEG, WebP, GIF ali AVIF.",
   "imageSizeError": "Slika je tudi po pomanjšanju prevelika. Poskusite z manjšo.",
   "imageReadError": "Slike ni bilo mogoče odpreti. Poskusite z drugo datoteko.",
-  "imageStorageError": "V tej napravi ni dovolj prostora za to sliko."
+  "imageStorageError": "V tej napravi ni dovolj prostora za to sliko.",
+  "imageMissingError": "Celotna slika v tej napravi ni več na voljo. Izberite jo znova."
 }

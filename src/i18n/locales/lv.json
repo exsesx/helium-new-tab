@@ -84,5 +84,6 @@
   "imageTypeError": "Izvēlieties PNG, JPEG, WebP, GIF vai AVIF attēlu.",
   "imageSizeError": "Attēls ir pārāk liels pat pēc samazināšanas. Mēģiniet mazāku.",
   "imageReadError": "Attēlu neizdevās atvērt. Mēģiniet citu failu.",
-  "imageStorageError": "Šajā ierīcē nepietiek vietas, lai saglabātu šo attēlu."
+  "imageStorageError": "Šajā ierīcē nepietiek vietas, lai saglabātu šo attēlu.",
+  "imageMissingError": "Pilnais attēls šajā ierīcē vairs nav pieejams. Izvēlieties to vēlreiz."
 }

@@ -84,5 +84,6 @@
   "imageTypeError": "請選擇 PNG、JPEG、WebP、GIF 或 AVIF 圖片。",
   "imageSizeError": "即使縮小後，此圖片仍然太大，無法儲存。請改用較小的圖片。",
   "imageReadError": "無法開啟此圖片。請改用其他檔案。",
-  "imageStorageError": "此裝置的空間不足，無法儲存此圖片。"
+  "imageStorageError": "此裝置的空間不足，無法儲存此圖片。",
+  "imageMissingError": "此裝置上的完整圖片已無法使用。請重新選擇。"
 }

@@ -84,5 +84,6 @@
   "imageTypeError": "Choose a PNG, JPEG, WebP, GIF, or AVIF image.",
   "imageSizeError": "This image is too large to keep, even after resizing. Try a smaller one.",
   "imageReadError": "This image could not be opened. Try another file.",
-  "imageStorageError": "There is not enough space on this device to keep this image."
+  "imageStorageError": "There is not enough space on this device to keep this image.",
+  "imageMissingError": "The full image is not available on this device anymore. Choose it again."
 }

@@ -84,5 +84,6 @@
   "imageTypeError": "Tria una imatge PNG, JPEG, WebP, GIF o AVIF.",
   "imageSizeError": "Aquesta imatge és massa gran per desar-la, fins i tot reduïda. Prova’n una de més petita.",
   "imageReadError": "No s’ha pogut obrir aquesta imatge. Prova un altre fitxer.",
-  "imageStorageError": "No hi ha prou espai en aquest dispositiu per desar aquesta imatge."
+  "imageStorageError": "No hi ha prou espai en aquest dispositiu per desar aquesta imatge.",
+  "imageMissingError": "La imatge completa ja no és disponible en aquest dispositiu. Torna-la a triar."
 }

@@ -84,5 +84,6 @@
   "imageTypeError": "Roghnaigh íomhá PNG, JPEG, WebP, GIF nó AVIF.",
   "imageSizeError": "Tá an íomhá seo rómhór le coinneáil, fiú tar éis í a laghdú. Bain triail as ceann níos lú.",
   "imageReadError": "Níorbh fhéidir an íomhá seo a oscailt. Bain triail as comhad eile.",
-  "imageStorageError": "Níl go leor spáis ar an ngléas seo chun an íomhá seo a choinneáil."
+  "imageStorageError": "Níl go leor spáis ar an ngléas seo chun an íomhá seo a choinneáil.",
+  "imageMissingError": "Níl an íomhá iomlán ar fáil ar an ngléas seo a thuilleadh. Roghnaigh arís í."
 }

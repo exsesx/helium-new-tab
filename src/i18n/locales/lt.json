@@ -84,5 +84,6 @@
   "imageTypeError": "Pasirinkite PNG, JPEG, WebP, GIF arba AVIF vaizdą.",
   "imageSizeError": "Vaizdas per didelis net ir sumažintas. Bandykite mažesnį.",
   "imageReadError": "Nepavyko atidaryti vaizdo. Bandykite kitą failą.",
-  "imageStorageError": "Šiame įrenginyje nepakanka vietos šiam vaizdui išsaugoti."
+  "imageStorageError": "Šiame įrenginyje nepakanka vietos šiam vaizdui išsaugoti.",
+  "imageMissingError": "Viso vaizdo šiame įrenginyje nebėra. Pasirinkite jį dar kartą."
 }

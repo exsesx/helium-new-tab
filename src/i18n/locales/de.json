@@ -84,5 +84,6 @@
   "imageTypeError": "Wähle ein Bild im Format PNG, JPEG, WebP, GIF oder AVIF.",
   "imageSizeError": "Dieses Bild ist selbst verkleinert zu groß zum Speichern. Versuche ein kleineres.",
   "imageReadError": "Dieses Bild konnte nicht geöffnet werden. Versuche eine andere Datei.",
-  "imageStorageError": "Auf diesem Gerät ist nicht genug Platz, um dieses Bild zu speichern."
+  "imageStorageError": "Auf diesem Gerät ist nicht genug Platz, um dieses Bild zu speichern.",
+  "imageMissingError": "Das vollständige Bild ist auf diesem Gerät nicht mehr verfügbar. Wähle es erneut aus."
 }

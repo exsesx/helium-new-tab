@@ -84,5 +84,6 @@
   "imageTypeError": "Choisissez une image PNG, JPEG, WebP, GIF ou AVIF.",
   "imageSizeError": "Cette image est trop lourde, même réduite. Essayez-en une plus petite.",
   "imageReadError": "Impossible d’ouvrir cette image. Essayez un autre fichier.",
-  "imageStorageError": "Cet appareil n’a pas assez d’espace pour conserver cette image."
+  "imageStorageError": "Cet appareil n’a pas assez d’espace pour conserver cette image.",
+  "imageMissingError": "L’image complète n’est plus disponible sur cet appareil. Choisissez-la à nouveau."
 }

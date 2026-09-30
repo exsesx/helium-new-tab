@@ -84,5 +84,6 @@
   "imageTypeError": "Vali PNG-, JPEG-, WebP-, GIF- või AVIF-pilt.",
   "imageSizeError": "See pilt on ka vähendatult salvestamiseks liiga suur. Proovi väiksemat.",
   "imageReadError": "Seda pilti ei saanud avada. Proovi mõnda teist faili.",
-  "imageStorageError": "Selles seadmes pole selle pildi salvestamiseks piisavalt ruumi."
+  "imageStorageError": "Selles seadmes pole selle pildi salvestamiseks piisavalt ruumi.",
+  "imageMissingError": "Täispilti selles seadmes enam pole. Vali see uuesti."
 }
