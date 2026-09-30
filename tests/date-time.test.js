@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { createDateFormatter, createTimeFormatter } from "../src/lib/date-time.js";
+import { createDateFormatter, createTimeFormatter } from "../src/lib/clock.js";
 import { readPreferences } from "../src/lib/model.js";
 
 const afternoon = new Date(2026, 8, 21, 16, 5, 9);

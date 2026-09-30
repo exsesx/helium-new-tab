@@ -1,4 +1,22 @@
-import { createDateFormatter, createTimeFormatter } from "./date-time.js";
+// Only validated time formats reach this, so the lookup needs no own-property guard.
+const HOUR_CYCLES = { "24h": "h23", "12h": "h12" };
+
+export function createDateFormatter(locales) {
+  return new Intl.DateTimeFormat(locales, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+}
+
+export function createTimeFormatter(preferences, locales) {
+  return new Intl.DateTimeFormat(locales, {
+    hour: "numeric",
+    minute: "2-digit",
+    second: preferences.showSeconds ? "2-digit" : undefined,
+    hourCycle: HOUR_CYCLES[preferences.timeFormat],
+  });
+}
 
 export function createClock({ clock, date, container }) {
   let preferences;
