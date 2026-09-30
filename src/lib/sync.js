@@ -51,6 +51,16 @@ export async function readSynced(key = PREFERENCES_KEY) {
   }
 }
 
+// Reads a synced item that can arrive late, such as at startup. `changes` counts this tab's
+// changes to the item, its own edits and those another tab passes on. When that count moves
+// while the read is pending, the snapshot is older than what the tab shows, so it is stale.
+export async function readSyncedSnapshot(changes, key = PREFERENCES_KEY) {
+  const before = changes();
+  const value = await readSynced(key);
+
+  return { value, stale: changes() !== before };
+}
+
 // Debounces writes of the current value; flush() sends a pending write at once so closing the
 // tab cannot drop it.
 export function createSyncWriter(getValue, key = PREFERENCES_KEY) {

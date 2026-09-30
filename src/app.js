@@ -21,7 +21,7 @@ import {
   deviceId,
   mergeSynced,
   onSyncedChange,
-  readSynced,
+  readSyncedSnapshot,
 } from "./lib/sync.js";
 import { applyAppearance, loadPinnedSites } from "./lib/preferences.js";
 
@@ -48,6 +48,9 @@ const syncWriter = createSyncWriter(() => preferences);
 const changeOrder = createChangeOrder(device, preferences);
 const sitesWriter = createSyncWriter(() => pinned, PINNED_SITES_KEY);
 const sitesOrder = createChangeOrder(device, pinned);
+// Changes this tab made or took from another tab; see readSyncedSnapshot.
+let preferenceChanges = 0;
+let siteChanges = 0;
 let activeLocale;
 let toastTimer;
 
@@ -133,6 +136,7 @@ $("open-settings").addEventListener("click", async () => {
 function updatePreference(key, value) {
   preferences[key] = value;
   changeOrder.stamp(preferences);
+  preferenceChanges++;
 
   if (key === "language") {
     void updateLanguage();
@@ -199,7 +203,9 @@ window.addEventListener("storage", (event) => {
   }
 
   try {
-    applyExternal(JSON.parse(event.newValue));
+    if (applyExternal(JSON.parse(event.newValue))) {
+      preferenceChanges++;
+    }
   } catch {
     /* Ignore malformed external data. */
   }
@@ -213,11 +219,12 @@ onSyncedChange((value) => {
   }
 });
 
-// Synced preferences win once they exist; otherwise this device seeds them.
-void readSynced().then((value) => {
+// Synced preferences win once they exist; otherwise this device seeds them. A snapshot that
+// arrives after a change in this tab is older than that change, so the tab's value seeds it.
+void readSyncedSnapshot(() => preferenceChanges).then(({ value, stale }) => {
   const merged = mergeSynced(value, preferences);
 
-  if (!merged) {
+  if (stale || !merged) {
     syncWriter.write();
     syncWriter.flush();
   } else if (applyExternal(merged)) {
@@ -256,6 +263,7 @@ if (showsSiteFavicons()) {
 function updatePinnedSites(sites) {
   pinned = { ...pinned, sites };
   sitesOrder.stamp(pinned);
+  siteChanges++;
   renderSites();
 
   saveLocal(PINNED_SITES_KEY, pinned);
@@ -288,7 +296,9 @@ window.addEventListener("storage", (event) => {
   }
 
   try {
-    applyExternalSites(JSON.parse(event.newValue));
+    if (applyExternalSites(JSON.parse(event.newValue))) {
+      siteChanges++;
+    }
   } catch {
     /* Ignore malformed external data. */
   }
@@ -301,15 +311,17 @@ onSyncedChange((value) => {
 }, PINNED_SITES_KEY);
 
 // Synced sites win once they exist. Only a list with sites seeds them, so a new device cannot
-// replace another device's list with an empty one before sync delivers it.
-void readSynced(PINNED_SITES_KEY).then((value) => {
-  if (value && typeof value === "object") {
-    if (applyExternalSites(value)) {
-      saveLocal(PINNED_SITES_KEY, pinned);
-    }
-  } else if (pinned.sites.length > 0) {
+// replace another device's list with an empty one before sync delivers it. A snapshot that
+// arrives after a change in this tab is older than that change, so the tab's list seeds it.
+void readSyncedSnapshot(() => siteChanges, PINNED_SITES_KEY).then(({ value, stale }) => {
+  const hasSyncedSites = Boolean(value) && typeof value === "object";
+  const seedsSync = stale || (!hasSyncedSites && pinned.sites.length > 0);
+
+  if (seedsSync) {
     sitesWriter.write();
     sitesWriter.flush();
+  } else if (hasSyncedSites && applyExternalSites(value)) {
+    saveLocal(PINNED_SITES_KEY, pinned);
   }
 });
 

@@ -6,6 +6,7 @@ import {
   mergeSynced,
   onSyncedChange,
   readSynced,
+  readSyncedSnapshot,
 } from "../src/lib/sync.js";
 
 afterEach(() => {
@@ -133,8 +134,45 @@ test("reports only sync changes to the preferences key", () => {
   expect(values).toEqual([{ theme: "dark" }]);
 });
 
+// Holds sync reads until the test releases them, like a slow chrome.storage.sync.get.
+function delayedStorage(initial) {
+  const { data } = fakeStorage(initial);
+  const { promise, resolve } = Promise.withResolvers();
+  const get = chrome.storage.sync.get;
+
+  chrome.storage.sync.get = async (key) => {
+    await promise;
+
+    return get(key);
+  };
+
+  return { data, release: resolve };
+}
+
+test("a snapshot is current when nothing changed while it was read", async () => {
+  const { release } = delayedStorage({ "helium-tab": { theme: "dark" } });
+  const changes = 0;
+
+  const snapshot = readSyncedSnapshot(() => changes);
+  release();
+
+  expect(await snapshot).toEqual({ value: { theme: "dark" }, stale: false });
+});
+
+test("a snapshot is stale when this tab changed the item while it was read", async () => {
+  const { release } = delayedStorage({ [PINNED_SITES_KEY]: { sites: [] } });
+  let changes = 3;
+
+  const snapshot = readSyncedSnapshot(() => changes, PINNED_SITES_KEY);
+  changes++;
+  release();
+
+  expect(await snapshot).toEqual({ value: { sites: [] }, stale: true });
+});
+
 test("does nothing without extension storage", async () => {
   expect(await readSynced()).toBeUndefined();
+  expect(await readSyncedSnapshot(() => 0)).toEqual({ value: undefined, stale: false });
   const { write, flush } = createSyncWriter(() => ({ theme: "dark" }));
 
   expect(() => write()).not.toThrow();
