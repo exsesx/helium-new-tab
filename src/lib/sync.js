@@ -63,8 +63,8 @@ export async function readSyncedSnapshot(changes, key = PREFERENCES_KEY) {
 }
 
 // Debounces writes of the current value; flush() sends a pending write at once so closing the
-// tab cannot drop it.
-export function createSyncWriter(getValue, key = PREFERENCES_KEY) {
+// tab cannot drop it. onWrite learns whether each write reached sync.
+export function createSyncWriter(getValue, key = PREFERENCES_KEY, onWrite = () => {}) {
   let timer;
   let changed = false;
 
@@ -83,9 +83,12 @@ export function createSyncWriter(getValue, key = PREFERENCES_KEY) {
       return;
     }
 
-    area.set({ [key]: shared(getValue()) }).catch(() => {
-      // Local storage still has the change; sync retries on the next save.
-    });
+    // A rejected write, such as one over the item quota, leaves the change in local storage only;
+    // sync retries on the next save.
+    area.set({ [key]: shared(getValue()) }).then(
+      () => onWrite(true),
+      () => onWrite(false),
+    );
   }
 
   function write() {

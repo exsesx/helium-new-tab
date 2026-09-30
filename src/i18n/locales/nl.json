@@ -39,6 +39,7 @@
   "overrideHelp": "Standaard gebruikt het algemene lettertype. Ontbrekende lettertypen worden door het standaardlettertype vervangen.",
   "privacy": "Opgeslagen in je browserprofiel. Geen tracking of accounts.",
   "storageError": "Opslag is niet beschikbaar. Wijzigingen blijven geldig totdat dit tabblad sluit.",
+  "syncError": "Opgeslagen op dit apparaat, maar nog niet gesynchroniseerd met je andere apparaten.",
   "searchError": "Zoeken is niet beschikbaar. Gebruik de adresbalk van de browser.",
   "settingsError": "Aanpassen kon niet worden geladen. Laad het tabblad opnieuw om het nogmaals te proberen.",
   "languageError": "Deze vertaling kon niet worden geladen. Voorlopig wordt Engels gebruikt.",

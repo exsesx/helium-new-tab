@@ -32,6 +32,7 @@ const SITE_FOCUS_ORDER = {
 export function createSettings({
   getPreferences,
   getPinnedSites,
+  hasUnsyncedChanges,
   onChange,
   onPinnedSitesChange,
   translator,
@@ -300,6 +301,25 @@ export function createSettings({
 
   siteAddress.addEventListener("input", clearSiteError);
 
+  // Changes are saved on this device first; the status says when sync has not taken them yet.
+  function showSyncStatus() {
+    const status = find("sync-status");
+    const unsynced = hasUnsyncedChanges();
+
+    // Leave the live region alone unless its message comes or goes, so it is announced once.
+    if (unsynced === Boolean(status.dataset.i18n)) {
+      return;
+    }
+
+    if (unsynced) {
+      status.dataset.i18n = "syncError";
+      status.textContent = translator.text("syncError");
+    } else {
+      delete status.dataset.i18n;
+      status.textContent = "";
+    }
+  }
+
   function sync() {
     translator.apply(dialog);
 
@@ -326,6 +346,7 @@ export function createSettings({
     }
 
     renderSiteList();
+    showSyncStatus();
   }
 
   for (const [id, key] of fields) {
@@ -390,5 +411,7 @@ export function createSettings({
         sync();
       }
     },
+
+    showSyncStatus,
   };
 }

@@ -39,6 +39,7 @@
   "overrideHelp": "Numatytasis naudoja bendrąjį šriftą. Trūkstami šriftai pakeičiami numatytuoju.",
   "privacy": "Įrašoma naršyklės profilyje. Be sekimo ir paskyrų.",
   "storageError": "Saugykla nepasiekiama. Pakeitimai galios iki šio skirtuko užvėrimo.",
+  "syncError": "Išsaugota šiame įrenginyje, bet dar nesinchronizuota su kitais jūsų įrenginiais.",
   "searchError": "Paieška nepasiekiama. Naudokite naršyklės adreso juostą.",
   "settingsError": "Nepavyko įkelti tinkinimo. Bandykite iš naujo įkelti skirtuką.",
   "languageError": "Nepavyko įkelti vertimo. Kol kas naudojama anglų kalba.",

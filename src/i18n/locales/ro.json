@@ -39,6 +39,7 @@
   "overrideHelp": "Implicit folosește fontul global. Fonturile lipsă sunt înlocuite cu cel implicit.",
   "privacy": "Salvat în profilul browserului. Fără urmărire sau conturi.",
   "storageError": "Stocarea nu este disponibilă. Modificările se păstrează până la închiderea acestei file.",
+  "syncError": "Salvat pe acest dispozitiv, dar încă nesincronizat cu celelalte dispozitive ale tale.",
   "searchError": "Căutarea nu este disponibilă. Folosește bara de adrese a browserului.",
   "settingsError": "Personalizarea nu s-a putut încărca. Reîncarcă fila pentru a încerca din nou.",
   "languageError": "Traducerea nu s-a putut încărca. Pentru moment se folosește engleza.",

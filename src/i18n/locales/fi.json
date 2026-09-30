@@ -39,6 +39,7 @@
   "overrideHelp": "Oletus käyttää yleistä fonttia. Puuttuvat fontit korvataan oletusfontilla.",
   "privacy": "Tallennetaan selaimen profiiliin. Ei seurantaa eikä tilejä.",
   "storageError": "Tallennustila ei ole käytettävissä. Muutokset säilyvät välilehden sulkemiseen asti.",
+  "syncError": "Tallennettu tähän laitteeseen, mutta ei vielä synkronoitu muihin laitteisiisi.",
   "searchError": "Haku ei ole käytettävissä. Käytä selaimen osoitepalkkia.",
   "settingsError": "Mukautusta ei voitu ladata. Yritä uudelleen lataamalla välilehti uudelleen.",
   "languageError": "Käännöstä ei voitu ladata. Toistaiseksi käytetään englantia.",

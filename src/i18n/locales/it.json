@@ -39,6 +39,7 @@
   "overrideHelp": "Predefinito usa il carattere globale. I caratteri mancanti vengono sostituiti con quello predefinito.",
   "privacy": "Salvato nel profilo del browser. Nessun tracciamento né account.",
   "storageError": "L’archiviazione non è disponibile. Le modifiche dureranno fino alla chiusura di questa scheda.",
+  "syncError": "Salvato su questo dispositivo, ma non ancora sincronizzato con gli altri tuoi dispositivi.",
   "searchError": "La ricerca non è disponibile. Usa la barra degli indirizzi del browser.",
   "settingsError": "Impossibile caricare la personalizzazione. Ricarica la scheda per riprovare.",
   "languageError": "Impossibile caricare questa traduzione. Per ora verrà usato l’inglese.",

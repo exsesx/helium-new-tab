@@ -44,9 +44,19 @@ const searchForm = createSearchForm({
   onError: () => notify(translator.text("searchError")),
 });
 const device = deviceId();
-const syncWriter = createSyncWriter(() => preferences);
+// Synced items whose latest write sync rejected, so their changes are only on this device.
+const unsyncedItems = new Set();
+const syncWriter = createSyncWriter(
+  () => preferences,
+  PREFERENCES_KEY,
+  (synced) => reportSync(PREFERENCES_KEY, synced),
+);
 const changeOrder = createChangeOrder(device, preferences);
-const sitesWriter = createSyncWriter(() => pinned, PINNED_SITES_KEY);
+const sitesWriter = createSyncWriter(
+  () => pinned,
+  PINNED_SITES_KEY,
+  (synced) => reportSync(PINNED_SITES_KEY, synced),
+);
 const sitesOrder = createChangeOrder(device, pinned);
 // Changes this tab made, and current copies it received from another tab or device, even
 // copies of what it already shows; see readSyncedSnapshot.
@@ -82,6 +92,17 @@ function save(key) {
   }
 }
 
+// Customize says when a change is saved here but has not synced, and clears it once one does.
+function reportSync(key, synced) {
+  if (synced) {
+    unsyncedItems.delete(key);
+  } else {
+    unsyncedItems.add(key);
+  }
+
+  settings?.showSyncStatus();
+}
+
 window.addEventListener("pagehide", syncWriter.flush);
 window.addEventListener("pagehide", sitesWriter.flush);
 
@@ -112,6 +133,7 @@ $("open-settings").addEventListener("click", async () => {
       settings = createSettings({
         getPreferences: () => preferences,
         getPinnedSites: () => pinned.sites,
+        hasUnsyncedChanges: () => unsyncedItems.size > 0,
         translator,
         languages,
         onChange(key, value) {

@@ -39,6 +39,7 @@
   "overrideHelp": "Vaikimisi kasutatakse üldist fonti. Puuduvad fondid asendatakse vaikefondiga.",
   "privacy": "Salvestatakse brauseri profiili. Jälgimise ja kontodeta.",
   "storageError": "Salvestusruum pole saadaval. Muudatused kehtivad vahekaardi sulgemiseni.",
+  "syncError": "Salvestatud selles seadmes, kuid pole veel sinu teiste seadmetega sünkroonitud.",
   "searchError": "Otsing pole saadaval. Kasuta brauseri aadressiriba.",
   "settingsError": "Kohandamist ei saanud laadida. Proovi vahekaarti uuesti laadida.",
   "languageError": "Tõlget ei saanud laadida. Praegu kasutatakse inglise keelt.",

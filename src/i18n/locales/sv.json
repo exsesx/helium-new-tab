@@ -39,6 +39,7 @@
   "overrideHelp": "Standard följer det globala teckensnittet. Saknade teckensnitt ersätts med standardteckensnittet.",
   "privacy": "Sparas i webbläsarprofilen. Ingen spårning, inga konton.",
   "storageError": "Lagring är inte tillgänglig. Ändringarna gäller tills fliken stängs.",
+  "syncError": "Sparat på den här enheten, men ännu inte synkroniserat med dina andra enheter.",
   "searchError": "Sökning är inte tillgänglig. Använd webbläsarens adressfält.",
   "settingsError": "Anpassning kunde inte laddas. Ladda om fliken för att försöka igen.",
   "languageError": "Översättningen kunde inte laddas. Engelska används tills vidare.",

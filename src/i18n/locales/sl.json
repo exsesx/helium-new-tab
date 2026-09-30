@@ -39,6 +39,7 @@
   "overrideHelp": "Privzeto uporablja splošno pisavo. Manjkajoče pisave se nadomestijo s privzeto.",
   "privacy": "Shranjeno v profilu brskalnika. Brez sledenja in računov.",
   "storageError": "Shramba ni na voljo. Spremembe veljajo do zaprtja tega zavihka.",
+  "syncError": "Shranjeno v tej napravi, vendar še ni sinhronizirano z vašimi drugimi napravami.",
   "searchError": "Iskanje ni na voljo. Uporabite naslovno vrstico brskalnika.",
   "settingsError": "Prilagajanja ni bilo mogoče naložiti. Znova naložite zavihek in poskusite ponovno.",
   "languageError": "Prevoda ni bilo mogoče naložiti. Za zdaj se uporablja angleščina.",

@@ -18,8 +18,9 @@ async function savePreferences(page, preferences) {
 }
 
 // A slow chrome.storage.sync for a page or a whole context. Each read takes its snapshot when it
-// starts, like the real API, and answers once the page calls releaseSyncReads(). The page's
-// onChanged listeners are kept so a test can deliver another device's change.
+// starts, like the real API, and answers once the page calls releaseSyncReads(). Writes over the
+// per-item quota are rejected, and so is every write while window.failSyncWrites is set. The
+// page's onChanged listeners are kept so a test can deliver another device's change.
 async function delaySyncReads(target, synced) {
   await target.addInitScript((initial) => {
     const { promise, resolve } = Promise.withResolvers();
@@ -38,6 +39,14 @@ async function delaySyncReads(target, synced) {
         },
 
         async set(value) {
+          for (const [key, item] of Object.entries(value)) {
+            const bytes = new TextEncoder().encode(key + JSON.stringify(item)).length;
+
+            if (window.failSyncWrites || bytes > 8192) {
+              throw new Error("QUOTA_BYTES_PER_ITEM quota exceeded");
+            }
+          }
+
           Object.assign(window.syncData, structuredClone(value));
         },
       },
@@ -944,6 +953,82 @@ test("adding and renaming stop when the list would be too large to sync", async 
   await name.press("Enter");
 
   await expect(pinnedLinks(page).first()).toHaveAccessibleName("A");
+});
+
+const NOT_SYNCED = "Saved on this device, but not synced to your other devices yet.";
+
+test("Customize says when a change is saved here but sync rejected it", async ({ page }) => {
+  await delaySyncReads(page, {});
+  await page.goto("/");
+  await releaseSyncReads(page);
+  await page.evaluate(() => {
+    window.failSyncWrites = true;
+  });
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  const status = page.locator("#sync-status");
+
+  await expect(status).toHaveRole("status");
+  await expect(status).toBeHidden();
+
+  await page.getByLabel("Appearance").selectOption("dark");
+
+  await expect(status).toBeVisible();
+  await expect(status).toHaveText(NOT_SYNCED);
+
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+
+  expect(saved.theme).toBe("dark");
+
+  // The next write that sync takes clears the message.
+  await page.evaluate(() => {
+    window.failSyncWrites = false;
+  });
+  await page.getByLabel("Appearance").selectOption("light");
+
+  await expect(status).toBeHidden();
+
+  const synced = await page.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
+
+  expect(synced.theme).toBe("light");
+});
+
+test("an older list too large for sync stays local until it is short enough", async ({ page }) => {
+  // Kept from before the size limit: four long addresses exceed one synced item.
+  const sites = ["a", "b", "c", "d"].map((letter) => ({
+    url: `https://${letter}.example.com/${"a".repeat(2000)}`,
+    title: `${letter}.example.com`,
+  }));
+
+  await delaySyncReads(page, {});
+  await savePinnedSites(page, sites);
+  await page.reload();
+  await releaseSyncReads(page);
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  const status = page.locator("#sync-status");
+
+  await expect(status).toHaveText(NOT_SYNCED);
+
+  // A shorter name is kept here, but the list is still too large to sync.
+  const name = page.getByLabel("Name for a.example.com");
+  await name.fill("A");
+  await name.press("Enter");
+
+  await expect(pinnedLinks(page).first()).toHaveAccessibleName("A");
+  await expect(status).toHaveText(NOT_SYNCED);
+  expect(await page.evaluate((key) => window.syncData[key], SITES_KEY)).toBeUndefined();
+
+  await page.getByRole("button", { name: "Remove b.example.com" }).click();
+
+  await expect(status).toBeHidden();
+
+  const synced = await page.evaluate((key) => window.syncData[key], SITES_KEY);
+
+  expect(synced.sites.map((site) => site.title)).toEqual(["A", "c.example.com", "d.example.com"]);
 });
 
 test("a plain click on a pinned site opens it in this tab", async ({ page }) => {

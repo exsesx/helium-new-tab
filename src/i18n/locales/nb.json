@@ -39,6 +39,7 @@
   "overrideHelp": "Standard følger den globale skrifttypen. Manglende skrifttyper erstattes med standardskrifttypen.",
   "privacy": "Lagres i nettleserprofilen. Ingen sporing eller kontoer.",
   "storageError": "Lagring er ikke tilgjengelig. Endringer gjelder til fanen lukkes.",
+  "syncError": "Lagret på denne enheten, men ikke synkronisert med de andre enhetene dine ennå.",
   "searchError": "Søk er ikke tilgjengelig. Bruk nettleserens adressefelt.",
   "settingsError": "Tilpasning kunne ikke lastes inn. Last inn fanen på nytt for å prøve igjen.",
   "languageError": "Oversettelsen kunne ikke lastes inn. Engelsk brukes inntil videre.",

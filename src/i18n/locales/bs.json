@@ -39,6 +39,7 @@
   "overrideHelp": "Zadano koristi opći font. Nedostupni fontovi zamjenjuju se zadanim.",
   "privacy": "Čuva se u profilu preglednika. Bez praćenja i računa.",
   "storageError": "Pohrana nije dostupna. Promjene vrijede do zatvaranja ove kartice.",
+  "syncError": "Sačuvano na ovom uređaju, ali još nije sinhronizovano s vašim drugim uređajima.",
   "searchError": "Pretraga nije dostupna. Koristite adresnu traku preglednika.",
   "settingsError": "Prilagođavanje se ne može učitati. Ponovo učitajte karticu i pokušajte opet.",
   "languageError": "Prijevod se ne može učitati. Zasad se koristi engleski.",

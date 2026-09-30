@@ -73,6 +73,35 @@ test("flush writes a pending change at once and cancels the delayed write", asyn
   expect(data["helium-tab"]).toEqual({ theme: "light" });
 });
 
+test("reports whether each write reached sync", async () => {
+  const { data } = fakeStorage();
+  const results = [];
+  const { write, flush } = createSyncWriter(
+    () => ({ theme: "dark" }),
+    "helium-tab",
+    (synced) => results.push(synced),
+  );
+  const set = chrome.storage.sync.set;
+
+  chrome.storage.sync.set = async () => {
+    throw new Error("QUOTA_BYTES_PER_ITEM quota exceeded");
+  };
+  write();
+  flush();
+  await Bun.sleep(0);
+
+  expect(results).toEqual([false]);
+  expect(data["helium-tab"]).toBeUndefined();
+
+  chrome.storage.sync.set = set;
+  write();
+  flush();
+  await Bun.sleep(0);
+
+  expect(results).toEqual([false, true]);
+  expect(data["helium-tab"]).toEqual({ theme: "dark" });
+});
+
 test("flush without a pending change writes nothing", async () => {
   const { data } = fakeStorage();
 

@@ -39,6 +39,7 @@
   "overrideHelp": "Standard verwendet die globale Schriftart. Fehlende Schriftarten werden durch die Standardschrift ersetzt.",
   "privacy": "Im Browserprofil gespeichert. Ohne Tracking oder Konten.",
   "storageError": "Der Speicher ist nicht verfügbar. Änderungen gelten bis zum Schließen dieses Tabs.",
+  "syncError": "Auf diesem Gerät gespeichert, aber noch nicht mit deinen anderen Geräten synchronisiert.",
   "searchError": "Die Suche ist nicht verfügbar. Verwende die Adressleiste des Browsers.",
   "settingsError": "Die Anpassung konnte nicht geladen werden. Lade den Tab erneut, um es noch einmal zu versuchen.",
   "languageError": "Diese Übersetzung konnte nicht geladen werden. Vorerst wird Englisch verwendet.",

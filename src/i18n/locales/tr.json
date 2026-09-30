@@ -39,6 +39,7 @@
   "overrideHelp": "Varsayılan, genel yazı tipini kullanır. Eksik yazı tipleri varsayılanla değiştirilir.",
   "privacy": "Tarayıcı profilinde saklanır. Takip ve hesap yok.",
   "storageError": "Depolama kullanılamıyor. Değişiklikler bu sekme kapanana kadar geçerlidir.",
+  "syncError": "Bu cihaza kaydedildi ancak diğer cihazlarınızla henüz eşitlenmedi.",
   "searchError": "Arama kullanılamıyor. Tarayıcınızın adres çubuğunu kullanın.",
   "settingsError": "Özelleştirme yüklenemedi. Yeniden denemek için sekmeyi yenileyin.",
   "languageError": "Bu çeviri yüklenemedi. Şimdilik İngilizce kullanılıyor.",

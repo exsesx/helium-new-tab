@@ -39,6 +39,7 @@
   "overrideHelp": "A opção predefinida usa o tipo de letra global. Tipos de letra em falta usam o predefinido.",
   "privacy": "Guardado no perfil do navegador. Sem rastreio nem contas.",
   "storageError": "O armazenamento não está disponível. As alterações duram até fechar este separador.",
+  "syncError": "Guardado neste dispositivo, mas ainda não sincronizado com os seus outros dispositivos.",
   "searchError": "A pesquisa não está disponível. Use a barra de endereço do navegador.",
   "settingsError": "Não foi possível carregar a personalização. Recarregue o separador para tentar novamente.",
   "languageError": "Não foi possível carregar esta tradução. Será usado inglês por agora.",

@@ -39,6 +39,7 @@
   "overrideHelp": "Az alapértelmezett az általános betűtípust használja. A hiányzó betűtípusokat az alapértelmezett helyettesíti.",
   "privacy": "A böngészőprofilban tárolva. Nincs követés vagy fiók.",
   "storageError": "A tárhely nem érhető el. A módosítások a lap bezárásáig maradnak érvényben.",
+  "syncError": "Mentve ezen az eszközön, de még nincs szinkronizálva a többi eszközöddel.",
   "searchError": "A keresés nem érhető el. Használd a böngésző címsorát.",
   "settingsError": "A testreszabás nem tölthető be. Próbáld újratölteni a lapot.",
   "languageError": "A fordítás nem tölthető be. Egyelőre az angol nyelv lesz használatban.",

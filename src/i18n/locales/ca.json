@@ -39,6 +39,7 @@
   "overrideHelp": "Per defecte utilitza el tipus de lletra global. Els tipus de lletra absents se substitueixen pel predeterminat.",
   "privacy": "Desat al perfil del navegador. Sense seguiment ni comptes.",
   "storageError": "L’emmagatzematge no està disponible. Els canvis duraran fins que es tanqui aquesta pestanya.",
+  "syncError": "Desat en aquest dispositiu, però encara no s’ha sincronitzat amb els altres dispositius.",
   "searchError": "La cerca no està disponible. Fes servir la barra d’adreces del navegador.",
   "settingsError": "No s’ha pogut carregar la personalització. Torna a carregar la pestanya per provar-ho de nou.",
   "languageError": "No s’ha pogut carregar la traducció. De moment es farà servir l’anglès.",

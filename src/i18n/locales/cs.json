@@ -39,6 +39,7 @@
   "overrideHelp": "Výchozí používá globální písmo. Chybějící písma se nahrazují výchozím.",
   "privacy": "Uloženo v profilu prohlížeče. Bez sledování a účtů.",
   "storageError": "Úložiště není dostupné. Změny budou platit do zavření této karty.",
+  "syncError": "Uloženo v tomto zařízení, ale zatím nesynchronizováno s vašimi dalšími zařízeními.",
   "searchError": "Vyhledávání není dostupné. Použijte adresní řádek prohlížeče.",
   "settingsError": "Přizpůsobení se nepodařilo načíst. Zkuste kartu načíst znovu.",
   "languageError": "Překlad se nepodařilo načíst. Prozatím se používá angličtina.",
