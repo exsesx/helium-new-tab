@@ -1533,3 +1533,52 @@ test("switching the appearance over a photo leaves the page as it is", async ({ 
   expect(after).toEqual(before);
   expect(animating).toBe(false);
 });
+
+test("text and the logo over a photo get a soft halo, and nowhere else", async ({ page }) => {
+  const halos = () =>
+    page.evaluate(() => {
+      const style = (selector) => getComputedStyle(document.querySelector(selector));
+
+      return {
+        clock: style("h1").textShadow,
+        date: style("#date").textShadow,
+        label: style(".pinned-title").textShadow,
+        logo: style(".helium-logo").filter,
+      };
+    });
+  const sites = [{ url: "https://example.com/", title: "Example" }];
+
+  // Light text on a night photo gets a dark halo.
+  await saveBackgroundImage(page, "#0b1020");
+  await savePinnedSites(page, sites);
+  await page.reload();
+
+  const dark = "rgba(0, 0, 0, 0.35) 0px 1px 2px, rgba(0, 0, 0, 0.25) 0px 0px 16px";
+
+  expect(await halos()).toEqual({
+    clock: dark,
+    date: dark,
+    label: dark,
+    logo: "drop-shadow(rgba(0, 0, 0, 0.35) 0px 0px 2px) drop-shadow(rgba(0, 0, 0, 0.25) 0px 0px 16px)",
+  });
+
+  // Dark text on a snow photo gets a light one.
+  await saveBackgroundImage(page, "#f5f6f5");
+  await savePinnedSites(page, sites);
+  await page.reload();
+
+  expect((await halos()).clock).toBe(
+    "rgba(255, 255, 255, 0.45) 0px 1px 2px, rgba(255, 255, 255, 0.35) 0px 0px 16px",
+  );
+
+  // Colors and the default background keep crisp text.
+  await savePinnedSites(page, sites, {
+    showPinnedSites: true,
+    background: "color",
+    backgroundColor: "#1e2a4a",
+  });
+  await page.evaluate((key) => localStorage.removeItem(key), BACKGROUND_IMAGE_KEY);
+  await page.reload();
+
+  expect(await halos()).toEqual({ clock: "none", date: "none", label: "none", logo: "none" });
+});

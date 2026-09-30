@@ -107,6 +107,28 @@ body {
   background-color: var(--image-overlay);
 }
 
+/* Over a photo, text and the logo carry a soft halo in the color opposite the text, so they read
+   over busy areas without toning down the whole photo. The logo's halo has no offset, so it
+   never looks like a hard 3D shadow. */
+:root[data-image-foreground="light"] main {
+  --halo: 0 1px 2px rgb(0 0 0 / 0.35), 0 0 16px rgb(0 0 0 / 0.25);
+  --logo-halo: drop-shadow(0 0 2px rgb(0 0 0 / 0.35)) drop-shadow(0 0 16px rgb(0 0 0 / 0.25));
+}
+
+:root[data-image-foreground="dark"] main {
+  --halo: 0 1px 2px rgb(255 255 255 / 0.45), 0 0 16px rgb(255 255 255 / 0.35);
+  --logo-halo: drop-shadow(0 0 2px rgb(255 255 255 / 0.45))
+    drop-shadow(0 0 16px rgb(255 255 255 / 0.35));
+}
+
+:root[data-background-image] :is(.clock-block, .pinned-title) {
+  text-shadow: var(--halo);
+}
+
+:root[data-background-image] .helium-logo {
+  filter: var(--logo-halo);
+}
+
 /* Background swaps crossfade briefly; with reduced motion they switch at once. */
 @media (prefers-reduced-motion: no-preference) {
   body {
