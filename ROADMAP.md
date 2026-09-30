@@ -16,17 +16,6 @@ warnings, and no slower first paint.
   reduced motion.
 - Verify with unit tests for ranking and Playwright tests for keyboard and pointer use.
 
-## Planned: Custom backgrounds
-
-- Let people pick a solid color or their own image in **Customize**. The current
-  backgrounds stay the default.
-- Keep images on the device. They do not sync, because sync's per-item limit is a few
-  kilobytes; a chosen color syncs with the other preferences.
-- Paint the background with the first paint, so a new tab never flashes the default first.
-- Nothing is downloaded, and no new permission shows an install warning.
-- Verify with unit tests for stored preferences and Playwright tests for choosing, painting,
-  and removing a background.
-
 ## Done
 
 ### Type anywhere to search
@@ -60,6 +49,20 @@ warnings, and no slower first paint.
 - Skip a most-visited list, because the `topSites` permission shows an install warning.
 - Show no row until the switch is on and a site is pinned, and draw it with the first paint
   so the page does not shift.
+
+### Custom backgrounds
+
+- Let people pick a pastel preset, a custom color, or their own image in **Customize**. The
+  current backgrounds stay the default.
+- Keep images on the device at full quality. They do not sync, because sync's per-item limit is
+  a few kilobytes; a chosen color syncs with the other preferences.
+- Paint the background with the first paint, so a new tab never flashes the default first. An
+  image paints at once as a small, soft version of itself that is cheap to draw, and the full
+  image fades in over it once it has loaded, with nothing else on the page changing.
+  Text and controls follow the chosen color, or the parts of the photo behind the content,
+  whatever the appearance. Photos show as they are, with a soft halo behind the text, a
+  stronger one where no text color reads everywhere, and a faint overlay only as a last resort.
+- Nothing is downloaded, and no new permission shows an install warning.
 
 ## Considering
 

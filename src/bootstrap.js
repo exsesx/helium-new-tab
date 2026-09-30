@@ -1,3 +1,4 @@
+import { applyBackgroundImage, loadBackgroundImage } from "./lib/background.js";
 import { loadPinnedSites, loadPreferences, applyAppearance } from "./lib/preferences.js";
 import { renderPinnedSites } from "./lib/site-tiles.js";
 import { resolveLanguage, translate } from "./i18n/languages.js";
@@ -12,9 +13,16 @@ const messages = __PAGE_MESSAGES__[selection.language];
 document.title = messages.newTab;
 applyAppearance(preferences);
 
+// This device's image covers the synced background. Only its small placeholder is read and
+// painted here; app.js shows the full image from IndexedDB once it has decoded.
+const backgroundImage = loadBackgroundImage();
+
+applyBackgroundImage(backgroundImage);
+
 // Hand off the validated preferences without rereading storage or resolving fonts.
 window.__heliumTabPreferences = preferences;
 window.__heliumTabSites = pinned;
+window.__heliumTabBackground = backgroundImage;
 
 // Draw pinned sites as soon as the parser adds their row, before its first paint, so the page
 // never shifts. Without sites, or while they are off, the row stays hidden and takes no space.

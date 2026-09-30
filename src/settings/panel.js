@@ -9,6 +9,7 @@ import {
 import { serviceIconsSupported } from "../lib/service-icons.js";
 import { showSiteFavicons } from "../lib/site-favicons.js";
 import { createSiteIcon } from "../lib/site-tiles.js";
+import { createBackgroundSettings } from "./background.js";
 
 // Messages for the reasons addPinnedSite gives.
 const SITE_ERRORS = {
@@ -56,7 +57,6 @@ export function createSettings({
   const fields = [
     ["language", "language"],
     ["theme", "theme"],
-    ["background", "background"],
     ["show-clock", "showClock"],
     ["time-format", "timeFormat"],
     ["show-seconds", "showSeconds"],
@@ -83,6 +83,13 @@ export function createSettings({
     ["date-custom-font", showsDate],
     ["pinned-site-controls", showsPinnedSites],
   ];
+
+  const background = createBackgroundSettings({
+    dialog,
+    getPreferences,
+    onChange,
+    onUpdate: () => sync(),
+  });
 
   // Render each custom name in its own font, so a missing font is visible while typing.
   function previewFont(key) {
@@ -291,9 +298,11 @@ export function createSettings({
   siteAddress.addEventListener("input", clearSiteError);
 
   function sync() {
-    translator.apply(dialog);
-
     const preferences = getPreferences();
+
+    // Background settings may show a message, so translate after they update.
+    background.sync();
+    translator.apply(dialog);
 
     for (const [id, key] of fields) {
       const field = find(id);
@@ -336,7 +345,27 @@ export function createSettings({
     });
   }
 
-  dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
+  // Closing returns focus to Customize. After a pointer close it must not show a keyboard focus
+  // ring, which Chromium otherwise carries over from the panel's own focus.
+  function closeWithPointer() {
+    dialog.close();
+
+    const opener = document.activeElement;
+
+    if (opener && opener !== document.body) {
+      opener.blur();
+      opener.focus({ focusVisible: false });
+    }
+  }
+
+  // A click from Enter or Space has no pointer presses, so keyboard closes keep the ring.
+  dialog.querySelector("[data-close]").addEventListener("click", (event) => {
+    if (event.detail > 0) {
+      closeWithPointer();
+    } else {
+      dialog.close();
+    }
+  });
 
   // The backdrop belongs to the dialog, so clicks on it target the dialog itself.
   function onBackdrop(event) {
@@ -360,7 +389,7 @@ export function createSettings({
 
   dialog.addEventListener("click", (event) => {
     if (pressedBackdrop && onBackdrop(event)) {
-      dialog.close();
+      closeWithPointer();
     }
 
     pressedBackdrop = false;
@@ -370,6 +399,7 @@ export function createSettings({
 
   return {
     open() {
+      background.reset();
       sync();
       dialog.showModal();
     },
@@ -377,6 +407,7 @@ export function createSettings({
     // Show changes that arrive from another tab or device while the panel is open.
     refresh() {
       if (dialog.open) {
+        background.load();
         sync();
       }
     },

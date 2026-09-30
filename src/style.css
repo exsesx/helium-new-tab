@@ -1,4 +1,7 @@
-:root {
+/* Light tokens, also used for content over a light chosen color in a dark appearance. */
+:root,
+:root[data-foreground="dark"]:not([data-background-image]) :is(main, footer),
+:root[data-image-foreground="dark"] :is(main, footer) {
   --text: #292b2b;
   --secondary: #555858;
   --muted: #666969;
@@ -42,7 +45,10 @@
   }
 }
 
-:root[data-theme="dark"] {
+/* Dark tokens, also used for content over a dark chosen color in a light appearance. */
+:root[data-theme="dark"],
+:root[data-foreground="light"]:not([data-background-image]) :is(main, footer),
+:root[data-image-foreground="light"] :is(main, footer) {
   --text: #e3e5e5;
   --secondary: #c3c6c6;
   --muted: #acb0b0;
@@ -61,6 +67,16 @@
   --dark-icon-filter: invert(1) hue-rotate(180deg);
 }
 
+/* Over a chosen color, text colors come from that color so they stay readable on mid-tones
+   and saturated colors; see foregroundColors. Toggles and errors appear only in Customize,
+   which keeps the appearance's own surface and tokens. */
+:root[data-background="color"]:not([data-background-image]) :is(main, footer) {
+  --text: var(--custom-text);
+  --secondary: var(--custom-secondary);
+  --muted: var(--custom-muted);
+  --border: var(--custom-border);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -73,6 +89,72 @@ body {
   display: grid;
   grid-template-rows: 1fr auto;
   font-size: 14px;
+}
+
+/* A photo shows as it is, under one text set it chose; see imageForeground. Only a mid-tone
+   photo gets a faint, even overlay, which is transparent otherwise. It covers both the
+   placeholder and the full image; see index.html and background-photo.js. */
+:root[data-background-image] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--image-overlay);
+}
+
+/* The full image over the placeholder, faded in once it has decoded; see background-photo.js. */
+.background-photo {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Over a photo, text and the logo carry a soft halo in the color opposite the text, so they read
+   over busy areas without toning down the whole photo. The logo's halo has no offset, so it
+   never looks like a hard 3D shadow. */
+:root[data-image-foreground="light"] main {
+  --halo: 0 1px 2px rgb(0 0 0 / 0.35), 0 0 16px rgb(0 0 0 / 0.25);
+  --logo-halo: drop-shadow(0 0 2px rgb(0 0 0 / 0.35)) drop-shadow(0 0 16px rgb(0 0 0 / 0.25));
+}
+
+:root[data-image-foreground="dark"] main {
+  --halo: 0 1px 2px rgb(255 255 255 / 0.45), 0 0 16px rgb(255 255 255 / 0.35);
+  --logo-halo: drop-shadow(0 0 2px rgb(255 255 255 / 0.45))
+    drop-shadow(0 0 16px rgb(255 255 255 / 0.35));
+}
+
+/* When no text set reads on every part of the photo behind the content, the halo is larger and
+   denser, still without an offset or a wash over the photo; see imageLegibility. */
+:root[data-image-foreground="light"][data-image-halo="strong"] main {
+  --halo: 0 1px 3px rgb(0 0 0 / 0.55), 0 0 24px rgb(0 0 0 / 0.45);
+  --logo-halo: drop-shadow(0 0 3px rgb(0 0 0 / 0.55)) drop-shadow(0 0 24px rgb(0 0 0 / 0.45));
+}
+
+:root[data-image-foreground="dark"][data-image-halo="strong"] main {
+  --halo: 0 1px 3px rgb(255 255 255 / 0.55), 0 0 24px rgb(255 255 255 / 0.45);
+  --logo-halo: drop-shadow(0 0 3px rgb(255 255 255 / 0.55))
+    drop-shadow(0 0 24px rgb(255 255 255 / 0.45));
+}
+
+:root[data-background-image] :is(.clock-block, .pinned-title) {
+  text-shadow: var(--halo);
+}
+
+:root[data-background-image] .helium-logo {
+  filter: var(--logo-halo);
+}
+
+/* Background swaps crossfade briefly; with reduced motion they switch at once. */
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    transition: background-color 200ms ease;
+  }
 }
 
 button,
@@ -126,6 +208,7 @@ a {
 }
 
 main {
+  color: var(--text);
   display: grid;
   justify-items: center;
   align-items: start;
@@ -447,6 +530,24 @@ h1 {
   --tile-hover-bg: color-mix(in srgb, var(--search-bg), #000 6%);
 }
 
+/* Over a chosen color or photo, pinned tiles take the pair that matches the page's text, like
+   the rest of the page does, instead of the appearance's. */
+:root[data-foreground="dark"]:not([data-background-image])
+  .pinned-sites
+  .site-icon:not(.has-favicon),
+:root[data-image-foreground="dark"] .pinned-sites .site-icon:not(.has-favicon) {
+  --tile-bg: var(--tone);
+  --tile-text: var(--tone-text);
+}
+
+:root[data-foreground="light"]:not([data-background-image])
+  .pinned-sites
+  .site-icon:not(.has-favicon),
+:root[data-image-foreground="light"] .pinned-sites .site-icon:not(.has-favicon) {
+  --tile-bg: var(--tone-dark);
+  --tile-text: var(--tone-dark-text);
+}
+
 .site-favicon {
   width: 24px;
   height: 24px;
@@ -515,6 +616,89 @@ kbd {
 
 .settings-button circle {
   fill: var(--bg);
+}
+
+/* Over a chosen color or image, the page's controls are frosted glass: a translucent version of
+   the search field's surface that blurs what is behind it, with a hairline edge. Hover and focus
+   make the glass more opaque instead of changing its color. */
+:root:is([data-background="color"], [data-background-image]) :is(main, footer) {
+  --frost-opacity: 70%;
+  --frost-raised-opacity: 85%;
+  --frost: color-mix(in srgb, var(--search-bg) var(--frost-opacity), transparent);
+  --frost-raised: color-mix(in srgb, var(--search-bg) var(--frost-raised-opacity), transparent);
+  --frost-edge: color-mix(in srgb, var(--text) 12%, transparent);
+  --frost-filter: blur(20px) saturate(1.2);
+}
+
+/* The field's 2px border is its focus ring, so its hairline is an inset outline instead. */
+:root:is([data-background="color"], [data-background-image]) #search-form {
+  background: var(--frost);
+  outline: 1px solid var(--frost-edge);
+  outline-offset: -1px;
+  backdrop-filter: var(--frost-filter);
+}
+
+:root:is([data-background="color"], [data-background-image]) #search-form:focus-within {
+  background: var(--frost-raised);
+}
+
+:root:is([data-background="color"], [data-background-image]) :is(.keyboard-hint, .settings-button) {
+  background: var(--frost);
+  box-shadow: inset 0 0 0 1px var(--frost-edge);
+  backdrop-filter: var(--frost-filter);
+}
+
+/* The hint becomes a pill as tall as the Customize button beside it. */
+:root:is([data-background="color"], [data-background-image]) .keyboard-hint {
+  padding: 8px 12px 8px 8px;
+  border-radius: 9px;
+}
+
+:root:is([data-background="color"], [data-background-image]) kbd {
+  background: transparent;
+  border-color: var(--frost-edge);
+}
+
+:root:is([data-background="color"], [data-background-image]) .settings-button:hover {
+  background: var(--frost-raised);
+}
+
+/* The icon's knobs cover the lines behind them in the glass's own color. */
+:root:is([data-background="color"], [data-background-image]) .settings-button circle {
+  fill: var(--search-bg);
+}
+
+:root:is([data-background="color"], [data-background-image]) .pinned-sites .site-icon {
+  background: color-mix(in srgb, var(--tile-bg) var(--frost-opacity), transparent);
+  box-shadow: inset 0 0 0 1px var(--frost-edge);
+  backdrop-filter: var(--frost-filter);
+}
+
+:root:is([data-background="color"], [data-background-image]) .pinned-site:hover .site-icon {
+  background: color-mix(in srgb, var(--tile-bg) var(--frost-raised-opacity), transparent);
+}
+
+/* Without transparency the glass is the surface it stands for, and hover and focus shift its
+   color as they do by default. */
+@media (prefers-reduced-transparency: reduce) {
+  :root:is([data-background="color"], [data-background-image]) :is(main, footer) {
+    --frost-opacity: 100%;
+    --frost-raised-opacity: 100%;
+    --frost-filter: none;
+  }
+
+  :root:is([data-background="color"], [data-background-image]) #search-form:focus-within {
+    background: var(--search-focus-bg);
+  }
+
+  :root:is([data-background="color"], [data-background-image]) .settings-button:hover {
+    background: var(--tint);
+  }
+
+  /* Tiles may use the other appearance's pair here, so hover mixes in the page's text color. */
+  :root:is([data-background="color"], [data-background-image]) .pinned-site:hover .site-icon {
+    background: color-mix(in srgb, var(--tile-bg), var(--text) 8%);
+  }
 }
 
 dialog {
@@ -736,7 +920,7 @@ input[type="checkbox"]:checked:before {
   transform: translateX(-50%);
   padding: 12px 18px;
   background: var(--text);
-  color: var(--bg);
+  color: var(--surface);
   border-radius: 12px;
   font-size: 12px;
   text-align: center;
@@ -1138,5 +1322,179 @@ input[type="checkbox"]:checked:before {
 }
 
 .pinned-site-form .section-help {
+  margin: 0;
+}
+
+.background-settings {
+  margin: 16px 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.background-settings legend {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 0 0 8px;
+}
+
+/* A segmented control; each mode is a visually hidden radio and its label. */
+.background-modes {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 2px;
+  margin-bottom: 12px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--tint);
+}
+
+.background-modes label {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 7px 8px;
+  border-radius: 8px;
+  color: var(--secondary);
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.background-modes input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.background-modes label:has(:checked) {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px #0000001a;
+}
+
+.background-modes label:has(:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+  gap: 10px;
+  padding: 6px 2px 18px;
+}
+
+.swatch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 36px;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px #0000001f;
+  color: #292b2b;
+  cursor: pointer;
+}
+
+.swatch[aria-checked="true"],
+.custom-swatch.is-selected {
+  box-shadow:
+    inset 0 0 0 1px #0000001f,
+    0 0 0 2px var(--panel),
+    0 0 0 4px var(--accent);
+}
+
+/* The custom tile shows its color once chosen, over a spectrum until then. */
+.custom-swatch {
+  background:
+    linear-gradient(var(--swatch), var(--swatch)),
+    conic-gradient(#fbdbe2, #fbe58a, #c9f5b2, #a9f2eb, #dbe4ff, #e3d9fd, #fbdbe2);
+}
+
+.custom-swatch svg {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.custom-swatch.is-selected svg {
+  visibility: hidden;
+}
+
+.custom-swatch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-swatch:has(:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.image-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0 14px;
+}
+
+.background-preview {
+  width: 64px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.image-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: var(--tint);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.image-button:hover {
+  background: var(--border);
+}
+
+.image-button:has(:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.image-button[aria-busy="true"] {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+/* The message stays in the page, empty, so screen readers announce what appears in it. */
+#background-image-message {
+  margin-top: 0;
+  color: var(--text);
+}
+
+#background-image-message:empty {
   margin: 0;
 }
