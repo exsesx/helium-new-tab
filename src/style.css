@@ -91,13 +91,8 @@ body {
   font-size: 14px;
 }
 
-/* The image is painted on the page canvas, so the page itself stays transparent. */
-:root[data-background-image] body {
-  background: transparent;
-}
-
 /* A photo shows as it is, under one text set it chose; see imageForeground. Only a mid-tone
-   photo gets a faint, even overlay, which is transparent otherwise. It covers both the blurred
+   photo gets a faint, even overlay, which is transparent otherwise. It covers both the
    placeholder and the full image; see index.html and background-photo.js. */
 :root[data-background-image] body::before {
   content: "";

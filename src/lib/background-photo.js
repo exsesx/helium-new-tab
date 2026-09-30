@@ -5,8 +5,9 @@ import { applyBackgroundImage, BACKGROUND_IMAGE_KEY } from "./background.js";
 const DATABASE = "helium-tab";
 const STORE = "background";
 const RECORD = "image";
-// The full image fades in over the placeholder, or appears at once with reduced motion.
-const FADE = 200;
+// The full image fades in over the placeholder, or appears at once with reduced motion. Nothing
+// else on the page changes when it does, so only the photo repaints.
+const FADE = 250;
 
 let database;
 // The photo on the page, and a count that lets a newer paint cancel an older one.
@@ -127,13 +128,13 @@ export async function paintBackgroundPhoto(placeholder) {
   // The photo it replaces goes once the fade has finished.
   const previous = photo;
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fade = { duration: reducedMotion ? 0 : FADE, easing: "ease-in-out" };
 
   document.body.append(next);
   photo = next;
   status = "shown";
 
-  await next.animate({ opacity: [0, 1] }, { duration: reducedMotion ? 0 : FADE, easing: "ease" })
-    .finished;
+  await next.animate({ opacity: [0, 1] }, fade).finished;
   previous?.remove();
 
   return status;

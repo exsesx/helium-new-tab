@@ -33,11 +33,14 @@ test("keeps compressed photos byte for byte, and encodes the rest again", () => 
   expect(keepsOriginal({ ...photo, width: 2880, height: 5121 })).toBe(false);
 });
 
-test("thumbnails are about 32 px on their longest side, keeping the shape", () => {
-  expect(thumbnailSize(5120, 2880)).toEqual({ width: 32, height: 18 });
-  expect(thumbnailSize(3024, 4032)).toEqual({ width: 24, height: 32 });
+test("thumbnails are 640 px on their longest side, keeping the shape", () => {
+  expect(thumbnailSize(5120, 2880)).toEqual({ width: 640, height: 360 });
+  expect(thumbnailSize(3024, 4032)).toEqual({ width: 480, height: 640 });
   expect(thumbnailSize(20, 10)).toEqual({ width: 20, height: 10 });
-  expect(thumbnailSize(10_000, 10)).toEqual({ width: 32, height: 1 });
+  expect(thumbnailSize(10_000, 10)).toEqual({ width: 640, height: 1 });
+
+  // Busy photos that would not fit are encoded smaller.
+  expect(thumbnailSize(5120, 2880, 320)).toEqual({ width: 320, height: 180 });
 });
 
 test("averages visible pixels into a hex color", () => {

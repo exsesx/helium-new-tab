@@ -834,6 +834,10 @@ async function paintedPhoto(page) {
   }));
 }
 
+// A #rrggbb color as getComputedStyle reports it.
+const hexToRgb = (hex) =>
+  `rgb(${[1, 3, 5].map((start) => Number.parseInt(hex.slice(start, start + 2), 16)).join(", ")})`;
+
 const pageBackground = (page) =>
   page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
@@ -963,11 +967,17 @@ test("choosing an image keeps it in full and paints its placeholder first", asyn
   );
   expect(saved?.background ?? "blend").toBe("blend");
 
-  // After a reload, the first frame paints the blurred placeholder, and the full image follows.
+  // After a reload, the first frame paints the placeholder as the page's own background, with no
+  // filter to paint, and the full image follows.
   await page.addInitScript(() => {
     requestAnimationFrame(() => {
+      const body = getComputedStyle(document.body);
+
       window.firstFrame = {
-        placeholder: getComputedStyle(document.documentElement, "::before").backgroundImage,
+        placeholder: body.backgroundImage,
+        color: body.backgroundColor,
+        filter: body.filter,
+        before: getComputedStyle(document.documentElement, "::before").content,
         photo: document.querySelector(".background-photo") !== null,
       };
     });
@@ -978,6 +988,9 @@ test("choosing an image keeps it in full and paints its placeholder first", asyn
   const firstFrame = await page.evaluate(() => window.firstFrame);
 
   expect(firstFrame.placeholder).toMatch(/^url\("data:image\/webp;base64,/);
+  expect(firstFrame.color).toBe(hexToRgb(placeholder.averageColor));
+  expect(firstFrame.filter).toBe("none");
+  expect(firstFrame.before).toBe("none");
   expect(firstFrame.photo).toBe(false);
   expect(await paintedPhoto(page)).toEqual({
     source: "blob:",
@@ -985,6 +998,191 @@ test("choosing an image keeps it in full and paints its placeholder first", asyn
     width: 64,
     height: 40,
   });
+});
+
+// Draws a photo-sized image: soft gradients and shapes, or noise that compresses badly.
+async function choosePhoto(page, { noise = false } = {}) {
+  const dataUrl = await page.evaluate((noise) => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    const gradient = context.createLinearGradient(0, 0, 2400, 1500);
+
+    canvas.width = 2400;
+    canvas.height = 1500;
+    gradient.addColorStop(0, "#f08a5d");
+    gradient.addColorStop(0.5, "#6a2c70");
+    gradient.addColorStop(1, "#1f4e79");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, 2400, 1500);
+
+    for (let index = 0; index < 40; index++) {
+      context.fillStyle = `hsl(${index * 37} 60% 60% / 0.5)`;
+      context.beginPath();
+      context.arc((index * 571) % 2400, (index * 331) % 1500, 60 + (index % 7) * 30, 0, 7);
+      context.fill();
+    }
+
+    if (noise) {
+      const pixels = context.getImageData(0, 0, 2400, 1500);
+
+      for (let index = 0; index < pixels.data.length; index++) {
+        pixels.data[index] = index % 4 === 3 ? 255 : Math.random() * 256;
+      }
+
+      context.putImageData(pixels, 0, 0);
+    }
+
+    // How long a 640 px, quality 0.7 thumbnail of it would be as a data URL.
+    const thumbnail = new OffscreenCanvas(640, 400);
+
+    thumbnail.getContext("2d").drawImage(canvas, 0, 0, 640, 400);
+    window.firstThumbnailBytes = thumbnail
+      .convertToBlob({ type: "image/webp", quality: 0.7 })
+      .then((blob) => blob.size);
+
+    return canvas.toDataURL("image/jpeg", 0.95);
+  }, noise);
+
+  await page.locator("#background-file").setInputFiles({
+    name: "photo.jpg",
+    mimeType: "image/jpeg",
+    buffer: Buffer.from(dataUrl.split(",")[1], "base64"),
+  });
+  await expect(page.locator(".background-photo")).toHaveCount(1);
+
+  return page.evaluate(async (key) => {
+    const { thumbnail } = JSON.parse(localStorage.getItem(key));
+    const image = new Image();
+
+    image.src = thumbnail;
+    await image.decode();
+
+    return {
+      length: thumbnail.length,
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+      firstLength: Math.ceil((await window.firstThumbnailBytes) / 3) * 4,
+    };
+  }, BACKGROUND_IMAGE_KEY);
+}
+
+test("a photo's placeholder is a 640 px thumbnail that fits local storage", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+
+  // A photo gets a 640 px WebP thumbnail, tens of kilobytes as a data URL.
+  const photo = await choosePhoto(page);
+
+  expect(photo).toMatchObject({ width: 640, height: 400 });
+  expect(photo.length).toBeLessThanOrEqual(128 * 1024);
+
+  // Noise that would not fit at quality 0.7 is encoded again, smaller, instead of being refused.
+  await page.getByRole("button", { name: "Remove image" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+
+  const noise = await choosePhoto(page, { noise: true });
+
+  expect(noise.firstLength).toBeGreaterThan(128 * 1024);
+  expect(noise.length).toBeLessThanOrEqual(128 * 1024);
+  expect(noise.width / noise.height).toBeCloseTo(2400 / 1500, 1);
+});
+
+test("the page background falls back to the appearance's, never to none", async ({ page }) => {
+  const backgrounds = () =>
+    page.evaluate(() => ({
+      page: getComputedStyle(document.documentElement).backgroundColor,
+      body: getComputedStyle(document.body).backgroundColor,
+    }));
+  // Marks the page as painting a color or image whose values are not set yet.
+  const markWithoutValues = (mark) =>
+    page.evaluate((mark) => {
+      const root = document.documentElement;
+
+      delete root.dataset.background;
+      delete root.dataset.backgroundImage;
+      root.style.removeProperty("--custom-bg");
+      root.style.removeProperty("--image-bg");
+      root.style.removeProperty("--image-thumbnail");
+      Object.assign(root.dataset, mark);
+    }, mark);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  for (const mark of [{ backgroundImage: "" }, { background: "color" }]) {
+    await markWithoutValues(mark);
+    expect(await backgrounds(), JSON.stringify(mark)).toEqual({
+      page: "rgb(255, 255, 255)",
+      body: "rgb(255, 255, 255)",
+    });
+  }
+
+  await page.emulateMedia({ colorScheme: "dark" });
+  await markWithoutValues({ backgroundImage: "" });
+
+  expect(await backgrounds()).toEqual({ page: "rgb(30, 32, 32)", body: "rgb(30, 32, 32)" });
+});
+
+test("the full image fades in once decoded, and nothing else on the page changes", async ({
+  page,
+}) => {
+  await saveBackgroundImage(page, "#1d3b6e");
+
+  // From the moment the photo is added until its fade has finished, record every change to the
+  // page's root and body, and the layers under the content.
+  await page.addInitScript(() => {
+    const layers = () => ({
+      body: getComputedStyle(document.body).background,
+      overlay: getComputedStyle(document.body, "::before").backgroundColor,
+    });
+
+    new MutationObserver((records, observer) => {
+      const photo = document.querySelector(".background-photo");
+
+      if (!photo) {
+        return;
+      }
+
+      observer.disconnect();
+
+      const [animation] = photo.getAnimations();
+      const changes = [];
+      const watcher = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          changes.push(`${mutation.target.nodeName} ${mutation.type} ${mutation.attributeName}`);
+        }
+      });
+      const before = layers();
+
+      watcher.observe(document.documentElement, { attributes: true });
+      watcher.observe(document.body, { attributes: true, childList: true });
+
+      window.swap = {
+        decoded: photo.complete && photo.naturalWidth > 0,
+        timing: animation.effect.getTiming(),
+        keyframes: animation.effect.getKeyframes().map((keyframe) => keyframe.opacity),
+      };
+      animation.finished.then(() => {
+        changes.push(...watcher.takeRecords().map((mutation) => mutation.type));
+        watcher.disconnect();
+        Object.assign(window.swap, {
+          changes,
+          same: JSON.stringify(layers()) === JSON.stringify(before),
+        });
+      });
+    }).observe(document, { childList: true, subtree: true });
+  });
+  await page.reload();
+  await page.waitForFunction(() => window.swap?.changes);
+
+  const swap = await page.evaluate(() => window.swap);
+
+  expect(swap.decoded).toBe(true);
+  expect(swap.timing).toMatchObject({ duration: 250, easing: "ease-in-out" });
+  expect(swap.keyframes).toEqual(["0", "1"]);
+  expect(swap.changes).toEqual([]);
+  expect(swap.same).toBe(true);
 });
 
 test("an unsupported file is refused with a message", async ({ page }) => {

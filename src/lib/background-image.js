@@ -1,6 +1,6 @@
-// Turns a chosen image file into a background: the full image, kept at full quality, and a tiny
+// Turns a chosen image file into a background: the full image, kept at full quality, and a small
 // placeholder for the first paint. Everything happens on this device.
-import { imageForeground, MAX_IMAGE_SIDE } from "./background.js";
+import { imageForeground, MAX_IMAGE_SIDE, MAX_THUMBNAIL_LENGTH } from "./background.js";
 
 export const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/avif"];
 
@@ -13,9 +13,15 @@ const ENCODED_QUALITY = 0.92;
 // Files this large would take too long to decode.
 const MAX_FILE_SIZE = 64 * 1024 * 1024;
 
-// The placeholder's thumbnail: about 1 KB, and blurred when painted.
-const THUMBNAIL_SIDE = 32;
-const THUMBNAIL_QUALITY = 0.8;
+// The placeholder's thumbnail: large enough that the browser's own scaling makes it a soft
+// version of the image, with no filter to paint, and close enough to it that the full image's
+// fade is hard to see. Busy photos that would not fit local storage's share are encoded smaller.
+const THUMBNAIL_ENCODINGS = [
+  { side: 640, quality: 0.7 },
+  { side: 640, quality: 0.5 },
+  { side: 480, quality: 0.5 },
+  { side: 320, quality: 0.5 },
+];
 // Tiny enough to average quickly, large enough to not be one pixel's color.
 const SAMPLE_SIDE = 16;
 // Where the page's content sits, as fractions of the window: the logo and search field, then the
@@ -65,8 +71,8 @@ export function contentRegions(image, view) {
   return CONTENT_BANDS.map((band) => coveredRegion(image, view, band));
 }
 
-export function thumbnailSize(width, height) {
-  return fitWithin(width, height, THUMBNAIL_SIDE);
+export function thumbnailSize(width, height, side = THUMBNAIL_ENCODINGS[0].side) {
+  return fitWithin(width, height, side);
 }
 
 // Whether a decoded file is kept as it is rather than encoded again.
@@ -157,6 +163,23 @@ async function encode(bitmap, color, { width, height }, quality) {
   return canvas.convertToBlob({ type: "image/jpeg", quality });
 }
 
+// The largest thumbnail that fits the placeholder, as a data URL.
+async function encodeThumbnail(bitmap, color) {
+  let thumbnail;
+
+  for (const { side, quality } of THUMBNAIL_ENCODINGS) {
+    const size = thumbnailSize(bitmap.width, bitmap.height, side);
+
+    thumbnail = await readAsDataUrl(await encode(bitmap, color, size, quality));
+
+    if (thumbnail.length <= MAX_THUMBNAIL_LENGTH) {
+      return thumbnail;
+    }
+  }
+
+  return thumbnail;
+}
+
 // Returns the full image as a Blob and the placeholder that stands in for it at first paint. The
 // text set is chosen for a window of the given size, this one by default.
 export async function importBackgroundImage(
@@ -182,14 +205,14 @@ export async function importBackgroundImage(
     const kept = keepsOriginal({ type: file.type, size: file.size, width, height });
     const size = kept ? { width, height } : fitWithin(width, height, ENCODED_SIDE);
     const blob = kept ? file : await encode(bitmap, color, size, ENCODED_QUALITY);
-    const thumbnail = await encode(bitmap, color, thumbnailSize(width, height), THUMBNAIL_QUALITY);
+    const thumbnail = await encodeThumbnail(bitmap, color);
 
     return {
       blob,
       placeholder: {
         averageColor: color,
         bands,
-        thumbnail: await readAsDataUrl(thumbnail),
+        thumbnail,
         width: size.width,
         height: size.height,
         updatedAt: Date.now(),

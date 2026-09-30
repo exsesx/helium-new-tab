@@ -6,8 +6,9 @@
 export const BACKGROUND_IMAGE_KEY = "helium-tab-background";
 // The longest side an image is kept at; larger ones are scaled down when they are chosen.
 export const MAX_IMAGE_SIDE = 5120;
-// A placeholder's thumbnail is about 1 KB; anything much larger is not one Customize wrote.
-const MAX_THUMBNAIL_LENGTH = 8 * 1024;
+// A placeholder's thumbnail is about 40 to 65 KB as a data URL; anything larger is not one
+// Customize wrote.
+export const MAX_THUMBNAIL_LENGTH = 128 * 1024;
 const TONES = ["light", "dark"];
 export const DEFAULT_BACKGROUND_COLOR = "#dbe4ff";
 
@@ -225,7 +226,7 @@ export function imageForeground(bands) {
   return { tone, ...imageLegibility(bands, tone) };
 }
 
-// Paints the placeholder over the synced background: the photo's average color and a blurred
+// Paints the placeholder over the synced background: the photo's average color and a small
 // thumbnail, under the text set chosen when the photo was. background-photo.js paints the full
 // image over it.
 export function applyBackgroundImage(image) {

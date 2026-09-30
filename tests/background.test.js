@@ -64,6 +64,11 @@ test("reads only placeholders that Customize could have written", () => {
     "#abcdef",
   );
 
+  // A 640 px thumbnail of a busy photo is about 65 KB as a data URL.
+  const busy = { ...validImage, thumbnail: `data:image/webp;base64,${"A".repeat(88_000)}` };
+
+  expect(readBackgroundImage(busy)).toEqual(busy);
+
   for (const invalid of [
     null,
     "data:image/webp;base64,AAAA",
@@ -73,7 +78,7 @@ test("reads only placeholders that Customize could have written", () => {
     { ...validImage, thumbnail: "https://example.com/image.webp" },
     { ...validImage, thumbnail: "data:image/svg+xml;base64,PHN2Zz4=" },
     { ...validImage, thumbnail: 'data:image/webp;base64,AAAA");background:url("x' },
-    { ...validImage, thumbnail: `data:image/webp;base64,${"A".repeat(10_000)}` },
+    { ...validImage, thumbnail: `data:image/webp;base64,${"A".repeat(132_000)}` },
     { ...validImage, width: 0 },
     { ...validImage, height: 1.5 },
     { ...validImage, width: 20_000 },
