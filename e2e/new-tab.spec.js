@@ -1061,8 +1061,12 @@ for (const [name, options] of [
     const opened = context.waitForEvent("page");
     await pinnedLinks(page).first().click(options);
 
+    // Playwright can attach to a browser-opened window after it has navigated, and then never
+    // reports that navigation. Ask the page where it is instead of waiting for its load event.
     const newPage = await opened;
-    await newPage.waitForURL(url.href);
+    const currentUrl = () => newPage.evaluate(() => location.href).catch(() => "");
+
+    await expect.poll(currentUrl).toBe(url.href);
 
     await expect(page).toHaveURL("/");
   });
