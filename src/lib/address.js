@@ -7,20 +7,25 @@ const HOST_PATTERN =
 const LABEL_PATTERN = /^[\p{L}\p{N}](?:[\p{L}\p{N}-]*[\p{L}\p{N}])?$/u;
 let knownDomains;
 
+// The normalized http(s) address, or "" for anything else, including login details.
 export function websiteUrl(value) {
   const text = value.trim();
 
   if (!/^https?:\/\//i.test(text) || /\s/.test(text)) {
-    throw new Error("Expected an http or https address.");
+    return "";
   }
 
-  const url = new URL(text);
+  try {
+    const url = new URL(text);
 
-  if (!url.hostname || url.username || url.password) {
-    throw new Error("Expected an address without login details.");
+    if (!url.hostname || url.username || url.password) {
+      return "";
+    }
+
+    return url.href;
+  } catch {
+    return "";
   }
-
-  return url.href;
 }
 
 function isIpv4(host) {
@@ -70,20 +75,19 @@ export function searchDestination(value) {
   const text = value.trim();
 
   if (/^https?:\/\//i.test(text)) {
-    try {
-      return { url: websiteUrl(text) };
-    } catch {
-      return { query: text };
-    }
+    const url = websiteUrl(text);
+
+    return url ? { url } : { query: text };
   }
 
   const scheme = addressScheme(text);
 
   if (scheme) {
-    try {
-      return { url: websiteUrl(`${scheme}://${text}`) };
-    } catch {
-      /* Treat addresses the URL parser rejects as a search. */
+    // Addresses the URL parser rejects are treated as a search.
+    const url = websiteUrl(`${scheme}://${text}`);
+
+    if (url) {
+      return { url };
     }
   }
 
