@@ -282,10 +282,6 @@ function applyExternalSites(value) {
   return true;
 }
 
-function isSyncedSites(value) {
-  return Boolean(value) && typeof value === "object";
-}
-
 window.addEventListener("storage", (event) => {
   if (event.key !== PINNED_SITES_KEY && event.key !== null) {
     return;
@@ -299,7 +295,7 @@ window.addEventListener("storage", (event) => {
 });
 
 onSyncedChange((value) => {
-  if (isSyncedSites(value) && applyExternalSites(value)) {
+  if (value && typeof value === "object" && applyExternalSites(value)) {
     saveLocal(PINNED_SITES_KEY, pinned);
   }
 }, PINNED_SITES_KEY);
@@ -307,7 +303,7 @@ onSyncedChange((value) => {
 // Synced sites win once they exist. Only a list with sites seeds them, so a new device cannot
 // replace another device's list with an empty one before sync delivers it.
 void readSynced(PINNED_SITES_KEY).then((value) => {
-  if (isSyncedSites(value)) {
+  if (value && typeof value === "object") {
     if (applyExternalSites(value)) {
       saveLocal(PINNED_SITES_KEY, pinned);
     }
