@@ -18,12 +18,14 @@ async function savePreferences(page, preferences) {
 }
 
 // A slow chrome.storage.sync for a page or a whole context. Each read takes its snapshot when it
-// starts, like the real API, and answers once the page calls releaseSyncReads().
+// starts, like the real API, and answers once the page calls releaseSyncReads(). The page's
+// onChanged listeners are kept so a test can deliver another device's change.
 async function delaySyncReads(target, synced) {
   await target.addInitScript((initial) => {
     const { promise, resolve } = Promise.withResolvers();
 
     window.syncData = structuredClone(initial);
+    window.syncListeners = [];
     window.releaseSyncReads = resolve;
     window.chrome ??= {};
     window.chrome.storage = {
@@ -39,9 +41,27 @@ async function delaySyncReads(target, synced) {
           Object.assign(window.syncData, structuredClone(value));
         },
       },
-      onChanged: { addListener() {} },
+      onChanged: {
+        addListener(listener) {
+          window.syncListeners.push(listener);
+        },
+      },
     };
   }, synced);
+}
+
+// Stores a change from another device and reports it the way chrome.storage.onChanged does.
+async function sendSyncChange(page, key, value) {
+  await page.evaluate(
+    ([changedKey, newValue]) => {
+      window.syncData[changedKey] = newValue;
+
+      for (const listener of window.syncListeners) {
+        listener({ [changedKey]: { newValue } }, "sync");
+      }
+    },
+    [key, value],
+  );
 }
 
 // Answers the held reads and waits until the page has handled them.
@@ -235,6 +255,32 @@ test("a late startup sync read does not revert another tab's newer change", asyn
     PREFERENCES_KEY,
   );
   const synced = await first.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
+
+  expect(saved.theme).toBe("light");
+  expect(synced.theme).toBe("light");
+});
+
+test("a late startup sync read does not revert another device's newer change", async ({ page }) => {
+  await delaySyncReads(page, OLDER_SYNCED_PREFERENCES);
+  await page.goto("/");
+
+  await sendSyncChange(page, PREFERENCES_KEY, {
+    theme: "light",
+    changedAt: 2,
+    changedBy: "another-device",
+  });
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  await releaseSyncReads(page);
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    PREFERENCES_KEY,
+  );
+  const synced = await page.evaluate((key) => window.syncData[key], PREFERENCES_KEY);
 
   expect(saved.theme).toBe("light");
   expect(synced.theme).toBe("light");
@@ -753,6 +799,30 @@ test("a late startup sync read does not revert sites another tab pinned", async 
 
   const saved = await first.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
   const synced = await first.evaluate((key) => window.syncData[key], SITES_KEY);
+
+  expect(saved.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+  expect(synced.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
+});
+
+test("a late startup sync read does not revert sites another device pinned", async ({ page }) => {
+  await delaySyncReads(page, OLDER_SYNCED_SITES);
+  await savePinnedSites(page, []);
+  await page.reload();
+
+  await sendSyncChange(page, SITES_KEY, {
+    sites: [{ url: "https://example.com/", title: "example.com" }],
+    changedAt: 2,
+    changedBy: "another-device",
+  });
+
+  await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);
+
+  await releaseSyncReads(page);
+
+  await expect(pinnedLinks(page)).toHaveText(["Eexample.com"]);
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), SITES_KEY);
+  const synced = await page.evaluate((key) => window.syncData[key], SITES_KEY);
 
   expect(saved.sites.map((site) => site.url)).toEqual(["https://example.com/"]);
   expect(synced.sites.map((site) => site.url)).toEqual(["https://example.com/"]);

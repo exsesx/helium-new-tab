@@ -52,8 +52,9 @@ export async function readSynced(key = PREFERENCES_KEY) {
 }
 
 // Reads a synced item that can arrive late, such as at startup. `changes` counts this tab's
-// changes to the item, its own edits and those another tab passes on. When that count moves
-// while the read is pending, the snapshot is older than what the tab shows, so it is stale.
+// changes to the item: its own edits and those it takes from other tabs and other devices. When
+// that count moves while the read is pending, the snapshot is older than what the tab shows, so
+// it is stale.
 export async function readSyncedSnapshot(changes, key = PREFERENCES_KEY) {
   const before = changes();
   const value = await readSynced(key);

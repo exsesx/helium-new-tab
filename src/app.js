@@ -48,7 +48,7 @@ const syncWriter = createSyncWriter(() => preferences);
 const changeOrder = createChangeOrder(device, preferences);
 const sitesWriter = createSyncWriter(() => pinned, PINNED_SITES_KEY);
 const sitesOrder = createChangeOrder(device, pinned);
-// Changes this tab made or took from another tab; see readSyncedSnapshot.
+// Changes this tab made or took from another tab or device; see readSyncedSnapshot.
 let preferenceChanges = 0;
 let siteChanges = 0;
 let activeLocale;
@@ -215,6 +215,7 @@ onSyncedChange((value) => {
   const merged = mergeSynced(value, preferences);
 
   if (merged && applyExternal(merged)) {
+    preferenceChanges++;
     saveLocal();
   }
 });
@@ -306,6 +307,7 @@ window.addEventListener("storage", (event) => {
 
 onSyncedChange((value) => {
   if (value && typeof value === "object" && applyExternalSites(value)) {
+    siteChanges++;
     saveLocal(PINNED_SITES_KEY, pinned);
   }
 }, PINNED_SITES_KEY);
