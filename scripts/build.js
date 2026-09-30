@@ -86,7 +86,7 @@ export async function build() {
     ]),
   );
 
-  const startup = await bundle({
+  const startup = await Bun.build({
     entrypoints: [`${root}src/bootstrap.js`],
     target: "browser",
     format: "iife",
@@ -96,7 +96,7 @@ export async function build() {
 
   await Bun.write(`${root}dist/bootstrap.js`, startup.outputs[0]);
 
-  await bundle({
+  await Bun.build({
     entrypoints: [`${root}src/app.js`],
     outdir: `${root}dist/assets`,
     target: "browser",
@@ -108,21 +108,11 @@ export async function build() {
     naming: { entry: "[name].[ext]", chunk: "[name]-[hash].[ext]" },
   });
 
-  await bundle({
+  await Bun.build({
     entrypoints: [`${root}src/style.css`],
     outdir: `${root}dist`,
     minify: true,
   });
-}
-
-async function bundle(options) {
-  const result = await Bun.build(options);
-
-  if (!result.success) {
-    throw new AggregateError(result.logs, "Build failed");
-  }
-
-  return result;
 }
 
 if (import.meta.main) {
