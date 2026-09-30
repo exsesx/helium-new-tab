@@ -54,9 +54,10 @@ warnings, and no slower first paint.
 
 - Let people pick a pastel preset, a custom color, or their own image in **Customize**. The
   current backgrounds stay the default.
-- Keep images on the device. They do not sync, because sync's per-item limit is a few
-  kilobytes; a chosen color syncs with the other preferences.
-- Paint the background with the first paint, so a new tab never flashes the default first.
+- Keep images on the device at full quality. They do not sync, because sync's per-item limit is
+  a few kilobytes; a chosen color syncs with the other preferences.
+- Paint the background with the first paint, so a new tab never flashes the default first. An
+  image paints as a blurred thumbnail at once, and the full image fades in once it has loaded.
   Text and controls follow the brightness of the chosen color or photo, whatever the
   appearance. Photos show as they are, with a soft halo behind the text; only a mid-tone photo
   gets a faint overlay.
