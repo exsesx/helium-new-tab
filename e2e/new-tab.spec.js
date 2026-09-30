@@ -1041,33 +1041,69 @@ test("a plain click on a pinned site opens it in this tab", async ({ page }) => 
   expect((await request).url()).toBe("https://example.com/");
 });
 
-// Headless Chromium opens every new page in its own window, so these check only that the
-// link opens elsewhere. Browser-opened tabs cannot load routed remote pages, so the site is local.
-for (const [name, options] of [
-  ["a modified click", { modifiers: ["ControlOrMeta"] }],
-  ["a middle click", { button: "middle" }],
-  ["a Shift click", { modifiers: ["Shift"] }],
+// Pinned sites are real links, so the browser itself opens modified and middle clicks elsewhere;
+// the page calls no window.open. Headless Chromium does not always report those windows as pages,
+// so these tests record the link activation instead: an init script listens on window, after
+// any listener the page could add, and notes which link was activated, how, and whether anything
+// cancelled the browser's default action.
+for (const [name, options, expected] of [
+  [
+    "a modified click",
+    { modifiers: ["ControlOrMeta"] },
+    { type: "click", button: 0, tabKey: true },
+  ],
+  ["a middle click", { button: "middle" }, { type: "auxclick", button: 1, tabKey: false }],
+  ["a Shift click", { modifiers: ["Shift"] }, { type: "click", button: 0, shiftKey: true }],
 ]) {
-  test(`${name} on a pinned site opens it elsewhere and stays here`, async ({
-    page,
-    context,
-    baseURL,
-  }) => {
+  test(`${name} on a pinned site opens it elsewhere and stays here`, async ({ page, baseURL }) => {
     const url = new URL("/?pinned", baseURL);
+
+    await page.addInitScript(() => {
+      window.linkActivations = [];
+
+      for (const type of ["click", "auxclick"]) {
+        window.addEventListener(type, (event) => {
+          const link = event.target.closest?.("a");
+
+          if (link) {
+            window.linkActivations.push({
+              type,
+              href: link.href,
+              target: link.target,
+              button: event.button,
+              shiftKey: event.shiftKey,
+              tabKey: event.ctrlKey || event.metaKey,
+              defaultPrevented: event.defaultPrevented,
+            });
+          }
+        });
+      }
+    });
 
     await savePinnedSites(page, [{ url: url.href, title: "Preview" }]);
     await page.reload();
-
-    const opened = context.waitForEvent("page");
     await pinnedLinks(page).first().click(options);
 
-    // Playwright can attach to a browser-opened window after it has navigated, and then never
-    // reports that navigation. Ask the page where it is instead of waiting for its load event.
-    const newPage = await opened;
-    const currentUrl = () => newPage.evaluate(() => location.href).catch(() => "");
+    await expect.poll(() => page.evaluate(() => window.linkActivations.length)).toBe(1);
 
-    await expect.poll(currentUrl).toBe(url.href);
+    const [activation] = await page.evaluate(() => window.linkActivations);
 
+    expect(activation).toMatchObject({
+      ...expected,
+      href: url.href,
+      target: "",
+      defaultPrevented: false,
+    });
+
+    // The click left this document in place: its URL and its record of the click are unchanged.
     await expect(page).toHaveURL("/");
+
+    const stillHere = await page.evaluate(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      return window.linkActivations.length;
+    });
+
+    expect(stillHere).toBe(1);
   });
 }
