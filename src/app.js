@@ -1,6 +1,11 @@
 import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
 import { createClock } from "./lib/clock.js";
-import { readPinnedSites, readPreferences } from "./lib/model.js";
+import {
+  PINNED_SITES_KEY,
+  PREFERENCES_KEY,
+  readPinnedSites,
+  readPreferences,
+} from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
 import {
   hasServiceIcons,
@@ -10,7 +15,6 @@ import {
 } from "./lib/service-icons.js";
 import { showSiteFavicons } from "./lib/site-favicons.js";
 import { renderPinnedSites } from "./lib/site-tiles.js";
-import { PINNED_SITES_KEY, PREFERENCES_KEY } from "./lib/storage.js";
 import {
   createChangeOrder,
   createSyncWriter,

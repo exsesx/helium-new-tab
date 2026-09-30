@@ -1,5 +1,9 @@
 import { languages } from "../i18n/languages.js";
 
+export const PREFERENCES_KEY = "helium-tab";
+// Pinned sites sync as their own item, so the list stays within sync's per-item size limit.
+export const PINNED_SITES_KEY = "helium-tab-sites";
+
 export const fonts = {
   system: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   mono: 'ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace',

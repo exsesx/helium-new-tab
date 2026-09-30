@@ -1,5 +1,10 @@
-import { readPinnedSites, readPreferences, resolvedFonts } from "./model.js";
-import { PINNED_SITES_KEY, PREFERENCES_KEY } from "./storage.js";
+import {
+  PINNED_SITES_KEY,
+  PREFERENCES_KEY,
+  readPinnedSites,
+  readPreferences,
+  resolvedFonts,
+} from "./model.js";
 
 export function loadPreferences() {
   try {
