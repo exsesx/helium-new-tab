@@ -24,7 +24,8 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
 
 - Automatic light and dark appearance, with manual overrides and a Blended or Helium dark background.
 - A pastel or custom background color that syncs, or your own background image that stays on
-  this device. Both are painted with the first frame, and text adapts to stay legible.
+  this device. Both are painted with the first frame. Text follows the color's or photo's
+  brightness, and photos show untoned, with a soft halo behind the text.
 - Optional clock and date, with 12-hour or 24-hour time and optional seconds.
 - 37 interface languages, with localized dates and times.
 - Custom installed fonts for the interface, clock, date, and search field.

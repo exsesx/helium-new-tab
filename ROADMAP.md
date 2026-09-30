@@ -57,8 +57,9 @@ warnings, and no slower first paint.
 - Keep images on the device. They do not sync, because sync's per-item limit is a few
   kilobytes; a chosen color syncs with the other preferences.
 - Paint the background with the first paint, so a new tab never flashes the default first.
-  Text follows a chosen color's brightness, and a scrim that follows the appearance keeps
-  text legible over an image.
+  Text and controls follow the brightness of the chosen color or photo, whatever the
+  appearance. Photos show as they are, with a soft halo behind the text; only a mid-tone photo
+  gets a faint overlay.
 - Nothing is downloaded, and no new permission shows an install warning.
 
 ## Considering
