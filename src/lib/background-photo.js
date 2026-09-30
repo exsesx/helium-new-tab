@@ -11,12 +11,16 @@ import {
 
 const DATABASE = "helium-tab";
 const STORE = "background";
+// The image the placeholder points at, and a replacement until its placeholder is written.
 const RECORD = "image";
+const STAGED = "staged";
 // The full image fades in over the placeholder, or appears at once with reduced motion. Nothing
 // else on the page changes when it does, so only the photo repaints.
 const FADE = 250;
 
 let database;
+// Saves and removals run one after another, so a rollback never undoes a newer choice.
+let writes = Promise.resolve();
 // The photo on the page, and a count that lets a newer paint cancel an older one.
 let photo;
 let paints = 0;
@@ -83,13 +87,51 @@ function lacksRendition(record, placeholder) {
 
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
-// Returns { blob, rendition, updatedAt }, or undefined when there is no full image.
-export function readStoredImage() {
-  return transact("readonly", (store) => store.get(RECORD));
+function serialize(task) {
+  const run = writes.then(task, task);
+
+  writes = run.catch(() => {});
+
+  return run;
+}
+
+// Returns { blob, rendition, updatedAt }, or undefined when there is no full image. With a time,
+// returns the image chosen then, which may still be staged if saving it was interrupted.
+export async function readStoredImage(updatedAt) {
+  const [image, staged] = await Promise.all([
+    transact("readonly", (store) => store.get(RECORD)),
+    updatedAt === undefined ? undefined : transact("readonly", (store) => store.get(STAGED)),
+  ]);
+
+  if (updatedAt === undefined || image?.updatedAt === updatedAt) {
+    return image;
+  }
+
+  return staged?.updatedAt === updatedAt ? { ...staged, isStaged: true } : undefined;
 }
 
 function deleteStoredImage() {
-  return transact("readwrite", (store) => store.delete(RECORD));
+  return transact("readwrite", (store) => {
+    store.delete(STAGED);
+
+    return store.delete(RECORD);
+  });
+}
+
+// Makes the staged image the one the placeholder points at, and drops the one it replaces.
+function commitStagedImage(updatedAt) {
+  return transact("readwrite", (store) => {
+    const request = store.get(STAGED);
+
+    request.addEventListener("success", () => {
+      if (request.result?.updatedAt === updatedAt) {
+        store.put(request.result, RECORD);
+        store.delete(STAGED);
+      }
+    });
+
+    return request;
+  });
 }
 
 export function backgroundPhotoStatus() {
@@ -118,7 +160,7 @@ export async function paintBackgroundPhoto(placeholder) {
   let record;
 
   try {
-    record = await readStoredImage();
+    record = await readStoredImage(placeholder.updatedAt);
   } catch {
     record = undefined;
   }
@@ -190,49 +232,63 @@ export async function paintBackgroundPhoto(placeholder) {
   return status;
 }
 
-// Keeps an imported image: the full image first, then the placeholder that tells this tab and
-// the others to show it. Throws when either store is full or unavailable, and then keeps neither.
-export async function saveBackgroundImage({ blob, rendition, placeholder }) {
-  await transact("readwrite", (store) =>
-    store.put({ blob, rendition, updatedAt: placeholder.updatedAt }, RECORD),
-  );
+// Keeps an imported image. The full image and its placeholder live in two stores that cannot
+// change together, and either can be full, so the image in use stays until its replacement is
+// complete: the new full image is staged next to it, then the placeholder that tells this tab and
+// the others to show it is written, and only then does the new image take the old one's place.
+// Throws when either store is full or unavailable, and then keeps the previous image as it was.
+export function saveBackgroundImage({ blob, rendition, placeholder }) {
+  return serialize(async () => {
+    const { updatedAt } = placeholder;
 
-  try {
-    localStorage.setItem(BACKGROUND_IMAGE_KEY, JSON.stringify(placeholder));
-  } catch (error) {
-    await deleteStoredImage().catch(() => {});
+    await transact("readwrite", (store) => store.put({ blob, rendition, updatedAt }, STAGED));
 
-    throw error;
-  }
+    try {
+      localStorage.setItem(BACKGROUND_IMAGE_KEY, JSON.stringify(placeholder));
+    } catch (error) {
+      await transact("readwrite", (store) => store.delete(STAGED)).catch(() => {});
 
-  applyBackgroundImage(placeholder);
+      throw error;
+    }
 
-  return paintBackgroundPhoto(placeholder);
+    // A tab that reads the placeholder before this finishes finds the staged image instead.
+    await commitStagedImage(updatedAt).catch(() => {});
+    applyBackgroundImage(placeholder);
+
+    return paintBackgroundPhoto(placeholder);
+  });
 }
 
-// Clears both stores and the page at once; the full image is deleted in the background.
-export function removeBackgroundImage() {
+function clearStores() {
   try {
     localStorage.removeItem(BACKGROUND_IMAGE_KEY);
   } catch {
-    /* Without storage the placeholder was never kept; clear the page anyway. */
+    /* Without storage the placeholder was never kept. */
   }
-
-  applyBackgroundImage(undefined);
-  void paintBackgroundPhoto(undefined);
 
   return deleteStoredImage().catch(() => {});
 }
 
+// Clears the page at once, and both stores once any save before it has finished.
+export function removeBackgroundImage() {
+  applyBackgroundImage(undefined);
+  void paintBackgroundPhoto(undefined);
+
+  return serialize(clearStores);
+}
+
 // Removes the image chosen at updatedAt, unless another one replaced it meanwhile.
 export function withdrawBackgroundImage(updatedAt) {
-  const stored = loadBackgroundImage();
+  return serialize(() => {
+    if (loadBackgroundImage()?.updatedAt !== updatedAt) {
+      return undefined;
+    }
 
-  if (stored?.updatedAt !== updatedAt) {
-    return Promise.resolve();
-  }
+    applyBackgroundImage(undefined);
+    void paintBackgroundPhoto(undefined);
 
-  return removeBackgroundImage();
+    return clearStores();
+  });
 }
 
 // Writes an updated placeholder, unless another choice replaced the image meanwhile.
@@ -287,7 +343,7 @@ export async function updateBackgroundImage(placeholder) {
   let record;
 
   try {
-    record = await readStoredImage();
+    record = await readStoredImage(placeholder.updatedAt);
   } catch {
     return undefined;
   }
@@ -301,6 +357,11 @@ export async function updateBackgroundImage(placeholder) {
     }
 
     return undefined;
+  }
+
+  // A save that was interrupted after its placeholder was written left the image staged.
+  if (record.isStaged) {
+    await serialize(() => commitStagedImage(placeholder.updatedAt)).catch(() => {});
   }
 
   const isOutdated = placeholder.version !== PLACEHOLDER_VERSION;
@@ -320,15 +381,17 @@ export async function updateBackgroundImage(placeholder) {
     screen: needsRendition ? screenPixels() : undefined,
   });
 
-  if (result.rendition) {
-    await storeRendition(placeholder.updatedAt, result.rendition).catch(() => {});
-  }
+  return serialize(async () => {
+    if (result.rendition) {
+      await storeRendition(placeholder.updatedAt, result.rendition).catch(() => {});
+    }
 
-  if (result.placeholder && storePlaceholder(result.placeholder)) {
-    applyBackgroundImage(result.placeholder);
+    if (result.placeholder && storePlaceholder(result.placeholder)) {
+      applyBackgroundImage(result.placeholder);
 
-    return result.placeholder;
-  }
+      return result.placeholder;
+    }
 
-  return undefined;
+    return undefined;
+  });
 }

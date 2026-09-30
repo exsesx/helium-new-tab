@@ -1553,6 +1553,84 @@ test("a pending import does not override a removal in another tab", async ({ con
   expect(await hasFullImage(page)).toBe(false);
 });
 
+// The times of the images IndexedDB holds: the one in use, and any staged replacement.
+const storedRecords = (page) =>
+  page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        const request = indexedDB.open("helium-tab", 1);
+
+        request.onupgradeneeded = () => request.result.createObjectStore("background");
+        request.onsuccess = () => {
+          const store = request.result.transaction("background").objectStore("background");
+          const image = store.get("image");
+          const staged = store.get("staged");
+
+          staged.onsuccess = () => {
+            request.result.close();
+            resolve({
+              image: image.result?.updatedAt ?? null,
+              staged: staged.result?.updatedAt ?? null,
+            });
+          };
+        };
+      }),
+  );
+
+test("a replacement that cannot be saved keeps the previous image whole", async ({ context }) => {
+  const page = await context.newPage();
+
+  await saveBackgroundImage(page, "#1d3b6e");
+  await page.reload();
+
+  const previous = await storedPlaceholder(page);
+  const failures = {
+    // Local storage is full, so the placeholder cannot be written.
+    placeholder: () => {
+      const setItem = Storage.prototype.setItem;
+
+      Storage.prototype.setItem = function (key, value) {
+        if (key === "helium-tab-background") {
+          throw new DOMException("The quota has been exceeded.", "QuotaExceededError");
+        }
+
+        return setItem.call(this, key, value);
+      };
+    },
+
+    // IndexedDB is full, so the full image cannot be written.
+    fullImage: () => {
+      IDBObjectStore.prototype.put = function () {
+        throw new DOMException("The quota has been exceeded.", "QuotaExceededError");
+      };
+    },
+  };
+
+  for (const [name, fail] of Object.entries(failures)) {
+    await page.reload();
+    await page.evaluate(fail);
+    await page.getByRole("button", { name: "Customize" }).click();
+    await chooseHeldImage(page, "#c0a040", { hold: false });
+
+    await expect(page.locator("#background-image-message"), name).toHaveText(
+      "There is not enough space on this device to keep this image.",
+    );
+
+    // The previous placeholder and full image are still a pair, and nothing is left staged.
+    expect(await storedPlaceholder(page), name).toEqual(previous);
+    expect(await storedRecords(page), name).toEqual({ image: previous.updatedAt, staged: null });
+    await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+  }
+
+  // A tab opened afterwards shows the previous image in full.
+  const reopened = await context.newPage();
+
+  await reopened.goto("/");
+  expect(await paintedPhoto(reopened)).toMatchObject({ source: "blob:" });
+  await reopened.getByRole("button", { name: "Customize" }).click();
+  await expect(reopened.locator("#background-image-message")).toBeEmpty();
+});
+
 test("Remove restores the default background and clears both stores", async ({ page }) => {
   await saveBackgroundImage(page);
   await page.reload();

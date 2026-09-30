@@ -97,7 +97,7 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
     if (image) {
       const placeholder = image;
 
-      replacedImage = readStoredImage()
+      replacedImage = readStoredImage(placeholder.updatedAt)
         .then((record) => record && { blob: record.blob, rendition: record.rendition, placeholder })
         .catch(() => undefined);
       image = undefined;
