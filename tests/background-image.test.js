@@ -1,9 +1,9 @@
 import { expect, test } from "bun:test";
 import {
   averageColor,
-  encodeWithinCap,
   fitWithin,
-  IMAGE_ENCODINGS,
+  keepsOriginal,
+  thumbnailSize,
 } from "../src/lib/background-image.js";
 
 test("fits the longest side within the limit without enlarging", () => {
@@ -13,39 +13,29 @@ test("fits the longest side within the limit without enlarging", () => {
   expect(fitWithin(10_000, 1, 2560)).toEqual({ width: 2560, height: 1 });
 });
 
-test("encodes once more at a lower quality and size when the first result is too large", async () => {
-  const attempts = [];
-  const encode = async (encoding) => {
-    attempts.push(encoding);
+test("keeps compressed photos byte for byte, and encodes the rest again", () => {
+  const photo = { type: "image/jpeg", size: 6 * 1024 * 1024, width: 5120, height: 2880 };
 
-    return "x".repeat(encoding.quality > 0.8 ? 200 : 100);
-  };
+  for (const type of ["image/jpeg", "image/webp", "image/avif"]) {
+    expect(keepsOriginal({ ...photo, type }), type).toBe(true);
+  }
 
-  expect(await encodeWithinCap(encode, IMAGE_ENCODINGS, 150)).toHaveLength(100);
-  expect(attempts).toEqual(IMAGE_ENCODINGS);
+  // PNG and GIF files are large for photos.
+  expect(keepsOriginal({ ...photo, type: "image/png" })).toBe(false);
+  expect(keepsOriginal({ ...photo, type: "image/gif" })).toBe(false);
 
-  const second = IMAGE_ENCODINGS[1];
-
-  expect(second.quality).toBeLessThan(IMAGE_ENCODINGS[0].quality);
-  expect(second.maxSide).toBeLessThan(IMAGE_ENCODINGS[0].maxSide);
+  // So are photos over about 12 MB or wider than 5120 px on their longest side.
+  expect(keepsOriginal({ ...photo, size: 12 * 1024 * 1024 })).toBe(true);
+  expect(keepsOriginal({ ...photo, size: 12 * 1024 * 1024 + 1 })).toBe(false);
+  expect(keepsOriginal({ ...photo, width: 5121 })).toBe(false);
+  expect(keepsOriginal({ ...photo, width: 2880, height: 5121 })).toBe(false);
 });
 
-test("stops at the first encoding under the cap and rejects images that never fit", async () => {
-  let calls = 0;
-  const small = async () => {
-    calls++;
-
-    return "x".repeat(10);
-  };
-
-  expect(await encodeWithinCap(small, IMAGE_ENCODINGS, 150)).toHaveLength(10);
-  expect(calls).toBe(1);
-
-  const large = async () => "x".repeat(200);
-
-  await expect(encodeWithinCap(large, IMAGE_ENCODINGS, 150)).rejects.toMatchObject({
-    code: "size",
-  });
+test("thumbnails are about 32 px on their longest side, keeping the shape", () => {
+  expect(thumbnailSize(5120, 2880)).toEqual({ width: 32, height: 18 });
+  expect(thumbnailSize(3024, 4032)).toEqual({ width: 24, height: 32 });
+  expect(thumbnailSize(20, 10)).toEqual({ width: 20, height: 10 });
+  expect(thumbnailSize(10_000, 10)).toEqual({ width: 32, height: 1 });
 });
 
 test("averages visible pixels into a hex color", () => {

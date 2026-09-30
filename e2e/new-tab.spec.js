@@ -710,16 +710,117 @@ async function chooseTestImage(page) {
   });
 }
 
-async function saveBackgroundImage(page, averageColor = "#88876c") {
+// Stores an image the way Customize does: the full image in IndexedDB and a placeholder in
+// local storage. Without the full image, only the placeholder paints.
+async function saveBackgroundImage(page, averageColor = "#88876c", { full = true } = {}) {
   await page.goto("/");
 
-  const dataUrl = await drawTestImage(page, "image/webp");
-  const image = { dataUrl, averageColor, updatedAt: Date.now() };
+  const thumbnail = await drawTestImage(page, "image/webp");
+  const placeholder = {
+    averageColor,
+    thumbnail,
+    width: 64,
+    height: 40,
+    updatedAt: Date.now(),
+    foreground: imageForeground(averageColor).tone,
+  };
+
+  if (full) {
+    await page.evaluate(
+      async ([dataUrl, updatedAt]) => {
+        const blob = await (await fetch(dataUrl)).blob();
+
+        window.seededImage = { blob, updatedAt };
+      },
+      [thumbnail, placeholder.updatedAt],
+    );
+    await page.evaluate(
+      () =>
+        new Promise((resolve, reject) => {
+          const request = indexedDB.open("helium-tab", 1);
+
+          request.onupgradeneeded = () => request.result.createObjectStore("background");
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => {
+            const transaction = request.result.transaction("background", "readwrite");
+
+            transaction.objectStore("background").put(window.seededImage, "image");
+            transaction.oncomplete = () => {
+              request.result.close();
+              resolve();
+            };
+            transaction.onabort = () => reject(transaction.error);
+          };
+        }),
+    );
+  }
 
   await page.evaluate(
     ([key, value]) => localStorage.setItem(key, JSON.stringify(value)),
-    [BACKGROUND_IMAGE_KEY, image],
+    [BACKGROUND_IMAGE_KEY, placeholder],
   );
+}
+
+// The full image kept in IndexedDB, decoded: its type and size, and colors near its top, its
+// bottom, and a corner.
+function storedImage(page) {
+  return page.evaluate(
+    () =>
+      new Promise((resolve, reject) => {
+        const request = indexedDB.open("helium-tab", 1);
+
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const get = request.result
+            .transaction("background")
+            .objectStore("background")
+            .get("image");
+
+          get.onsuccess = async () => {
+            request.result.close();
+
+            if (!get.result) {
+              resolve(null);
+
+              return;
+            }
+
+            const { blob } = get.result;
+            const bitmap = await createImageBitmap(blob);
+            const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+            const context = canvas.getContext("2d");
+            const pixel = (x, y) => Array.from(context.getImageData(x, y, 1, 1).data.slice(0, 3));
+
+            context.drawImage(bitmap, 0, 0);
+            resolve({
+              type: blob.type,
+              width: bitmap.width,
+              height: bitmap.height,
+              top: pixel(bitmap.width / 2, 2),
+              bottom: pixel(bitmap.width / 2, bitmap.height - 3),
+              corner: pixel(1, 1),
+            });
+          };
+        };
+      }),
+  );
+}
+
+// The full image on the page, once its fade in has finished.
+async function paintedPhoto(page) {
+  const photo = page.locator(".background-photo");
+
+  await expect(photo).toHaveCount(1);
+  await photo.evaluate((element) =>
+    Promise.all(element.getAnimations().map((animation) => animation.finished)),
+  );
+
+  return photo.evaluate((element) => ({
+    source: element.src.slice(0, 5),
+    opacity: getComputedStyle(element).opacity,
+    width: element.naturalWidth,
+    height: element.naturalHeight,
+  }));
 }
 
 const pageBackground = (page) =>
@@ -816,7 +917,7 @@ test("the custom color tile applies any color", async ({ page }) => {
   expect(saved).toMatchObject({ background: "color", backgroundColor: "#123456" });
 });
 
-test("choosing an image paints it and keeps it on this device", async ({ page }) => {
+test("choosing an image keeps it in full and paints its placeholder first", async ({ page }) => {
   await page.goto("/");
 
   await page.getByRole("button", { name: "Customize" }).click();
@@ -826,15 +927,22 @@ test("choosing an image paints it and keeps it on this device", async ({ page })
   await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
   await expect(page.locator("#background-preview")).toBeVisible();
 
-  const stored = await page.evaluate(
+  // Local storage keeps only the small placeholder; the full image is in IndexedDB.
+  const placeholder = await page.evaluate(
     (key) => JSON.parse(localStorage.getItem(key)),
     BACKGROUND_IMAGE_KEY,
   );
-  expect(stored).toEqual({
-    dataUrl: expect.stringMatching(/^data:image\/webp;base64,/),
+
+  expect(placeholder).toEqual({
     averageColor: expect.stringMatching(/^#[0-9a-f]{6}$/),
+    thumbnail: expect.stringMatching(/^data:image\/webp;base64,/),
+    width: 64,
+    height: 40,
     updatedAt: expect.any(Number),
+    foreground: expect.stringMatching(/^(light|dark)$/),
   });
+  expect(placeholder.thumbnail.length).toBeLessThan(2048);
+  expect(await storedImage(page)).toMatchObject({ type: "image/webp", width: 64, height: 40 });
 
   // The synced preferences never name the image.
   const saved = await page.evaluate(
@@ -843,13 +951,28 @@ test("choosing an image paints it and keeps it on this device", async ({ page })
   );
   expect(saved?.background ?? "blend").toBe("blend");
 
+  // After a reload, the first frame paints the blurred placeholder, and the full image follows.
+  await page.addInitScript(() => {
+    requestAnimationFrame(() => {
+      window.firstFrame = {
+        placeholder: getComputedStyle(document.documentElement, "::before").backgroundImage,
+        photo: document.querySelector(".background-photo") !== null,
+      };
+    });
+  });
   await page.reload();
+  await page.waitForFunction(() => window.firstFrame);
 
-  const image = await page.evaluate(
-    () => getComputedStyle(document.documentElement).backgroundImage,
-  );
-  expect(image).toMatch(/^url\("data:image\/webp;base64,/);
-  expect(await pageBackground(page)).toBe("rgba(0, 0, 0, 0)");
+  const firstFrame = await page.evaluate(() => window.firstFrame);
+
+  expect(firstFrame.placeholder).toMatch(/^url\("data:image\/webp;base64,/);
+  expect(firstFrame.photo).toBe(false);
+  expect(await paintedPhoto(page)).toEqual({
+    source: "blob:",
+    opacity: "1",
+    width: 64,
+    height: 40,
+  });
 });
 
 test("an unsupported file is refused with a message", async ({ page }) => {
@@ -869,11 +992,12 @@ test("an unsupported file is refused with a message", async ({ page }) => {
   await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
 });
 
-test("Remove restores the default background", async ({ page }) => {
+test("Remove restores the default background and clears both stores", async ({ page }) => {
   await saveBackgroundImage(page);
   await page.reload();
 
   await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+  await paintedPhoto(page);
 
   await page.getByRole("button", { name: "Customize" }).click();
 
@@ -882,11 +1006,13 @@ test("Remove restores the default background", async ({ page }) => {
   await page.getByRole("button", { name: "Remove image" }).click();
 
   await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
+  await expect(page.locator(".background-photo")).toHaveCount(0);
   await expect(page.getByRole("radio", { name: "Default" })).toBeChecked();
   await expect.poll(() => pageBackground(page)).toBe("rgb(255, 255, 255)");
 
   const stored = await page.evaluate((key) => localStorage.getItem(key), BACKGROUND_IMAGE_KEY);
   expect(stored).toBeNull();
+  await expect.poll(() => storedImage(page)).toBeNull();
 });
 
 test("another mode replaces the image until Image is chosen again", async ({ page }) => {
@@ -898,10 +1024,14 @@ test("another mode replaces the image until Image is chosen again", async ({ pag
 
   await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
   await expect(page.locator("html")).toHaveAttribute("data-background", "color");
+  await expect.poll(() => storedImage(page)).toBeNull();
 
+  // Choosing Image again brings back both the placeholder and the full image.
   await page.getByRole("radio", { name: "Image" }).check();
 
   await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+  expect(await paintedPhoto(page)).toMatchObject({ opacity: "1", width: 64, height: 40 });
+  expect(await storedImage(page)).toMatchObject({ width: 64, height: 40 });
 });
 
 test("removing the image in one tab repaints the others", async ({ context }) => {
@@ -912,11 +1042,27 @@ test("removing the image in one tab repaints the others", async ({ context }) =>
   await second.goto("/");
 
   await expect(second.locator("html")).toHaveAttribute("data-background-image", "");
+  await paintedPhoto(second);
 
   await first.getByRole("button", { name: "Customize" }).click();
   await first.getByRole("button", { name: "Remove image" }).click();
 
   await expect(second.locator("html")).not.toHaveAttribute("data-background-image");
+  await expect(second.locator(".background-photo")).toHaveCount(0);
+});
+
+test("choosing an image in one tab shows it in full in the others", async ({ context }) => {
+  const first = await context.newPage();
+  const second = await context.newPage();
+  await first.goto("/");
+  await second.goto("/");
+
+  await first.getByRole("button", { name: "Customize" }).click();
+  await first.getByRole("radio", { name: "Image" }).check();
+  await chooseTestImage(first);
+
+  await expect(second.locator("html")).toHaveAttribute("data-background-image", "");
+  expect(await paintedPhoto(second)).toMatchObject({ opacity: "1", width: 64, height: 40 });
 });
 
 // The page over a photo: its text set, clock and search colors, and the overlay and its layers.
@@ -1284,29 +1430,9 @@ async function rotatedPhoto(page) {
   return Buffer.concat([jpeg.subarray(0, 2), exif, jpeg.subarray(2)]);
 }
 
-// Decodes the stored image and reads its size and the colors near its top and bottom.
-function storedImage(page) {
-  return page.evaluate(async (key) => {
-    const { dataUrl } = JSON.parse(localStorage.getItem(key));
-    const bitmap = await createImageBitmap(await (await fetch(dataUrl)).blob());
-    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-    const context = canvas.getContext("2d");
-    const pixel = (x, y) => Array.from(context.getImageData(x, y, 1, 1).data.slice(0, 3));
-
-    context.drawImage(bitmap, 0, 0);
-
-    return {
-      type: dataUrl.slice(5, dataUrl.indexOf(";")),
-      width: bitmap.width,
-      height: bitmap.height,
-      top: pixel(bitmap.width / 2, 2),
-      bottom: pixel(bitmap.width / 2, bitmap.height - 3),
-      corner: pixel(1, 1),
-    };
-  }, BACKGROUND_IMAGE_KEY);
-}
-
-test("a phone photo is stored upright from its EXIF orientation", async ({ page }) => {
+test("a phone photo is kept as it is and shows upright from its EXIF orientation", async ({
+  page,
+}) => {
   await page.goto("/");
   const photo = await rotatedPhoto(page);
 
@@ -1318,6 +1444,15 @@ test("a phone photo is stored upright from its EXIF orientation", async ({ page 
   await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
 
   const image = await storedImage(page);
+  const placeholder = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    BACKGROUND_IMAGE_KEY,
+  );
+
+  // A small JPEG is kept byte for byte, and its placeholder and page image are portrait.
+  expect(image.type).toBe("image/jpeg");
+  expect(placeholder).toMatchObject({ width: 40, height: 80 });
+  expect(await paintedPhoto(page)).toMatchObject({ width: 40, height: 80 });
 
   // Turned a quarter clockwise, the left (red) half is on top and the image is portrait.
   expect(image.height).toBeGreaterThan(image.width);
@@ -1416,6 +1551,30 @@ test("an image that does not fit in local storage is refused with a message", as
   );
   await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
   await expect(page.getByRole("button", { name: "Remove image" })).toBeHidden();
+
+  // The full image that was stored first is removed again, so nothing is left behind.
+  const stored = await page.evaluate((key) => localStorage.getItem(key), BACKGROUND_IMAGE_KEY);
+  expect(stored).toBeNull();
+  await expect.poll(() => storedImage(page)).toBeNull();
+});
+
+test("an image that does not fit in IndexedDB is refused with a message", async ({ page }) => {
+  // Fail writes the way a full IndexedDB does.
+  await page.addInitScript(() => {
+    IDBObjectStore.prototype.put = function () {
+      throw new DOMException("The quota has been exceeded.", "QuotaExceededError");
+    };
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+  await chooseTestImage(page);
+
+  await expect(page.locator("#background-image-message")).toHaveText(
+    "There is not enough space on this device to keep this image.",
+  );
+  await expect(page.locator("html")).not.toHaveAttribute("data-background-image");
 
   const stored = await page.evaluate((key) => localStorage.getItem(key), BACKGROUND_IMAGE_KEY);
   expect(stored).toBeNull();

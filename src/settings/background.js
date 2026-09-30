@@ -1,10 +1,10 @@
 import { importBackgroundImage } from "../lib/background-image.js";
 import {
-  BACKGROUND_COLORS,
-  loadBackgroundImage,
+  readStoredImage,
   removeBackgroundImage,
   saveBackgroundImage,
-} from "../lib/background.js";
+} from "../lib/background-photo.js";
+import { BACKGROUND_COLORS, loadBackgroundImage } from "../lib/background.js";
 
 const DARK_BACKGROUNDS = ["blend", "helium"];
 
@@ -27,10 +27,10 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
   const removeButton = find("remove-background-image");
   const message = find("background-image-message");
 
-  // This device's image, while the panel is open.
+  // This device's image placeholder, while the panel is open.
   let image;
-  // An image replaced by another choice while the panel is open, restored if Image is chosen
-  // again. A stray arrow key on the modes should not lose someone's picture.
+  // An image replaced by another choice while the panel is open, with its full image, restored
+  // if Image is chosen again. A stray arrow key on the modes should not lose someone's picture.
   let replacedImage;
   // Image was chosen, but no file yet.
   let choosingImage = false;
@@ -69,28 +69,33 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
     }
   }
 
-  // Another choice replaces the image; the synced background shows again.
+  // Another choice replaces the image; the synced background shows again. The full image is
+  // read before it is deleted, and IndexedDB runs the two in that order.
   function replaceImage() {
     if (image) {
-      replacedImage = image;
+      const placeholder = image;
+
+      replacedImage = readStoredImage()
+        .then((record) => record && { blob: record.blob, placeholder })
+        .catch(() => undefined);
       image = undefined;
-      removeBackgroundImage();
+      void removeBackgroundImage();
     }
 
     choosingImage = false;
     showMessage();
   }
 
-  function keepImage(record) {
+  async function keepImage(result) {
     try {
-      saveBackgroundImage(record);
+      await saveBackgroundImage(result);
     } catch {
       showMessage(IMAGE_ERRORS.storage);
 
       return;
     }
 
-    image = record;
+    image = result.placeholder;
     replacedImage = undefined;
     choosingImage = false;
     showMessage();
@@ -140,8 +145,8 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
 
     if (!image) {
       preview.removeAttribute("src");
-    } else if (preview.src !== image.dataUrl) {
-      preview.src = image.dataUrl;
+    } else if (preview.src !== image.thumbnail) {
+      preview.src = image.thumbnail;
     }
   }
 
@@ -157,14 +162,17 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
         await onChange("background", "color");
         break;
 
-      case "image":
-        if (replacedImage) {
-          keepImage(replacedImage);
+      case "image": {
+        const replaced = await replacedImage;
+
+        if (replaced) {
+          await keepImage(replaced);
         } else {
           choosingImage = true;
         }
 
         break;
+      }
     }
   }
 
@@ -247,7 +255,7 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
     fileInput.closest(".image-button").setAttribute("aria-busy", "true");
 
     try {
-      keepImage(await importBackgroundImage(file));
+      await keepImage(await importBackgroundImage(file));
     } catch (error) {
       const code = error?.code;
 
@@ -260,7 +268,7 @@ export function createBackgroundSettings({ dialog, getPreferences, onChange, onU
   });
 
   removeButton.addEventListener("click", () => {
-    removeBackgroundImage();
+    void removeBackgroundImage();
     image = undefined;
     replacedImage = undefined;
     choosingImage = false;

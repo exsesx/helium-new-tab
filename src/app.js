@@ -4,6 +4,7 @@ import {
   BACKGROUND_IMAGE_KEY,
   loadBackgroundImage,
 } from "./lib/background.js";
+import { paintBackgroundPhoto } from "./lib/background-photo.js";
 import { createClock } from "./lib/clock.js";
 import { readPinnedSites, readPreferences } from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
@@ -31,8 +32,10 @@ const $ = (id) => document.getElementById(id);
 // bootstrap.js runs first and has already validated and applied these.
 let preferences = window.__heliumTabPreferences;
 let pinned = window.__heliumTabSites ?? loadPinnedSites();
+const backgroundImage = window.__heliumTabBackground;
 delete window.__heliumTabPreferences;
 delete window.__heliumTabSites;
+delete window.__heliumTabBackground;
 
 const translator = createTranslator();
 const clock = createClock({ clock: $("clock"), date: $("date"), container: $("clock-block") });
@@ -209,10 +212,21 @@ function applyExternalPreferences(value) {
   }
 }
 
-// Another tab on this device chose or removed its background image.
+// Shows the full image over the placeholder, and tells Customize whether it is missing.
+function paintPhoto(image) {
+  void paintBackgroundPhoto(image).then(() => settings?.refresh());
+}
+
+paintPhoto(backgroundImage);
+
+// Another tab on this device chose or removed its background image. It writes the placeholder
+// last, so the full image is already in IndexedDB.
 function applyExternalImage() {
-  applyBackgroundImage(loadBackgroundImage());
+  const image = loadBackgroundImage();
+
+  applyBackgroundImage(image);
   settings?.refresh();
+  paintPhoto(image);
 }
 
 window.addEventListener("storage", (event) => {

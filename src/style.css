@@ -97,7 +97,8 @@ body {
 }
 
 /* A photo shows as it is, under one text set it chose; see imageForeground. Only a mid-tone
-   photo gets a faint, even overlay, which is transparent otherwise. */
+   photo gets a faint, even overlay, which is transparent otherwise. It covers both the blurred
+   placeholder and the full image; see index.html and background-photo.js. */
 :root[data-background-image] body::before {
   content: "";
   position: fixed;
@@ -105,6 +106,18 @@ body {
   z-index: -1;
   pointer-events: none;
   background-color: var(--image-overlay);
+}
+
+/* The full image over the placeholder, faded in once it has decoded; see background-photo.js. */
+.background-photo {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Over a photo, text and the logo carry a soft halo in the color opposite the text, so they read

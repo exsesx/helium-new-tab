@@ -34,7 +34,17 @@
 
       :root[data-background-image] {
         --bg: var(--image-bg);
-        background: var(--bg) var(--background-image) center / cover no-repeat fixed;
+      }
+
+      /* A tiny thumbnail of this device's image, blurred into a soft version of it, until the
+         full image fades in over it. It overflows the window so its blurred edges never show. */
+      :root[data-background-image]::before {
+        content: "";
+        position: fixed;
+        inset: -120px;
+        z-index: -3;
+        background: var(--image-thumbnail) center / cover no-repeat;
+        filter: blur(40px);
       }
     </style>
     <title data-i18n="newTab">New Tab</title>

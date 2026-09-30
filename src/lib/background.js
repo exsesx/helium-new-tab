@@ -1,11 +1,14 @@
 // Background helpers that run before the first paint, so they stay small and synchronous.
 
-// The image stays on this device. It is kept apart from the synced preferences, so other
-// devices never point at an image they do not have.
+// The image stays on this device, kept apart from the synced preferences so other devices never
+// point at an image they do not have. Local storage holds only a small placeholder for the
+// first paint; the full image is in IndexedDB, see background-photo.js.
 export const BACKGROUND_IMAGE_KEY = "helium-tab-background";
-// About 1.5 MB of data URL. Chromium gives an origin's local storage 5 Mi UTF-16 code units
-// (10 MiB), so the largest record takes about 30% of it; photos usually take 1% to 7%.
-export const MAX_IMAGE_LENGTH = 1.5 * 1024 * 1024;
+// The longest side an image is kept at; larger ones are scaled down when they are chosen.
+export const MAX_IMAGE_SIDE = 5120;
+// A placeholder's thumbnail is about 1 KB; anything much larger is not one Customize wrote.
+const MAX_THUMBNAIL_LENGTH = 8 * 1024;
+const TONES = ["light", "dark"];
 export const DEFAULT_BACKGROUND_COLOR = "#dbe4ff";
 
 // Pastel tones from Helium's appearance palette, with the names Customize reads out.
@@ -41,7 +44,7 @@ const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 // faint overlay in the color opposite its text, and never more than this, in percent.
 const MAX_IMAGE_OVERLAY = 15;
 const OVERLAY_COLORS = { dark: "#ffffff", light: "#000000" };
-const IMAGE_PROPERTIES = ["--background-image", "--image-bg", "--image-overlay"];
+const IMAGE_PROPERTIES = ["--image-thumbnail", "--image-bg", "--image-overlay"];
 
 export function isHexColor(value) {
   return typeof value === "string" && HEX_COLOR.test(value);
@@ -118,23 +121,40 @@ export function foregroundColors(color) {
   };
 }
 
-// Returns the stored image, or undefined when the value is not one Customize wrote.
+// Returns the stored placeholder, or undefined when the value is not one Customize wrote, such as
+// an image record from before the full image moved to IndexedDB.
 export function readBackgroundImage(value) {
   if (!value || typeof value !== "object") {
     return undefined;
   }
 
-  const { dataUrl, averageColor, updatedAt } = value;
-  const hasImage =
-    typeof dataUrl === "string" &&
-    dataUrl.length <= MAX_IMAGE_LENGTH &&
-    IMAGE_DATA_URL.test(dataUrl);
+  const { averageColor, thumbnail, width, height, updatedAt, foreground } = value;
+  const hasThumbnail =
+    typeof thumbnail === "string" &&
+    thumbnail.length <= MAX_THUMBNAIL_LENGTH &&
+    IMAGE_DATA_URL.test(thumbnail);
+  const hasSize = [width, height].every(
+    (side) => Number.isInteger(side) && side > 0 && side <= MAX_IMAGE_SIDE,
+  );
+  const isValid =
+    hasThumbnail &&
+    hasSize &&
+    isHexColor(averageColor) &&
+    Number.isFinite(updatedAt) &&
+    TONES.includes(foreground);
 
-  if (!hasImage || !isHexColor(averageColor) || !Number.isFinite(updatedAt)) {
+  if (!isValid) {
     return undefined;
   }
 
-  return { dataUrl, averageColor: averageColor.toLowerCase(), updatedAt };
+  return {
+    averageColor: averageColor.toLowerCase(),
+    thumbnail,
+    width,
+    height,
+    updatedAt,
+    foreground,
+  };
 }
 
 function parseBackgroundImage(stored) {
@@ -145,7 +165,7 @@ function parseBackgroundImage(stored) {
   }
 }
 
-// Reads the image synchronously and discards an item that is not valid.
+// Reads the placeholder synchronously and discards an item that is not valid.
 export function loadBackgroundImage() {
   try {
     const stored = localStorage.getItem(BACKGROUND_IMAGE_KEY);
@@ -162,12 +182,9 @@ export function loadBackgroundImage() {
   }
 }
 
-// The text set for a photo's page, chosen by the photo as a chosen color's page is, whatever the
-// appearance: "dark" text on bright photos and "light" text on dark ones. The overlay, in
-// percent, is the least that brings the set's text to 4.5:1 on the photo's average color, up
-// to MAX_IMAGE_OVERLAY, and 0 whenever the text reads without it.
-export function imageForeground(averageColor) {
-  const tone = foregroundFor(averageColor);
+// The overlay, in percent, that brings a text set to 4.5:1 on a photo's average color: the least
+// that does, up to MAX_IMAGE_OVERLAY, and 0 whenever the text reads without it.
+function imageOverlay(averageColor, tone) {
   const text = FOREGROUNDS[tone];
   const readable = (overlay) =>
     contrastRatio(text, mixColors(OVERLAY_COLORS[tone], averageColor, overlay)) >= MINIMUM_CONTRAST;
@@ -177,10 +194,21 @@ export function imageForeground(averageColor) {
     overlay++;
   }
 
-  return { tone, overlay };
+  return overlay;
 }
 
-// Paints the image over the synced background, with its average color underneath.
+// The text set for a photo's page, chosen by the photo as a chosen color's page is, whatever the
+// appearance: "dark" text on bright photos and "light" text on dark ones, with the overlay a
+// mid-tone photo needs.
+export function imageForeground(averageColor) {
+  const tone = foregroundFor(averageColor);
+
+  return { tone, overlay: imageOverlay(averageColor, tone) };
+}
+
+// Paints the placeholder over the synced background: the photo's average color and a blurred
+// thumbnail, under the text set chosen when the photo was. background-photo.js paints the full
+// image over it.
 export function applyBackgroundImage(image) {
   const root = document.documentElement;
 
@@ -195,9 +223,10 @@ export function applyBackgroundImage(image) {
     return;
   }
 
-  const { tone, overlay } = imageForeground(image.averageColor);
+  const tone = image.foreground;
+  const overlay = imageOverlay(image.averageColor, tone);
 
-  root.style.setProperty("--background-image", `url("${image.dataUrl}")`);
+  root.style.setProperty("--image-thumbnail", `url("${image.thumbnail}")`);
   root.style.setProperty("--image-bg", image.averageColor);
   root.style.setProperty(
     "--image-overlay",
@@ -205,20 +234,4 @@ export function applyBackgroundImage(image) {
   );
   root.dataset.imageForeground = tone;
   root.dataset.backgroundImage = "";
-}
-
-// Throws when local storage is full or unavailable.
-export function saveBackgroundImage(image) {
-  localStorage.setItem(BACKGROUND_IMAGE_KEY, JSON.stringify(image));
-  applyBackgroundImage(image);
-}
-
-export function removeBackgroundImage() {
-  try {
-    localStorage.removeItem(BACKGROUND_IMAGE_KEY);
-  } catch {
-    /* Without storage the image was never kept; clear it from the page anyway. */
-  }
-
-  applyBackgroundImage(undefined);
 }

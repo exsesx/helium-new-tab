@@ -7,7 +7,6 @@ import {
   mixColors,
   loadBackgroundImage,
   foregroundFor,
-  MAX_IMAGE_LENGTH,
   readBackgroundImage,
   relativeLuminance,
   imageForeground,
@@ -15,9 +14,12 @@ import {
 import { readPreferences } from "../src/lib/model.js";
 
 const validImage = {
-  dataUrl: "data:image/webp;base64,UklGRhYAAABXRUJQ",
   averageColor: "#336699",
+  thumbnail: "data:image/webp;base64,UklGRhYAAABXRUJQ",
+  width: 5120,
+  height: 2880,
   updatedAt: 1_700_000_000_000,
+  foreground: "light",
 };
 
 test("accepts a color background and validates its color", () => {
@@ -55,7 +57,7 @@ test("picks the text color with more contrast, switching near a luminance of 0.2
   }
 });
 
-test("reads only stored images that Customize could have written", () => {
+test("reads only placeholders that Customize could have written", () => {
   expect(readBackgroundImage(validImage)).toEqual(validImage);
   expect(readBackgroundImage({ ...validImage, averageColor: "#ABCDEF" }).averageColor).toBe(
     "#abcdef",
@@ -64,13 +66,19 @@ test("reads only stored images that Customize could have written", () => {
   for (const invalid of [
     null,
     "data:image/webp;base64,AAAA",
-    { ...validImage, dataUrl: undefined },
-    { ...validImage, dataUrl: "https://example.com/image.webp" },
-    { ...validImage, dataUrl: "data:image/svg+xml;base64,PHN2Zz4=" },
-    { ...validImage, dataUrl: 'data:image/webp;base64,AAAA");background:url("x' },
-    { ...validImage, dataUrl: `data:image/webp;base64,${"A".repeat(MAX_IMAGE_LENGTH)}` },
+    // The record from before the full image moved to IndexedDB.
+    { dataUrl: validImage.thumbnail, averageColor: "#336699", updatedAt: 1 },
+    { ...validImage, thumbnail: undefined },
+    { ...validImage, thumbnail: "https://example.com/image.webp" },
+    { ...validImage, thumbnail: "data:image/svg+xml;base64,PHN2Zz4=" },
+    { ...validImage, thumbnail: 'data:image/webp;base64,AAAA");background:url("x' },
+    { ...validImage, thumbnail: `data:image/webp;base64,${"A".repeat(10_000)}` },
+    { ...validImage, width: 0 },
+    { ...validImage, height: 1.5 },
+    { ...validImage, width: 20_000 },
     { ...validImage, averageColor: "blue" },
     { ...validImage, updatedAt: "yesterday" },
+    { ...validImage, foreground: "auto" },
   ]) {
     expect(readBackgroundImage(invalid)).toBeUndefined();
   }
@@ -87,13 +95,15 @@ function fakeLocalStorage(entries) {
   return items;
 }
 
-test("loads a stored image and discards a corrupt one", () => {
+test("loads a stored placeholder and discards a corrupt or outdated one", () => {
   const stored = fakeLocalStorage({ [BACKGROUND_IMAGE_KEY]: JSON.stringify(validImage) });
 
   expect(loadBackgroundImage()).toEqual(validImage);
   expect(stored.has(BACKGROUND_IMAGE_KEY)).toBe(true);
 
-  for (const corrupt of ["{", JSON.stringify({ dataUrl: "x" })]) {
+  const outdated = { dataUrl: validImage.thumbnail, averageColor: "#336699", updatedAt: 1 };
+
+  for (const corrupt of ["{", JSON.stringify({ dataUrl: "x" }), JSON.stringify(outdated)]) {
     const items = fakeLocalStorage({ [BACKGROUND_IMAGE_KEY]: corrupt });
 
     expect(loadBackgroundImage()).toBeUndefined();

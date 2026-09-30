@@ -1,15 +1,21 @@
-// Turns a chosen image file into a background record. Everything happens on this device.
-import { MAX_IMAGE_LENGTH } from "./background.js";
+// Turns a chosen image file into a background: the full image, kept at full quality, and a tiny
+// placeholder for the first paint. Everything happens on this device.
+import { imageForeground, MAX_IMAGE_SIDE } from "./background.js";
 
 export const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/avif"];
 
-// The first pass keeps the image sharp on large screens; the second trades a little
-// detail for size once when the first is over the cap.
-export const IMAGE_ENCODINGS = [
-  { maxSide: 2560, quality: 0.85 },
-  { maxSide: 1920, quality: 0.7 },
-];
+// Compressed photos within these limits are kept byte for byte. PNG and GIF files, which are
+// large for photos, and larger images are encoded again.
+const KEPT_TYPES = ["image/jpeg", "image/webp", "image/avif"];
+const MAX_KEPT_SIZE = 12 * 1024 * 1024;
+const ENCODED_SIDE = 3840;
+const ENCODED_QUALITY = 0.92;
+// Files this large would take too long to decode.
+const MAX_FILE_SIZE = 64 * 1024 * 1024;
 
+// The placeholder's thumbnail: about 1 KB, and blurred when painted.
+const THUMBNAIL_SIDE = 32;
+const THUMBNAIL_QUALITY = 0.8;
 // Tiny enough to average quickly, large enough to not be one pixel's color.
 const SAMPLE_SIDE = 16;
 
@@ -30,17 +36,15 @@ export function fitWithin(width, height, maxSide) {
   };
 }
 
-// Tries each encoding in turn and returns the first data URL under the cap.
-export async function encodeWithinCap(encode, encodings = IMAGE_ENCODINGS, cap = MAX_IMAGE_LENGTH) {
-  for (const encoding of encodings) {
-    const dataUrl = await encode(encoding);
+export function thumbnailSize(width, height) {
+  return fitWithin(width, height, THUMBNAIL_SIDE);
+}
 
-    if (dataUrl.length <= cap) {
-      return dataUrl;
-    }
-  }
-
-  throw new BackgroundImageError("size");
+// Whether a decoded file is kept as it is rather than encoded again.
+export function keepsOriginal({ type, size, width, height }) {
+  return (
+    KEPT_TYPES.includes(type) && size <= MAX_KEPT_SIZE && Math.max(width, height) <= MAX_IMAGE_SIDE
+  );
 }
 
 // The average of the visible pixels in RGBA data, as #rrggbb.
@@ -99,8 +103,8 @@ function sampleColor(bitmap) {
   return averageColor(context.getImageData(0, 0, SAMPLE_SIDE, SAMPLE_SIDE).data);
 }
 
-async function encode(bitmap, color, { maxSide, quality }) {
-  const { width, height } = fitWithin(bitmap.width, bitmap.height, maxSide);
+// Draws the bitmap at a size and encodes it as WebP, or JPEG where WebP is not available.
+async function encode(bitmap, color, { width, height }, quality) {
   const canvas = new OffscreenCanvas(width, height);
   const context = canvas.getContext("2d");
 
@@ -109,28 +113,47 @@ async function encode(bitmap, color, { maxSide, quality }) {
   context.fillRect(0, 0, width, height);
   context.drawImage(bitmap, 0, 0, width, height);
 
-  let blob = await canvas.convertToBlob({ type: "image/webp", quality });
+  const blob = await canvas.convertToBlob({ type: "image/webp", quality });
 
   // Browsers without a WebP encoder return PNG instead.
-  if (blob.type !== "image/webp") {
-    blob = await canvas.convertToBlob({ type: "image/jpeg", quality });
+  if (blob.type === "image/webp") {
+    return blob;
   }
 
-  return readAsDataUrl(blob);
+  return canvas.convertToBlob({ type: "image/jpeg", quality });
 }
 
+// Returns the full image as a Blob and the placeholder that stands in for it at first paint.
 export async function importBackgroundImage(file) {
   if (!IMAGE_TYPES.includes(file.type)) {
     throw new BackgroundImageError("type");
   }
 
+  if (file.size > MAX_FILE_SIZE) {
+    throw new BackgroundImageError("size");
+  }
+
   const bitmap = await decode(file);
 
   try {
+    const { width, height } = bitmap;
     const color = sampleColor(bitmap);
-    const dataUrl = await encodeWithinCap((encoding) => encode(bitmap, color, encoding));
+    const kept = keepsOriginal({ type: file.type, size: file.size, width, height });
+    const size = kept ? { width, height } : fitWithin(width, height, ENCODED_SIDE);
+    const blob = kept ? file : await encode(bitmap, color, size, ENCODED_QUALITY);
+    const thumbnail = await encode(bitmap, color, thumbnailSize(width, height), THUMBNAIL_QUALITY);
 
-    return { dataUrl, averageColor: color, updatedAt: Date.now() };
+    return {
+      blob,
+      placeholder: {
+        averageColor: color,
+        thumbnail: await readAsDataUrl(thumbnail),
+        width: size.width,
+        height: size.height,
+        updatedAt: Date.now(),
+        foreground: imageForeground(color).tone,
+      },
+    };
   } finally {
     bitmap.close();
   }
