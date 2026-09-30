@@ -18,6 +18,13 @@ const THUMBNAIL_SIDE = 32;
 const THUMBNAIL_QUALITY = 0.8;
 // Tiny enough to average quickly, large enough to not be one pixel's color.
 const SAMPLE_SIDE = 16;
+// Where the page's content sits, as fractions of the window: the logo and search field, then the
+// clock, date, and pinned sites. The text set is chosen by the parts of the image behind these.
+const CONTENT_BANDS = [
+  { left: 0.25, right: 0.75, top: 0.25, bottom: 0.45 },
+  { left: 0.25, right: 0.75, top: 0.45, bottom: 0.7 },
+];
+const WHOLE_IMAGE = { left: 0, right: 1, top: 0, bottom: 1 };
 
 export class BackgroundImageError extends Error {
   constructor(code) {
@@ -34,6 +41,28 @@ export function fitWithin(width, height, maxSide) {
     width: Math.max(1, Math.round(width * scale)),
     height: Math.max(1, Math.round(height * scale)),
   };
+}
+
+// The part of an image that a band of the window shows when the image covers the window,
+// centered, as fractions of the image.
+export function coveredRegion(image, view, band) {
+  const scale = Math.max(view.width / image.width, view.height / image.height);
+  const shownWidth = view.width / scale / image.width;
+  const shownHeight = view.height / scale / image.height;
+  const left = (1 - shownWidth) / 2;
+  const top = (1 - shownHeight) / 2;
+
+  return {
+    left: left + band.left * shownWidth,
+    right: left + band.right * shownWidth,
+    top: top + band.top * shownHeight,
+    bottom: top + band.bottom * shownHeight,
+  };
+}
+
+// The parts of an image behind the content in a window of this size.
+export function contentRegions(image, view) {
+  return CONTENT_BANDS.map((band) => coveredRegion(image, view, band));
 }
 
 export function thumbnailSize(width, height) {
@@ -94,11 +123,16 @@ async function decode(file) {
   }
 }
 
-function sampleColor(bitmap) {
+// The average color of a region of the bitmap, given as fractions of it.
+function sampleColor(bitmap, region = WHOLE_IMAGE) {
   const canvas = new OffscreenCanvas(SAMPLE_SIDE, SAMPLE_SIDE);
   const context = canvas.getContext("2d");
+  const x = region.left * bitmap.width;
+  const y = region.top * bitmap.height;
+  const width = Math.max(1, (region.right - region.left) * bitmap.width);
+  const height = Math.max(1, (region.bottom - region.top) * bitmap.height);
 
-  context.drawImage(bitmap, 0, 0, SAMPLE_SIDE, SAMPLE_SIDE);
+  context.drawImage(bitmap, x, y, width, height, 0, 0, SAMPLE_SIDE, SAMPLE_SIDE);
 
   return averageColor(context.getImageData(0, 0, SAMPLE_SIDE, SAMPLE_SIDE).data);
 }
@@ -123,8 +157,12 @@ async function encode(bitmap, color, { width, height }, quality) {
   return canvas.convertToBlob({ type: "image/jpeg", quality });
 }
 
-// Returns the full image as a Blob and the placeholder that stands in for it at first paint.
-export async function importBackgroundImage(file) {
+// Returns the full image as a Blob and the placeholder that stands in for it at first paint. The
+// text set is chosen for a window of the given size, this one by default.
+export async function importBackgroundImage(
+  file,
+  view = { width: globalThis.innerWidth, height: globalThis.innerHeight },
+) {
   if (!IMAGE_TYPES.includes(file.type)) {
     throw new BackgroundImageError("type");
   }
@@ -138,6 +176,9 @@ export async function importBackgroundImage(file) {
   try {
     const { width, height } = bitmap;
     const color = sampleColor(bitmap);
+    const bands = contentRegions({ width, height }, view).map((region) =>
+      sampleColor(bitmap, region),
+    );
     const kept = keepsOriginal({ type: file.type, size: file.size, width, height });
     const size = kept ? { width, height } : fitWithin(width, height, ENCODED_SIDE);
     const blob = kept ? file : await encode(bitmap, color, size, ENCODED_QUALITY);
@@ -147,11 +188,12 @@ export async function importBackgroundImage(file) {
       blob,
       placeholder: {
         averageColor: color,
+        bands,
         thumbnail: await readAsDataUrl(thumbnail),
         width: size.width,
         height: size.height,
         updatedAt: Date.now(),
-        foreground: imageForeground(color).tone,
+        foreground: imageForeground(bands).tone,
       },
     };
   } finally {

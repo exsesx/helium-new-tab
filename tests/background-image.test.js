@@ -1,6 +1,8 @@
 import { expect, test } from "bun:test";
 import {
   averageColor,
+  contentRegions,
+  coveredRegion,
   fitWithin,
   keepsOriginal,
   thumbnailSize,
@@ -44,4 +46,43 @@ test("averages visible pixels into a hex color", () => {
 
   expect(averageColor(pixels)).toBe("#800080");
   expect(averageColor(new Uint8ClampedArray([10, 20, 30, 0]))).toBe("#808080");
+});
+
+// Rounds a region's fractions so they compare cleanly.
+const rounded = (region) =>
+  Object.fromEntries(Object.entries(region).map(([key, value]) => [key, Number(value.toFixed(4))]));
+
+test("finds the part of a covering, centered image behind a band of the window", () => {
+  const photo = { width: 5120, height: 2880 };
+  const band = { left: 0.25, right: 0.75, top: 0.25, bottom: 0.45 };
+
+  // A 16:10 window shows the full height and 90% of the width.
+  expect(rounded(coveredRegion(photo, { width: 1440, height: 900 }, band))).toEqual({
+    left: 0.275,
+    right: 0.725,
+    top: 0.25,
+    bottom: 0.45,
+  });
+
+  // A tall window shows the full height and a narrow middle.
+  expect(rounded(coveredRegion(photo, { width: 1000, height: 1200 }, band))).toEqual({
+    left: 0.3828,
+    right: 0.6172,
+    top: 0.25,
+    bottom: 0.45,
+  });
+
+  // A portrait photo in a wide window shows the full width and a middle slice of the height.
+  expect(
+    rounded(coveredRegion({ width: 3024, height: 4032 }, { width: 1440, height: 900 }, band)),
+  ).toEqual({ left: 0.25, right: 0.75, top: 0.3828, bottom: 0.4766 });
+});
+
+test("samples two bands: behind the logo and search, and behind the clock and pinned sites", () => {
+  const regions = contentRegions({ width: 1600, height: 900 }, { width: 1600, height: 900 });
+
+  expect(regions.map(rounded)).toEqual([
+    { left: 0.25, right: 0.75, top: 0.25, bottom: 0.45 },
+    { left: 0.25, right: 0.75, top: 0.45, bottom: 0.7 },
+  ]);
 });

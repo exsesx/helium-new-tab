@@ -40,9 +40,12 @@ const MUTED_WEIGHT = 62;
 // Only encodings Customize writes, and only characters that cannot end a CSS url().
 const IMAGE_DATA_URL = /^data:image\/(?:webp|jpeg|png);base64,[A-Za-z0-9+/]+={0,2}$/;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
-// A photo is shown as it is. Only a mid-tone photo, where neither text set reads well, gets a
-// faint overlay in the color opposite its text, and never more than this, in percent.
+// Large text such as the clock reads at 3:1. Below that on the worst band behind the content, a
+// photo gets a faint overlay in the color opposite its text, never more than this, in percent.
+const LARGE_TEXT_CONTRAST = 3;
 const MAX_IMAGE_OVERLAY = 15;
+// The bands behind the content: the logo and search, then the clock, date, and pinned sites.
+const CONTENT_BAND_COUNT = 2;
 const OVERLAY_COLORS = { dark: "#ffffff", light: "#000000" };
 const IMAGE_PROPERTIES = ["--image-thumbnail", "--image-bg", "--image-overlay"];
 
@@ -128,7 +131,7 @@ export function readBackgroundImage(value) {
     return undefined;
   }
 
-  const { averageColor, thumbnail, width, height, updatedAt, foreground } = value;
+  const { averageColor, bands, thumbnail, width, height, updatedAt, foreground } = value;
   const hasThumbnail =
     typeof thumbnail === "string" &&
     thumbnail.length <= MAX_THUMBNAIL_LENGTH &&
@@ -136,9 +139,12 @@ export function readBackgroundImage(value) {
   const hasSize = [width, height].every(
     (side) => Number.isInteger(side) && side > 0 && side <= MAX_IMAGE_SIDE,
   );
+  const hasBands =
+    Array.isArray(bands) && bands.length === CONTENT_BAND_COUNT && bands.every(isHexColor);
   const isValid =
     hasThumbnail &&
     hasSize &&
+    hasBands &&
     isHexColor(averageColor) &&
     Number.isFinite(updatedAt) &&
     TONES.includes(foreground);
@@ -149,6 +155,7 @@ export function readBackgroundImage(value) {
 
   return {
     averageColor: averageColor.toLowerCase(),
+    bands: bands.map((band) => band.toLowerCase()),
     thumbnail,
     width,
     height,
@@ -182,28 +189,40 @@ export function loadBackgroundImage() {
   }
 }
 
-// The overlay, in percent, that brings a text set to 4.5:1 on a photo's average color: the least
-// that does, up to MAX_IMAGE_OVERLAY, and 0 whenever the text reads without it.
-function imageOverlay(averageColor, tone) {
-  const text = FOREGROUNDS[tone];
-  const readable = (overlay) =>
-    contrastRatio(text, mixColors(OVERLAY_COLORS[tone], averageColor, overlay)) >= MINIMUM_CONTRAST;
+// How well a text set reads on the parts of a photo behind the content: its worst contrast over
+// the bands' average colors.
+function worstContrast(bands, tone) {
+  return Math.min(...bands.map((band) => contrastRatio(FOREGROUNDS[tone], band)));
+}
+
+// How a text set is kept legible on a photo. A set that reads at 4.5:1 on every band gets the
+// soft halo alone. Otherwise it gets the strong halo, and only when even large text is below 3:1
+// on the worst band, the least overlay that brings it there, up to MAX_IMAGE_OVERLAY percent.
+function imageLegibility(bands, tone) {
+  if (worstContrast(bands, tone) >= MINIMUM_CONTRAST) {
+    return { halo: "soft", overlay: 0 };
+  }
+
+  const covered = (overlay) => bands.map((band) => mixColors(OVERLAY_COLORS[tone], band, overlay));
   let overlay = 0;
 
-  while (overlay < MAX_IMAGE_OVERLAY && !readable(overlay)) {
+  while (
+    overlay < MAX_IMAGE_OVERLAY &&
+    worstContrast(covered(overlay), tone) < LARGE_TEXT_CONTRAST
+  ) {
     overlay++;
   }
 
-  return overlay;
+  return { halo: "strong", overlay };
 }
 
-// The text set for a photo's page, chosen by the photo as a chosen color's page is, whatever the
-// appearance: "dark" text on bright photos and "light" text on dark ones, with the overlay a
-// mid-tone photo needs.
-export function imageForeground(averageColor) {
-  const tone = foregroundFor(averageColor);
+// The text set for a photo's page, chosen by the parts of the photo behind the content rather
+// than the whole photo, whatever the appearance: the set whose worst band reads best, with the
+// halo and overlay it needs there.
+export function imageForeground(bands) {
+  const [tone] = TONES.toSorted((a, b) => worstContrast(bands, b) - worstContrast(bands, a));
 
-  return { tone, overlay: imageOverlay(averageColor, tone) };
+  return { tone, ...imageLegibility(bands, tone) };
 }
 
 // Paints the placeholder over the synced background: the photo's average color and a blurred
@@ -215,6 +234,7 @@ export function applyBackgroundImage(image) {
   if (!image) {
     delete root.dataset.backgroundImage;
     delete root.dataset.imageForeground;
+    delete root.dataset.imageHalo;
 
     for (const property of IMAGE_PROPERTIES) {
       root.style.removeProperty(property);
@@ -224,7 +244,7 @@ export function applyBackgroundImage(image) {
   }
 
   const tone = image.foreground;
-  const overlay = imageOverlay(image.averageColor, tone);
+  const { halo, overlay } = imageLegibility(image.bands, tone);
 
   root.style.setProperty("--image-thumbnail", `url("${image.thumbnail}")`);
   root.style.setProperty("--image-bg", image.averageColor);
@@ -233,5 +253,6 @@ export function applyBackgroundImage(image) {
     `color-mix(in srgb, ${OVERLAY_COLORS[tone]} ${overlay}%, transparent)`,
   );
   root.dataset.imageForeground = tone;
+  root.dataset.imageHalo = halo;
   root.dataset.backgroundImage = "";
 }

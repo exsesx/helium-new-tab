@@ -134,6 +134,19 @@ body {
     drop-shadow(0 0 16px rgb(255 255 255 / 0.35));
 }
 
+/* When no text set reads on every part of the photo behind the content, the halo is larger and
+   denser, still without an offset or a wash over the photo; see imageLegibility. */
+:root[data-image-foreground="light"][data-image-halo="strong"] main {
+  --halo: 0 1px 3px rgb(0 0 0 / 0.55), 0 0 24px rgb(0 0 0 / 0.45);
+  --logo-halo: drop-shadow(0 0 3px rgb(0 0 0 / 0.55)) drop-shadow(0 0 24px rgb(0 0 0 / 0.45));
+}
+
+:root[data-image-foreground="dark"][data-image-halo="strong"] main {
+  --halo: 0 1px 3px rgb(255 255 255 / 0.55), 0 0 24px rgb(255 255 255 / 0.45);
+  --logo-halo: drop-shadow(0 0 3px rgb(255 255 255 / 0.55))
+    drop-shadow(0 0 24px rgb(255 255 255 / 0.45));
+}
+
 :root[data-background-image] :is(.clock-block, .pinned-title) {
   text-shadow: var(--halo);
 }

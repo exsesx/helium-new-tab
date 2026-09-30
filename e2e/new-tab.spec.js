@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { contrastRatio, foregroundColors, imageForeground } from "../src/lib/background.js";
+import {
+  contrastRatio,
+  foregroundColors,
+  foregroundFor,
+  imageForeground,
+} from "../src/lib/background.js";
 
 const PREFERENCES_KEY = "helium-tab";
 const BACKGROUND_IMAGE_KEY = "helium-tab-background";
@@ -711,18 +716,24 @@ async function chooseTestImage(page) {
 }
 
 // Stores an image the way Customize does: the full image in IndexedDB and a placeholder in
-// local storage. Without the full image, only the placeholder paints.
-async function saveBackgroundImage(page, averageColor = "#88876c", { full = true } = {}) {
+// local storage. Without the full image, only the placeholder paints. The bands behind the
+// content are the average color unless given.
+async function saveBackgroundImage(
+  page,
+  averageColor = "#88876c",
+  { full = true, bands = [averageColor, averageColor] } = {},
+) {
   await page.goto("/");
 
   const thumbnail = await drawTestImage(page, "image/webp");
   const placeholder = {
     averageColor,
+    bands,
     thumbnail,
     width: 64,
     height: 40,
     updatedAt: Date.now(),
-    foreground: imageForeground(averageColor).tone,
+    foreground: imageForeground(bands).tone,
   };
 
   if (full) {
@@ -935,6 +946,7 @@ test("choosing an image keeps it in full and paints its placeholder first", asyn
 
   expect(placeholder).toEqual({
     averageColor: expect.stringMatching(/^#[0-9a-f]{6}$/),
+    bands: [expect.stringMatching(/^#[0-9a-f]{6}$/), expect.stringMatching(/^#[0-9a-f]{6}$/)],
     thumbnail: expect.stringMatching(/^data:image\/webp;base64,/),
     width: 64,
     height: 40,
@@ -1125,19 +1137,71 @@ test("a photo picks one text set for the whole page, whatever the appearance", a
   expect(isTransparent(snow.overlay), snow.overlay).toBe(true);
 });
 
-test("only a mid-tone photo gets a faint overlay", async ({ page }) => {
-  const { tone, overlay } = imageForeground("#88876c");
+test("a photo no set reads on everywhere gets strong halos, and an overlay only last", async ({
+  page,
+}) => {
+  const clockHalo = () =>
+    page.locator("h1").evaluate((element) => getComputedStyle(element).textShadow);
 
-  await saveBackgroundImage(page, "#88876c");
+  // A warm stripe behind the search field and a dark green band behind the clock.
+  await saveBackgroundImage(page, "#81865d", { bands: ["#c06464", "#316b28"] });
   await page.reload();
 
-  expect(overlay).toBeGreaterThan(0);
-  expect(overlay).toBeLessThanOrEqual(15);
-  expect(await photoPage(page)).toMatchObject({
-    tone,
-    overlay: `color(srgb 1 1 1 / ${overlay / 100})`,
-    layers: "none",
+  expect(await photoPage(page)).toMatchObject({ tone: "light", layers: "none" });
+  expect(isTransparent((await photoPage(page)).overlay)).toBe(true);
+  expect(await clockHalo()).toBe(
+    "rgba(0, 0, 0, 0.55) 0px 1px 3px, rgba(0, 0, 0, 0.45) 0px 0px 24px",
+  );
+
+  // Where even large text stays below 3:1, a capped overlay helps as the last fallback.
+  const extreme = imageForeground(["#ffffff", "#000000"]);
+
+  await saveBackgroundImage(page, "#808080", { bands: ["#ffffff", "#000000"] });
+  await page.reload();
+
+  expect(extreme.overlay).toBeGreaterThan(0);
+  expect(extreme.overlay).toBeLessThanOrEqual(15);
+  expect((await photoPage(page)).overlay).toMatch(new RegExp(` / ${extreme.overlay / 100}\\)$`));
+});
+
+test("the text set follows the part of the photo behind the content, not its average", async ({
+  page,
+}) => {
+  // A bright photo, dark only where the logo, search, clock, and date sit.
+  const png = await page.evaluate(() => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = 1600;
+    canvas.height = 900;
+    context.fillStyle = "#f2f4f0";
+    context.fillRect(0, 0, 1600, 900);
+    context.fillStyle = "#1f3b24";
+    context.fillRect(400, 225, 800, 405);
+
+    return canvas.toDataURL("image/png").split(",")[1];
   });
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Image" }).check();
+  await page.locator("#background-file").setInputFiles({
+    name: "band.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(png, "base64"),
+  });
+  await expect(page.locator("html")).toHaveAttribute("data-background-image", "");
+
+  const placeholder = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    BACKGROUND_IMAGE_KEY,
+  );
+
+  // The average alone would pick dark text; the bands behind the content pick light text.
+  expect(foregroundFor(placeholder.averageColor)).toBe("dark");
+  expect(placeholder.foreground).toBe("light");
+  await expect(page.locator("html")).toHaveAttribute("data-image-foreground", "light");
+  await expect(page.locator("html")).toHaveAttribute("data-image-halo", "soft");
 });
 
 // The surfaces that frost over a chosen color or image: search, hint, Customize, and any tiles.

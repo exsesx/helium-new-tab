@@ -15,6 +15,7 @@ import { readPreferences } from "../src/lib/model.js";
 
 const validImage = {
   averageColor: "#336699",
+  bands: ["#1e2a3a", "#2a3a4a"],
   thumbnail: "data:image/webp;base64,UklGRhYAAABXRUJQ",
   width: 5120,
   height: 2880,
@@ -79,6 +80,10 @@ test("reads only placeholders that Customize could have written", () => {
     { ...validImage, averageColor: "blue" },
     { ...validImage, updatedAt: "yesterday" },
     { ...validImage, foreground: "auto" },
+    // A placeholder from before the text set was chosen by the bands behind the content.
+    { ...validImage, bands: undefined },
+    { ...validImage, bands: ["#1e2a3a"] },
+    { ...validImage, bands: ["#1e2a3a", "dark green"] },
   ]) {
     expect(readBackgroundImage(invalid)).toBeUndefined();
   }
@@ -162,27 +167,63 @@ test("pastels keep the default hierarchy of text, secondary, and muted", () => {
   }
 });
 
-test("a photo picks one text set by its brightness, and no overlay unless it is a mid-tone", () => {
-  // Night, snow, and the lavender wallpaper all read without help.
-  expect(imageForeground("#0b1020")).toEqual({ tone: "light", overlay: 0 });
-  expect(imageForeground("#f5f6f5")).toEqual({ tone: "dark", overlay: 0 });
-  expect(imageForeground("#9d8be6")).toEqual({ tone: "dark", overlay: 0 });
-
-  // A mid-tone gets the least overlay that helps, never more than 15%.
-  const middle = imageForeground("#7c7c7c");
-
-  expect(middle.overlay).toBeGreaterThan(0);
-  expect(middle.overlay).toBeLessThanOrEqual(15);
+test("a photo's text set reads on both bands behind the content, with the soft halo", () => {
+  // Night, snow, and a pale lavender read on both bands.
+  expect(imageForeground(["#0b1020", "#01455c"])).toEqual({
+    tone: "light",
+    halo: "soft",
+    overlay: 0,
+  });
+  expect(imageForeground(["#f9fafa", "#f5f6f5"])).toEqual({
+    tone: "dark",
+    halo: "soft",
+    overlay: 0,
+  });
+  expect(imageForeground(["#e3d9fd", "#d9cdf5"])).toEqual({
+    tone: "dark",
+    halo: "soft",
+    overlay: 0,
+  });
 });
 
-test("the photo overlay is 0 whenever the chosen text already reads at 4.5:1", () => {
+test("the band behind the clock decides, not the whole photo", () => {
+  // A bright photo whose middle is a dark green band: dark text would vanish on the band.
+  const { tone } = imageForeground(["#2e5a2a", "#316b28"]);
+
+  expect(tone).toBe("light");
+});
+
+test("when no set reads on both bands, the better worst band wins and gets the strong halo", () => {
   const text = { dark: "#292b2b", light: "#e3e5e5" };
+  // A warm stripe behind the search field and a dark green band behind the clock.
+  const bands = ["#c06464", "#316b28"];
+  const result = imageForeground(bands);
+  const worst = (tone) => Math.min(...bands.map((band) => contrastRatio(text[tone], band)));
+  const other = result.tone === "light" ? "dark" : "light";
+
+  expect(worst(result.tone)).toBeLessThan(4.5);
+  expect(worst(result.tone)).toBeGreaterThan(worst(other));
+  expect(result).toMatchObject({ halo: "strong", overlay: 0 });
+});
+
+test("an overlay comes only after the strong halo, where even large text is below 3:1", () => {
+  const text = { dark: "#292b2b", light: "#e3e5e5" };
+
+  // One band white and one black: nothing reads, so the capped overlay helps as it can.
+  const extreme = imageForeground(["#ffffff", "#000000"]);
+
+  expect(extreme.halo).toBe("strong");
+  expect(extreme.overlay).toBeGreaterThan(0);
+  expect(extreme.overlay).toBeLessThanOrEqual(15);
 
   for (let gray = 0; gray <= 255; gray += 5) {
     const color = `#${gray.toString(16).padStart(2, "0").repeat(3)}`;
-    const { tone, overlay } = imageForeground(color);
+    const { tone, halo, overlay } = imageForeground([color, color]);
+    const contrast = contrastRatio(text[tone], color);
 
-    if (contrastRatio(text[tone], color) >= 4.5) {
+    expect(halo, color).toBe(contrast >= 4.5 ? "soft" : "strong");
+
+    if (contrast >= 3) {
       expect(overlay, color).toBe(0);
     }
 
