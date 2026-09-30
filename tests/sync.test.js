@@ -1,6 +1,5 @@
 import { afterEach, expect, test } from "bun:test";
-import { readPinnedSites } from "../src/lib/model.js";
-import { PINNED_SITES_KEY } from "../src/lib/storage.js";
+import { PINNED_SITES_KEY, readPinnedSites } from "../src/lib/model.js";
 import {
   createChangeOrder,
   createSyncWriter,

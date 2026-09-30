@@ -1,35 +1,12 @@
 import { watch } from "node:fs";
 import { build, root } from "./build.js";
 
-let files;
 let manifest;
-let sourceHash;
 
 async function rebuild() {
-  // Editors and filesystem watchers can send several events for the same save.
-  const hash = new Bun.CryptoHasher("sha256");
-  const sources = await Array.fromAsync(
-    new Bun.Glob("**/*").scan({ cwd: `${root}src`, onlyFiles: true }),
-  );
-
-  for (const path of sources.sort()) {
-    hash.update(path);
-    hash.update(await Bun.file(`${root}src/${path}`).arrayBuffer());
-  }
-
-  const nextHash = hash.digest("hex");
-
-  if (nextHash === sourceHash) {
-    return;
-  }
-
   await build();
   // Serve the extension's own policy so the preview allows and blocks the same resources.
   manifest = await Bun.file(`${root}dist/manifest.json`).json();
-  sourceHash = nextHash;
-  files = new Set(
-    await Array.fromAsync(new Bun.Glob("**/*").scan({ cwd: `${root}dist`, onlyFiles: true })),
-  );
 }
 
 await rebuild();
@@ -37,14 +14,16 @@ await rebuild();
 const server = Bun.serve({
   hostname: "127.0.0.1",
   port: Number(process.env.PORT || 4173),
-  fetch(request) {
+  async fetch(request) {
+    // URL parsing collapses "..", and a directory does not exist as a file.
     const path = new URL(request.url).pathname.slice(1) || "index.html";
+    const file = Bun.file(`${root}dist/${path}`);
 
-    if (!files.has(path)) {
+    if (!(await file.exists())) {
       return new Response("Not found", { status: 404 });
     }
 
-    return new Response(Bun.file(`${root}dist/${path}`), {
+    return new Response(file, {
       headers: {
         "Cache-Control": "no-store",
         "Cross-Origin-Embedder-Policy": "credentialless",

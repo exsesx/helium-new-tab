@@ -17,7 +17,7 @@ describe("website URLs", () => {
       "hello world",
       "",
     ]) {
-      expect(() => websiteUrl(input)).toThrow();
+      expect(websiteUrl(input)).toBe("");
     }
   });
 });

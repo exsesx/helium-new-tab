@@ -9,29 +9,26 @@ export function serviceIconsSupported() {
   );
 }
 
-// Call directly from a user action so the browser can show its permission prompt.
-export async function requestServiceIcons() {
+// Calls one chrome.permissions method for the favicon permission; false when it is unavailable.
+async function faviconPermission(method) {
   if (!serviceIconsSupported()) {
     return false;
   }
 
   try {
-    return await chrome.permissions.request(PERMISSION);
+    return await chrome.permissions[method](PERMISSION);
   } catch {
     return false;
   }
 }
 
-export async function hasServiceIcons() {
-  if (!serviceIconsSupported()) {
-    return false;
-  }
+// Call directly from a user action so the browser can show its permission prompt.
+export function requestServiceIcons() {
+  return faviconPermission("request");
+}
 
-  try {
-    return await chrome.permissions.contains(PERMISSION);
-  } catch {
-    return false;
-  }
+export function hasServiceIcons() {
+  return faviconPermission("contains");
 }
 
 export function onServiceIconsRevoked(listener) {

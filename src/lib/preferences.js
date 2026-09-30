@@ -1,20 +1,26 @@
-import { readPinnedSites, readPreferences, resolvedFonts } from "./model.js";
-import { PINNED_SITES_KEY, PREFERENCES_KEY } from "./storage.js";
+import {
+  PINNED_SITES_KEY,
+  PREFERENCES_KEY,
+  readPinnedSites,
+  readPreferences,
+  resolvedFonts,
+} from "./model.js";
 
-export function loadPreferences() {
+// Validates a locally stored item, falling back to its defaults when it is missing or broken.
+function readStored(key, read) {
   try {
-    return readPreferences(JSON.parse(localStorage.getItem(PREFERENCES_KEY)));
+    return read(JSON.parse(localStorage.getItem(key)));
   } catch {
-    return readPreferences(null);
+    return read(null);
   }
 }
 
+export function loadPreferences() {
+  return readStored(PREFERENCES_KEY, readPreferences);
+}
+
 export function loadPinnedSites() {
-  try {
-    return readPinnedSites(JSON.parse(localStorage.getItem(PINNED_SITES_KEY)));
-  } catch {
-    return readPinnedSites(null);
-  }
+  return readStored(PINNED_SITES_KEY, readPinnedSites);
 }
 
 export function applyAppearance(preferences) {

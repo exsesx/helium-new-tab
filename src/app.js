@@ -1,6 +1,11 @@
 import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
 import { createClock } from "./lib/clock.js";
-import { readPinnedSites, readPreferences } from "./lib/model.js";
+import {
+  PINNED_SITES_KEY,
+  PREFERENCES_KEY,
+  readPinnedSites,
+  readPreferences,
+} from "./lib/model.js";
 import { createSearchForm } from "./lib/search-form.js";
 import {
   hasServiceIcons,
@@ -10,7 +15,6 @@ import {
 } from "./lib/service-icons.js";
 import { showSiteFavicons } from "./lib/site-favicons.js";
 import { renderPinnedSites } from "./lib/site-tiles.js";
-import { PINNED_SITES_KEY, PREFERENCES_KEY } from "./lib/storage.js";
 import {
   createChangeOrder,
   createSyncWriter,
@@ -278,10 +282,6 @@ function applyExternalSites(value) {
   return true;
 }
 
-function isSyncedSites(value) {
-  return Boolean(value) && typeof value === "object";
-}
-
 window.addEventListener("storage", (event) => {
   if (event.key !== PINNED_SITES_KEY && event.key !== null) {
     return;
@@ -295,7 +295,7 @@ window.addEventListener("storage", (event) => {
 });
 
 onSyncedChange((value) => {
-  if (isSyncedSites(value) && applyExternalSites(value)) {
+  if (value && typeof value === "object" && applyExternalSites(value)) {
     saveLocal(PINNED_SITES_KEY, pinned);
   }
 }, PINNED_SITES_KEY);
@@ -303,7 +303,7 @@ onSyncedChange((value) => {
 // Synced sites win once they exist. Only a list with sites seeds them, so a new device cannot
 // replace another device's list with an empty one before sync delivers it.
 void readSynced(PINNED_SITES_KEY).then((value) => {
-  if (isSyncedSites(value)) {
+  if (value && typeof value === "object") {
     if (applyExternalSites(value)) {
       saveLocal(PINNED_SITES_KEY, pinned);
     }

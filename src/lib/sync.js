@@ -1,4 +1,4 @@
-import { PREFERENCES_KEY } from "./storage.js";
+import { PREFERENCES_KEY } from "./model.js";
 
 // Permissions differ per device, so each device keeps its own service-icon choice.
 const DEVICE_KEYS = ["showServiceIcons"];
