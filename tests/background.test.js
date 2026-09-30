@@ -10,7 +10,7 @@ import {
   MAX_IMAGE_LENGTH,
   readBackgroundImage,
   relativeLuminance,
-  scrimStrengths,
+  imageForeground,
 } from "../src/lib/background.js";
 import { readPreferences } from "../src/lib/model.js";
 
@@ -152,28 +152,30 @@ test("pastels keep the default hierarchy of text, secondary, and muted", () => {
   }
 });
 
-test("the scrim over a photo is stronger the more the photo works against the text", () => {
-  const night = scrimStrengths("#0a0a14");
-  const snow = scrimStrengths("#f5f6f5");
-  const middle = scrimStrengths("#808080");
+test("a photo picks one text set by its brightness, and no overlay unless it is a mid-tone", () => {
+  // Night, snow, and the lavender wallpaper all read without help.
+  expect(imageForeground("#0b1020")).toEqual({ tone: "light", overlay: 0 });
+  expect(imageForeground("#f5f6f5")).toEqual({ tone: "dark", overlay: 0 });
+  expect(imageForeground("#9d8be6")).toEqual({ tone: "dark", overlay: 0 });
 
-  // Dark text on a night photo needs a strong light scrim; light text barely needs any.
-  expect(night.light).toBeGreaterThan(night.dark);
-  expect(snow.dark).toBeGreaterThan(snow.light);
+  // A mid-tone gets the least overlay that helps, never more than 15%.
+  const middle = imageForeground("#7c7c7c");
 
-  expect(night.light).toBeGreaterThan(middle.light);
-  expect(snow.dark).toBeGreaterThan(middle.dark);
+  expect(middle.overlay).toBeGreaterThan(0);
+  expect(middle.overlay).toBeLessThanOrEqual(15);
+});
 
-  for (const strengths of [
-    night,
-    snow,
-    middle,
-    scrimStrengths("#000000"),
-    scrimStrengths("#ffffff"),
-  ]) {
-    for (const strength of Object.values(strengths)) {
-      expect(strength).toBeGreaterThanOrEqual(18);
-      expect(strength).toBeLessThanOrEqual(40);
+test("the photo overlay is 0 whenever the chosen text already reads at 4.5:1", () => {
+  const text = { dark: "#292b2b", light: "#e3e5e5" };
+
+  for (let gray = 0; gray <= 255; gray += 5) {
+    const color = `#${gray.toString(16).padStart(2, "0").repeat(3)}`;
+    const { tone, overlay } = imageForeground(color);
+
+    if (contrastRatio(text[tone], color) >= 4.5) {
+      expect(overlay, color).toBe(0);
     }
+
+    expect(overlay, color).toBeLessThanOrEqual(15);
   }
 });

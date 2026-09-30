@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { contrastRatio, foregroundColors, scrimStrengths } from "../src/lib/background.js";
+import { contrastRatio, foregroundColors, imageForeground } from "../src/lib/background.js";
 
 const PREFERENCES_KEY = "helium-tab";
 const BACKGROUND_IMAGE_KEY = "helium-tab-background";
@@ -710,11 +710,11 @@ async function chooseTestImage(page) {
   });
 }
 
-async function saveBackgroundImage(page) {
+async function saveBackgroundImage(page, averageColor = "#88876c") {
   await page.goto("/");
 
   const dataUrl = await drawTestImage(page, "image/webp");
-  const image = { dataUrl, averageColor: "#88876c", updatedAt: Date.now() };
+  const image = { dataUrl, averageColor, updatedAt: Date.now() };
 
   await page.evaluate(
     ([key, value]) => localStorage.setItem(key, JSON.stringify(value)),
@@ -919,35 +919,63 @@ test("removing the image in one tab repaints the others", async ({ context }) =>
   await expect(second.locator("html")).not.toHaveAttribute("data-background-image");
 });
 
-test("the scrim over an image follows the appearance", async ({ page }) => {
-  const scrim = () =>
-    page.evaluate(() => getComputedStyle(document.body, "::before").backgroundColor);
-  const clockColor = () =>
-    page.locator("h1").evaluate((element) => getComputedStyle(element).color);
+// The page over a photo: its text set, clock and search colors, and the overlay and its layers.
+function photoPage(page) {
+  return page.evaluate(() => {
+    const overlay = getComputedStyle(document.body, "::before");
 
-  const glow = () =>
-    page.evaluate(() => getComputedStyle(document.body, "::before").backgroundImage);
+    return {
+      tone: document.documentElement.dataset.imageForeground,
+      clock: getComputedStyle(document.querySelector("h1")).color,
+      search: getComputedStyle(document.getElementById("search-form")).backgroundColor,
+      overlay: overlay.backgroundColor,
+      layers: overlay.backgroundImage,
+    };
+  });
+}
 
-  // The seeded image's average color is a mid-tone, so both appearances get a middle strength.
-  const strengths = scrimStrengths("#88876c");
+const isTransparent = (color) => color.endsWith(" 0)");
 
-  await saveBackgroundImage(page);
-  await page.emulateMedia({ colorScheme: "light" });
+test("a photo picks one text set for the whole page, whatever the appearance", async ({ page }) => {
+  // A night photo gets light text and dark glass in both appearances, with no overlay at all.
+  await saveBackgroundImage(page, "#0b1020");
+
+  for (const colorScheme of ["light", "dark"]) {
+    await page.emulateMedia({ colorScheme });
+    await page.reload();
+
+    const night = await photoPage(page);
+
+    expect(night).toMatchObject({ tone: "light", clock: "rgb(227, 229, 229)", layers: "none" });
+    expect(night.search).toMatch(/^color\(srgb 0\.207843 0\.215686 0\.215686 \/ 0\.7\)$/);
+    expect(isTransparent(night.overlay), night.overlay).toBe(true);
+  }
+
+  // A snow photo gets dark text and light glass, even in a dark appearance.
+  await saveBackgroundImage(page, "#f5f6f5");
+  await page.emulateMedia({ colorScheme: "dark" });
   await page.reload();
 
-  expect(await scrim()).toBe(`color(srgb 1 1 1 / ${strengths.light / 100})`);
-  expect(await clockColor()).toBe("rgb(41, 43, 43)");
+  const snow = await photoPage(page);
 
-  await page.emulateMedia({ colorScheme: "dark" });
+  expect(snow).toMatchObject({ tone: "dark", clock: "rgb(41, 43, 43)", layers: "none" });
+  expect(snow.search).toMatch(/^color\(srgb 0\.921569 0\.921569 0\.921569 \/ 0\.7\)$/);
+  expect(isTransparent(snow.overlay), snow.overlay).toBe(true);
+});
 
-  expect(await scrim()).toBe(`color(srgb 0 0 0 / ${strengths.dark / 100})`);
-  expect(await clockColor()).toBe("rgb(227, 229, 229)");
+test("only a mid-tone photo gets a faint overlay", async ({ page }) => {
+  const { tone, overlay } = imageForeground("#88876c");
 
-  // Besides the even scrim there is only one soft glow: no edge vignettes or bands.
-  const layers = await glow();
+  await saveBackgroundImage(page, "#88876c");
+  await page.reload();
 
-  expect(layers.match(/gradient\(/g)).toHaveLength(1);
-  expect(layers).toMatch(/^radial-gradient\(/);
+  expect(overlay).toBeGreaterThan(0);
+  expect(overlay).toBeLessThanOrEqual(15);
+  expect(await photoPage(page)).toMatchObject({
+    tone,
+    overlay: `color(srgb 1 1 1 / ${overlay / 100})`,
+    layers: "none",
+  });
 });
 
 // The surfaces that frost over a chosen color or image: search, hint, Customize, and any tiles.
@@ -1484,41 +1512,24 @@ test("a color chosen on another device repaints live, foreground included", asyn
   await expect(page.locator("html")).toHaveAttribute("data-background", "helium");
 });
 
-test("switching the appearance over an image flips the scrim in the same frame", async ({
-  page,
-}) => {
-  const strengths = scrimStrengths("#88876c");
-
-  await saveBackgroundImage(page);
+test("switching the appearance over a photo leaves the page as it is", async ({ page }) => {
+  await saveBackgroundImage(page, "#0b1020");
   await page.emulateMedia({ colorScheme: "light", reducedMotion: "no-preference" });
   await page.reload();
 
+  const before = await photoPage(page);
+
   await page.emulateMedia({ colorScheme: "dark", reducedMotion: "no-preference" });
 
-  // Nothing animates between the two: the scrim and the page behind it change at once.
-  const frames = await page.evaluate(async () => {
-    const samples = [];
+  // Only Customize follows the appearance; the page keeps its text, glass, and overlay, and
+  // nothing animates behind it.
+  const after = await photoPage(page);
+  const animating = await page.evaluate(() =>
+    document
+      .getAnimations()
+      .some(({ effect }) => [document.body, document.documentElement].includes(effect.target)),
+  );
 
-    for (let frame = 0; frame < 4; frame++) {
-      samples.push({
-        scrim: getComputedStyle(document.body, "::before").backgroundColor,
-        body: getComputedStyle(document.body).backgroundColor,
-        animating: document
-          .getAnimations()
-          .some(({ effect }) => [document.body, document.documentElement].includes(effect.target)),
-      });
-
-      await new Promise(requestAnimationFrame);
-    }
-
-    return samples;
-  });
-
-  for (const frame of frames) {
-    expect(frame).toEqual({
-      scrim: `color(srgb 0 0 0 / ${strengths.dark / 100})`,
-      body: "rgba(0, 0, 0, 0)",
-      animating: false,
-    });
-  }
+  expect(after).toEqual(before);
+  expect(animating).toBe(false);
 });

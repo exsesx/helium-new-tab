@@ -37,11 +37,11 @@ const MUTED_WEIGHT = 62;
 // Only encodings Customize writes, and only characters that cannot end a CSS url().
 const IMAGE_DATA_URL = /^data:image\/(?:webp|jpeg|png);base64,[A-Za-z0-9+/]+={0,2}$/;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
-// The scrim's range over an image, from a photo that already suits the text to one that is its
-// opposite, such as a night photo under dark text.
-const SCRIM_MIN = 18;
-const SCRIM_MAX = 40;
-const IMAGE_PROPERTIES = ["--background-image", "--image-bg", "--scrim-light", "--scrim-dark"];
+// A photo is shown as it is. Only a mid-tone photo, where neither text set reads well, gets a
+// faint overlay in the color opposite its text, and never more than this, in percent.
+const MAX_IMAGE_OVERLAY = 15;
+const OVERLAY_COLORS = { dark: "#ffffff", light: "#000000" };
+const IMAGE_PROPERTIES = ["--background-image", "--image-bg", "--image-overlay"];
 
 export function isHexColor(value) {
   return typeof value === "string" && HEX_COLOR.test(value);
@@ -162,14 +162,22 @@ export function loadBackgroundImage() {
   }
 }
 
-// How strongly the scrim tones an image down in each appearance, in percent. A light scrim
-// under dark text needs more strength the darker the photo is, and a dark scrim under light
-// text the brighter it is. Perceived lightness is close to the square root of luminance.
-export function scrimStrengths(averageColor) {
-  const lightness = Math.sqrt(relativeLuminance(averageColor));
-  const strength = (mismatch) => Math.round(SCRIM_MIN + mismatch * (SCRIM_MAX - SCRIM_MIN));
+// The text set for a photo's page, chosen by the photo as a chosen color's page is, whatever the
+// appearance: "dark" text on bright photos and "light" text on dark ones. The overlay, in
+// percent, is the least that brings the set's text to 4.5:1 on the photo's average color, up
+// to MAX_IMAGE_OVERLAY, and 0 whenever the text reads without it.
+export function imageForeground(averageColor) {
+  const tone = foregroundFor(averageColor);
+  const text = FOREGROUNDS[tone];
+  const readable = (overlay) =>
+    contrastRatio(text, mixColors(OVERLAY_COLORS[tone], averageColor, overlay)) >= MINIMUM_CONTRAST;
+  let overlay = 0;
 
-  return { light: strength(1 - lightness), dark: strength(lightness) };
+  while (overlay < MAX_IMAGE_OVERLAY && !readable(overlay)) {
+    overlay++;
+  }
+
+  return { tone, overlay };
 }
 
 // Paints the image over the synced background, with its average color underneath.
@@ -178,6 +186,7 @@ export function applyBackgroundImage(image) {
 
   if (!image) {
     delete root.dataset.backgroundImage;
+    delete root.dataset.imageForeground;
 
     for (const property of IMAGE_PROPERTIES) {
       root.style.removeProperty(property);
@@ -186,12 +195,15 @@ export function applyBackgroundImage(image) {
     return;
   }
 
-  const strengths = scrimStrengths(image.averageColor);
+  const { tone, overlay } = imageForeground(image.averageColor);
 
   root.style.setProperty("--background-image", `url("${image.dataUrl}")`);
   root.style.setProperty("--image-bg", image.averageColor);
-  root.style.setProperty("--scrim-light", `${strengths.light}%`);
-  root.style.setProperty("--scrim-dark", `${strengths.dark}%`);
+  root.style.setProperty(
+    "--image-overlay",
+    `color-mix(in srgb, ${OVERLAY_COLORS[tone]} ${overlay}%, transparent)`,
+  );
+  root.dataset.imageForeground = tone;
   root.dataset.backgroundImage = "";
 }
 

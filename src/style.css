@@ -1,6 +1,7 @@
 /* Light tokens, also used for content over a light chosen color in a dark appearance. */
 :root,
-:root[data-foreground="dark"]:not([data-background-image]) :is(main, footer) {
+:root[data-foreground="dark"]:not([data-background-image]) :is(main, footer),
+:root[data-image-foreground="dark"] :is(main, footer) {
   --text: #292b2b;
   --secondary: #555858;
   --muted: #666969;
@@ -19,11 +20,6 @@
   /* Flip favicons cached in the other theme's color; see markIconTone. */
   --light-icon-filter: invert(1) hue-rotate(180deg);
   --dark-icon-filter: none;
-  /* Tones down a background image; see body::before. Its strength follows how far the photo's
-     brightness is from what the text needs; see scrimStrengths. */
-  --scrim: #fff;
-  --scrim-strength: var(--scrim-light, 22%);
-  --scrim-glow: 25%;
   font-family: var(--interface-font, system-ui, sans-serif);
   font-synthesis: none;
 }
@@ -46,15 +42,13 @@
     --error: #ffb4ab;
     --light-icon-filter: none;
     --dark-icon-filter: invert(1) hue-rotate(180deg);
-    --scrim: #000;
-    --scrim-strength: var(--scrim-dark, 22%);
-    --scrim-glow: 15%;
   }
 }
 
 /* Dark tokens, also used for content over a dark chosen color in a light appearance. */
 :root[data-theme="dark"],
-:root[data-foreground="light"]:not([data-background-image]) :is(main, footer) {
+:root[data-foreground="light"]:not([data-background-image]) :is(main, footer),
+:root[data-image-foreground="light"] :is(main, footer) {
   --text: #e3e5e5;
   --secondary: #c3c6c6;
   --muted: #acb0b0;
@@ -71,9 +65,6 @@
   --error: #ffb4ab;
   --light-icon-filter: none;
   --dark-icon-filter: invert(1) hue-rotate(180deg);
-  --scrim: #000;
-  --scrim-strength: var(--scrim-dark, 22%);
-  --scrim-glow: 15%;
 }
 
 /* Over a chosen color, text colors come from that color so they stay readable on mid-tones
@@ -105,29 +96,15 @@ body {
   background: transparent;
 }
 
-/* One even scrim over the whole image, light or dark with the appearance and stronger when the
-   photo works against the text, and a soft glow behind the logo, search, and clock that fades
-   out well inside the window. */
+/* A photo shows as it is, under one text set it chose; see imageForeground. Only a mid-tone
+   photo gets a faint, even overlay, which is transparent otherwise. */
 :root[data-background-image] body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-color: color-mix(in srgb, var(--scrim) var(--scrim-strength), transparent);
-  background-image: radial-gradient(
-    ellipse min(36vw, 460px) min(32svh, 300px) at 50% calc(clamp(48px, 25svh, 300px) + 150px),
-    color-mix(in srgb, var(--scrim) var(--scrim-glow), transparent),
-    color-mix(in srgb, var(--scrim) calc(var(--scrim-glow) * 0.6), transparent) 50%,
-    transparent
-  );
-}
-
-/* Secondary and muted text stay closer to the text color over a photo, whose busy areas swallow
-   the default grays. */
-:root[data-background-image] :is(main, footer) {
-  --secondary: color-mix(in srgb, var(--text) 88%, var(--scrim));
-  --muted: color-mix(in srgb, var(--text) 78%, var(--scrim));
+  background-color: var(--image-overlay);
 }
 
 /* Background swaps crossfade briefly; with reduced motion they switch at once. */
@@ -510,25 +487,22 @@ h1 {
   --tile-hover-bg: color-mix(in srgb, var(--search-bg), #000 6%);
 }
 
-/* Over a chosen color, pinned tiles take the pair that matches the page's text, like the rest
-   of the page does, instead of the appearance's. */
+/* Over a chosen color or photo, pinned tiles take the pair that matches the page's text, like
+   the rest of the page does, instead of the appearance's. */
 :root[data-foreground="dark"]:not([data-background-image])
   .pinned-sites
-  .site-icon:not(.has-favicon) {
+  .site-icon:not(.has-favicon),
+:root[data-image-foreground="dark"] .pinned-sites .site-icon:not(.has-favicon) {
   --tile-bg: var(--tone);
   --tile-text: var(--tone-text);
 }
 
 :root[data-foreground="light"]:not([data-background-image])
   .pinned-sites
-  .site-icon:not(.has-favicon) {
+  .site-icon:not(.has-favicon),
+:root[data-image-foreground="light"] .pinned-sites .site-icon:not(.has-favicon) {
   --tile-bg: var(--tone-dark);
   --tile-text: var(--tone-dark-text);
-}
-
-/* Labels over an image use the full text color, so busy areas do not swallow them. */
-:root[data-background-image] .pinned-title {
-  color: var(--text);
 }
 
 .site-favicon {
