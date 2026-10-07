@@ -34,3 +34,9 @@ clearly.
   `Co-Authored-By` or session trailers in commits, and no "Generated with" lines,
   footers, or links in pull request titles, descriptions, or comments.
 - Commit under the repository owner's configured Git identity, never as an AI tool.
+
+# Cursor Cloud specific instructions
+
+The environment installs Bun 1.4.2 and Node 26, then runs `bun install --frozen-lockfile` and `bun x playwright install --with-deps chromium`. On boot, `bun run dev` serves the preview at http://127.0.0.1:4173 when that port is free.
+
+`bun run check` is the lint, format, unit-test, and production-build command. `bun run test:e2e` starts its own preview on port 4174, so it can run while the boot preview is up. The Development section of the README lists the remaining commands.
