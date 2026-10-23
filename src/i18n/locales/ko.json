@@ -63,5 +63,13 @@
   "siteNameFor": "{site} 이름",
   "moveSiteUp": "{site} 위로 이동",
   "moveSiteDown": "{site} 아래로 이동",
-  "removeSite": "{site} 삭제"
+  "removeSite": "{site} 삭제",
+  "bookmarks": "Bookmarks",
+  "showBookmarks": "Show bookmarks",
+  "bookmarksHelp": "Shows links from your bookmarks bar, including folders, below the clock and date. Asks for permission to read bookmarks and saved site icons. Nothing is downloaded.",
+  "bookmarksEmpty": "Add links to your browser’s bookmarks bar to see them here.",
+  "bookmarksError": "Bookmarks could not load. Open a new tab to try again.",
+  "bookmarkStyle": "Bookmark style",
+  "bookmarkStyleBar": "Bar",
+  "bookmarkStyleTiles": "Tiles"
 }

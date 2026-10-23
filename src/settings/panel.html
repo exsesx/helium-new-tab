@@ -109,6 +109,26 @@
     </p>
   </div>
 
+  <div class="setting">
+    <label for="show-bookmarks" data-i18n="showBookmarks">Show bookmarks</label>
+    <input id="show-bookmarks" type="checkbox" role="switch" aria-describedby="bookmarks-help" />
+  </div>
+
+  <p id="bookmarks-help" class="setting-help" data-i18n="bookmarksHelp">
+    Shows links from your bookmarks bar, including folders, below the clock and date. Asks for
+    permission to read bookmarks and saved site icons. Nothing is downloaded.
+  </p>
+
+  <div class="setting">
+    <label for="bookmark-style" data-i18n="bookmarkStyle">Bookmark style</label>
+    <span class="select-control">
+      <select id="bookmark-style">
+        <option value="bar" data-i18n="bookmarkStyleBar">Bar</option>
+        <option value="tiles" data-i18n="bookmarkStyleTiles">Tiles</option>
+      </select>
+    </span>
+  </div>
+
   <div class="pinned-settings">
     <div class="setting">
       <label for="show-pinned-sites" data-i18n="showPinnedSites">Show pinned sites</label>

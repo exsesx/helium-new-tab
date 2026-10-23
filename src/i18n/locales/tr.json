@@ -63,5 +63,13 @@
   "siteNameFor": "{site} için ad",
   "moveSiteUp": "{site} sitesini yukarı taşı",
   "moveSiteDown": "{site} sitesini aşağı taşı",
-  "removeSite": "{site} sitesini kaldır"
+  "removeSite": "{site} sitesini kaldır",
+  "bookmarks": "Bookmarks",
+  "showBookmarks": "Show bookmarks",
+  "bookmarksHelp": "Shows links from your bookmarks bar, including folders, below the clock and date. Asks for permission to read bookmarks and saved site icons. Nothing is downloaded.",
+  "bookmarksEmpty": "Add links to your browser’s bookmarks bar to see them here.",
+  "bookmarksError": "Bookmarks could not load. Open a new tab to try again.",
+  "bookmarkStyle": "Bookmark style",
+  "bookmarkStyleBar": "Bar",
+  "bookmarkStyleTiles": "Tiles"
 }

@@ -42,12 +42,20 @@ Disable or remove Helium New Tab on the extensions page to restore your previous
   click opens a background tab and Shift opens a new window. Each shows a colored letter, or
   its cached favicon when service icons are on. The row is drawn with the first paint and
   takes no space until a site is pinned.
+- Optional horizontal bookmarks bar below the clock and date, with titles and locally cached
+  favicons. Turn on **Customize → Show bookmarks** and allow bookmark and favicon access.
+  Links from the browser’s bookmarks bar and its subfolders appear in bookmark order; hover
+  a link to see its folder and full title. Long rows scroll horizontally. Bookmark changes
+  appear in open new tabs automatically. Choose **Bookmark style → Bar** for the compact
+  horizontal row or **Tiles** for borderless squares with larger icons above their titles.
+  Tiles wrap into centered rows in smaller windows. Visibility stays on this device.
 - Keyboard-accessible settings that adapt to small windows and respect reduced motion.
 - Preferences and pinned sites saved in the extension's browser profile and synced across
   devices when the browser syncs extension data. Service icons stay a per-device choice.
 - No analytics, remote fonts, or external network requests.
   Required permissions are `search` and `storage`, neither of which shows an install warning.
   Service icons ask for the optional `favicon` permission when you turn them on.
+  The bookmarks bar asks for optional `bookmarks` and `favicon` permissions when enabled.
 
 The favicon follows the browser's light or dark appearance. The page appearance can
 be overridden separately. Custom browser theme palettes are not detected automatically.

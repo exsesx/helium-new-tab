@@ -1,7 +1,7 @@
 import { PREFERENCES_KEY } from "./model.js";
 
-// Permissions differ per device, so each device keeps its own service-icon choice.
-const DEVICE_KEYS = ["showServiceIcons"];
+// Permissions differ per device, so each device keeps its own icon and bookmarks choices.
+const DEVICE_KEYS = ["showServiceIcons", "showBookmarks"];
 // Stay well below chrome.storage.sync's write quota while someone types a font name.
 const WRITE_DELAY = 1000;
 // Names this device in its changes. Local storage is per device, so it is never synced.

@@ -7,7 +7,7 @@
     "newtab": "index.html"
   },
   "permissions": ["search", "storage"],
-  "optional_permissions": ["favicon"],
+  "optional_permissions": ["favicon", "bookmarks"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'none'"
   },

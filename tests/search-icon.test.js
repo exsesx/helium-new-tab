@@ -89,5 +89,5 @@ test("service changes clear stale icons, late loads cannot win, and failed icons
 
 test("service icons need only an optional favicon permission", () => {
   expect(manifest.permissions).toEqual(["search", "storage"]);
-  expect(manifest.optional_permissions).toEqual(["favicon"]);
+  expect(manifest.optional_permissions).toEqual(["favicon", "bookmarks"]);
 });

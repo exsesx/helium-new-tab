@@ -9,6 +9,7 @@ import {
 import { serviceIconsSupported } from "../lib/service-icons.js";
 import { showSiteFavicons } from "../lib/site-favicons.js";
 import { createSiteIcon } from "../lib/site-tiles.js";
+import { bookmarksSupported } from "../lib/bookmarks.js";
 
 // Messages for the reasons addPinnedSite and renamePinnedSite give.
 const SITE_ERRORS = {
@@ -44,6 +45,8 @@ export function createSettings({
   const dialog = template.content.querySelector("dialog");
   const find = (id) => dialog.querySelector(`#${id}`);
 
+  find("show-bookmarks").disabled = !bookmarksSupported();
+
   // The preview has no favicon permission, so it cannot show service icons.
   if (!serviceIconsSupported()) {
     find("service-icons-setting").hidden = true;
@@ -65,6 +68,8 @@ export function createSettings({
     ["show-date", "showDate"],
     ["type-to-search", "typeToSearch"],
     ["show-pinned-sites", "showPinnedSites"],
+    ["show-bookmarks", "showBookmarks"],
+    ["bookmark-style", "bookmarkStyle"],
     ["show-service-icons", "showServiceIcons"],
     ...["ui", "mono", "clock", "date", "search"].map((key) => [`${key}-font`, `${key}Font`]),
   ];
@@ -74,6 +79,7 @@ export function createSettings({
   const showsClock = (preferences) => preferences.showClock;
   const showsDate = (preferences) => preferences.showDate;
   const showsPinnedSites = (preferences) => preferences.showPinnedSites;
+  const showsBookmarks = (preferences) => preferences.showBookmarks;
 
   const dependencies = [
     ["background", usesDarkBackground],
@@ -84,6 +90,7 @@ export function createSettings({
     ["date-font", showsDate],
     ["date-custom-font", showsDate],
     ["pinned-site-controls", showsPinnedSites],
+    ["bookmark-style", showsBookmarks],
   ];
 
   // Render each custom name in its own font, so a missing font is visible while typing.

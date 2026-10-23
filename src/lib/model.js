@@ -20,6 +20,8 @@ export const defaults = {
   showServiceIcons: false,
   typeToSearch: true,
   showPinnedSites: false,
+  showBookmarks: false,
+  bookmarkStyle: "bar",
   uiFont: "system",
   monoFont: "system",
   uiCustomFont: "",
@@ -37,6 +39,7 @@ const componentFonts = ["inherit", "ui", "mono", "custom"];
 
 // Every accepted value of the preferences that pick one of a fixed set of choices.
 const ALLOWED = {
+  bookmarkStyle: ["bar", "tiles"],
   background: ["blend", "helium"],
   theme: ["system", "light", "dark"],
   timeFormat: ["auto", "12h", "24h"],
@@ -85,6 +88,7 @@ export function readPreferences(value) {
     "showServiceIcons",
     "typeToSearch",
     "showPinnedSites",
+    "showBookmarks",
   ]) {
     if (typeof value[key] === "boolean") {
       result[key] = value[key];

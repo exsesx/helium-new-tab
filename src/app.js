@@ -1,5 +1,6 @@
 import { createTranslator, languages, resolveLanguage } from "./i18n/index.js";
 import { createClock } from "./lib/clock.js";
+import { createBookmarksBar, requestBookmarks } from "./lib/bookmarks.js";
 import {
   PINNED_SITES_KEY,
   PREFERENCES_KEY,
@@ -34,6 +35,18 @@ delete window.__heliumTabPreferences;
 delete window.__heliumTabSites;
 
 const translator = createTranslator();
+const bookmarksBar = createBookmarksBar({
+  container: $("bookmarks"),
+  getEnabled: () => preferences.showBookmarks,
+  getStyle: () => preferences.bookmarkStyle,
+  translator,
+  onRevoked: () => {
+    if (preferences.showBookmarks) {
+      updatePreference("showBookmarks", false);
+      settings?.refresh();
+    }
+  },
+});
 const clock = createClock({ clock: $("clock"), date: $("date"), container: $("clock-block") });
 const searchForm = createSearchForm({
   form: $("search-form"),
@@ -137,6 +150,10 @@ $("open-settings").addEventListener("click", async () => {
         translator,
         languages,
         onChange(key, value) {
+          if (key === "showBookmarks" && value) {
+            return requestBookmarks().then((granted) => updatePreference(key, granted));
+          }
+
           if (key === "showServiceIcons" && value) {
             return requestServiceIcons().then((granted) => updatePreference(key, granted));
           }
@@ -171,6 +188,10 @@ function updatePreference(key, value) {
 
   if (key === "showServiceIcons" || key === "showPinnedSites") {
     renderSites();
+  }
+
+  if (key === "showBookmarks" || key === "bookmarkStyle") {
+    void bookmarksBar.refresh();
   }
 
   save(key);
@@ -213,6 +234,7 @@ function applyExternal(value) {
     next.showPinnedSites !== preferences.showPinnedSites;
 
   preferences = next;
+  void bookmarksBar.refresh();
   void updateLanguage(true);
   settings?.refresh();
 
@@ -350,6 +372,7 @@ void readSyncedSnapshot(() => siteChanges, PINNED_SITES_KEY).then(({ value, stal
   }
 });
 
+void bookmarksBar.refresh();
 void updateLanguage();
 
 async function updateLanguage(updateAppearance = false) {

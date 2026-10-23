@@ -135,6 +135,7 @@ main {
 
 .start {
   width: min(100%, 640px);
+  min-width: 0;
   text-align: center;
 }
 
@@ -330,6 +331,98 @@ h1 {
   .pinned-site:active .site-icon {
     transform: scale(0.97);
   }
+}
+
+.bookmarks {
+  max-width: 100%;
+  margin-top: 28px;
+  padding: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.bookmarks ul {
+  display: flex;
+  gap: 6px;
+  width: max-content;
+  min-width: 100%;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bookmark-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 180px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  color: var(--secondary);
+  font-size: 13px;
+}
+
+.bookmark-link:hover,
+.bookmark-link:focus-visible {
+  background: var(--search-bg);
+  color: var(--text);
+}
+
+.bookmark-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bookmark-icon,
+.bookmark-icon svg,
+.bookmark-icon .site-favicon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.bookmarks-message {
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.bookmarks[data-style="tiles"] ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 96px);
+  gap: 8px;
+  width: 100%;
+}
+
+.bookmarks[data-style="tiles"] .bookmark-link {
+  display: grid;
+  grid-template-rows: 32px 16px;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  width: 96px;
+  height: 96px;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.bookmarks[data-style="tiles"] .bookmark-title {
+  display: block;
+  max-width: 100%;
+  line-height: 16px;
+}
+
+.bookmarks[data-style="tiles"] .bookmark-icon,
+.bookmarks[data-style="tiles"] .bookmark-icon svg,
+.bookmarks[data-style="tiles"] .bookmark-icon .site-favicon {
+  width: 32px;
+  height: 32px;
 }
 
 /* One centered row of up to eight sites under the date, last on the page, as far below it as

@@ -2,7 +2,7 @@
 
 Helium New Tab stores appearance, language, clock, font, and service-icon preferences, and the
 addresses and names of sites you pin, in local storage within your browser profile. It also
-copies them, except the service-icon choice, to the browser's extension sync storage. If your
+copies them, except the service-icon and bookmarks-bar choices, to the browser's extension sync storage. If your
 browser syncs extension data through your browser account, those preferences and pinned sites
 follow you to your other devices; otherwise they stay on this device. Each saved copy also notes when it changed and a random identifier for the device
 that changed it, so a device can tell its own older changes from newer ones. The identifier is
@@ -17,6 +17,13 @@ and styles ship in the extension; custom fonts must already be installed on your
 saved. While you type a recognized bang, the extension looks up the destination's icon in
 that local cache, and pinned sites show their icons from it. No icon service or website receives
 a request. Bangs with query-dependent hostnames show no icon.
+
+**Customize → Show bookmarks** is off by default. Turning it on asks for the optional
+`bookmarks` and `favicon` permissions. The bar reads links from your browser’s bookmarks
+bar, including its subfolders, and displays their titles and cached site icons locally.
+Bookmark contents stay in memory: the extension never copies them to its storage, sync
+storage, or a server, and never edits your bookmarks. Only the visibility choice is saved
+on this device. Turning the option off stops reading and showing bookmarks.
 
 The bang catalog ships with the extension. Maintainers update this snapshot manually
 with extension releases. The extension does not download or cache bang catalogs.

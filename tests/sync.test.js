@@ -32,18 +32,18 @@ function fakeStorage(initial = {}) {
 
 test("device-only keys stay local when merging synced preferences", () => {
   const merged = mergeSynced(
-    { theme: "dark", showServiceIcons: true },
-    { theme: "light", showServiceIcons: false },
+    { theme: "dark", showServiceIcons: true, showBookmarks: true },
+    { theme: "light", showServiceIcons: false, showBookmarks: false },
   );
 
-  expect(merged).toEqual({ theme: "dark", showServiceIcons: false });
+  expect(merged).toEqual({ theme: "dark", showServiceIcons: false, showBookmarks: false });
   expect(mergeSynced(undefined, {})).toBeUndefined();
   expect(mergeSynced("bad", {})).toBeUndefined();
 });
 
 test("writes are debounced and omit device-only keys", async () => {
   const { data } = fakeStorage();
-  const preferences = { theme: "light", showServiceIcons: true };
+  const preferences = { theme: "light", showServiceIcons: true, showBookmarks: true };
   const { write } = createSyncWriter(() => preferences);
 
   write();
