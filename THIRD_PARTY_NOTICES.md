@@ -7,7 +7,7 @@ Helium artwork remains under its upstream GPL-3.0 license, included in
 ## Bang catalog
 
 `src/data/bangs.json` is a snapshot of [Helium's published bang catalog](https://services.helium.imput.net/bangs.json),
-downloaded on 21 September 2026. Its generation timestamp is `2026-09-01T08:41:24.475Z`.
+downloaded on 26 October 2026. Its generation timestamp is `2026-10-14T11:11:02.825Z`.
 The catalog is Copyright (c) 2024 Kagi Search, 2026 imput, under the MIT license
 included in [licenses/bangs-MIT.txt](licenses/bangs-MIT.txt).
 
